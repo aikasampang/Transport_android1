@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:weightSum="6">
+
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="2"
+        android:background="#5956c871"
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginLeft="22dp"
+            android:layout_marginStart="22dp"
+            android:layout_marginTop="24dp"
+            android:id="@+id/companyName" />
+
+        <TextView
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/companyName"
+            android:layout_alignRight="@+id/companyName"
+            android:layout_alignEnd="@+id/companyName"
+            android:layout_marginTop="16dp"
+            android:id="@+id/devicename" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/devicename"
+            android:layout_alignLeft="@+id/devicename"
+            android:layout_alignStart="@+id/devicename"
+            android:layout_marginTop="23dp"
+            android:id="@+id/battstatus" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="4"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_gravity="center"
+            >
+            <GridView
+                android:id="@+id/myGrid"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:paddingLeft="5sp"
+                android:paddingRight="5sp"
+                android:horizontalSpacing="5sp"
+                android:verticalSpacing="5sp"
+                android:stretchMode="columnWidth"
+                android:numColumns="2" >
+
+            </GridView>
+        </LinearLayout>
+
+
+    </RelativeLayout>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <!--<LinearLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:background="#00a20f"-->
+        <!--android:orientation="horizontal">-->
+
+
+        <!--<TextView-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="40sp"-->
+            <!--android:paddingLeft="10sp"-->
+            <!--android:paddingRight="10sp"-->
+            <!--android:textAppearance="?android:attr/textAppearanceMedium"-->
+            <!--android:text="Large Text"-->
+            <!--android:textColor="#ffffff"-->
+            <!--android:layout_weight="1"-->
+            <!--android:drawableStart="@drawable/nav_user"-->
+            <!--android:gravity="start|center"-->
+            <!--android:id="@+id/txtUser"-->
+            <!--android:drawableLeft="@drawable/nav_user"-->
+            <!--android:textSize="12sp"/>-->
+
+        <!--<TextView-->
+            <!--android:layout_width="0sp"-->
+            <!--android:layout_height="40sp"-->
+            <!--android:textAppearance="?android:attr/textAppearanceMedium"-->
+            <!--android:text="Large Text"-->
+            <!--android:textColor="#ffffff"-->
+            <!--android:gravity="start|center|end"-->
+            <!--android:layout_weight="1"-->
+            <!--android:drawablePadding="-6sp"-->
+            <!--android:drawableLeft="@drawable/battery"-->
+            <!--android:drawableStart="@drawable/battery"-->
+            <!--android:id="@+id/txtBattery"-->
+            <!--android:textSize="12sp"/>-->
+
+        <!--<TextView-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="40sp"-->
+            <!--android:paddingLeft="2sp"-->
+            <!--android:textAppearance="?android:attr/textAppearanceMedium"-->
+            <!--android:text="Large Text"-->
+            <!--android:textColor="#ffffff"-->
+            <!--android:layout_weight="1"-->
+            <!--android:gravity="start|center|end"-->
+            <!--android:drawablePadding="6sp"-->
+            <!--android:drawableLeft="@drawable/time"-->
+            <!--android:drawableStart="@drawable/time"-->
+            <!--android:id="@+id/txtDateTime"-->
+            <!--android:textSize="12sp"/>-->
+    <!--</LinearLayout>-->
+
+
+
+</LinearLayout>

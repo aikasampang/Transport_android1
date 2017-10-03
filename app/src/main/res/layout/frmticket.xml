@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <!-- Header aligned to top -->
+    <RelativeLayout
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:background="#AFA7EF"
+        android:gravity="center">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#00a20f"
+            android:orientation="horizontal"
+            android:id="@+id/one">
+
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="40sp"
+                android:paddingLeft="10sp"
+                android:paddingRight="10sp"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Large Text"
+                android:textColor="#ffffff"
+                android:layout_weight="1"
+                android:drawableStart="@drawable/nav_user"
+                android:gravity="start|center"
+                android:id="@+id/txtUser"
+                android:drawableLeft="@drawable/nav_user"
+                android:textSize="12sp"/>
+
+            <TextView
+                android:layout_width="0sp"
+                android:layout_height="40sp"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Large Text"
+                android:textColor="#ffffff"
+                android:gravity="start|center|end"
+                android:layout_weight="1"
+                android:drawablePadding="-6sp"
+                android:drawableLeft="@drawable/battery"
+                android:drawableStart="@drawable/battery"
+                android:id="@+id/txtBattery"
+                android:textSize="12sp"/>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="40sp"
+                android:paddingLeft="2sp"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Large Text"
+                android:textColor="#ffffff"
+                android:layout_weight="1"
+                android:gravity="start|center|end"
+                android:drawablePadding="6sp"
+                android:drawableLeft="@drawable/time"
+                android:drawableStart="@drawable/time"
+                android:id="@+id/txtDateTime"
+                android:textSize="12sp"/>
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <!-- Footer aligned to bottom -->
+    <RelativeLayout
+        android:id="@+id/footer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:gravity="center">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+        <Button
+            android:text="Print"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:id="@+id/t_print"
+            android:layout_weight="1" />
+        <Button
+            android:text="AOC"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:id="@+id/t_aoc"
+            android:layout_weight="1" />
+        <Button
+            android:text="GROSS"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:id="@+id/t_gc"
+            android:layout_weight="1" />
+        </LinearLayout>
+    </RelativeLayout>
+
+    <!-- Content below header and above footer -->
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_above="@id/footer"
+        android:layout_below="@id/header"
+        android:gravity="center">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:id="@+id/two"
+            android:paddingTop="5sp"
+            android:paddingBottom="5sp"
+            >
+
+
+            <TextView
+                android:text="0"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/two"
+                android:id="@+id/t_ticket"
+                android:gravity="center"
+                android:paddingLeft="15sp"
+                android:paddingRight="50sp"
+                />
+
+            <TextView
+                android:text="R.Pax:"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/two"
+                android:id="@+id/text"
+                android:textSize="15sp"
+                android:layout_weight="1" />
+
+
+            <TextView
+                android:text="0"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/two"
+                android:id="@+id/t_remaining"
+                android:layout_weight="1"
+                android:gravity="center"/>
+            <Button
+                android:text="Hotspot"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/t_hotspot"
+                android:layout_weight="1" />
+
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingTop="2sp"
+            android:paddingBottom="25sp"
+            android:layout_below="@+id/two"
+            android:id="@+id/content"
+            >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:id="@+id/originlinear"
+                android:paddingTop="10sp"
+                android:paddingBottom="10sp"
+                >
+
+                <TextView
+                    android:text="ORIGIN"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/textView2"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:textSize="20sp"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:text="DESTINATION"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/textView3"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:textSize="20sp"
+                    android:textStyle="bold"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:id="@+id/pickerlinear"
+                android:paddingTop="10sp"
+                android:paddingBottom="10sp"
+                >
+
+                <NumberPicker
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:id="@+id/t_origin"
+                    android:padding="10sp">
+                </NumberPicker>
+                <NumberPicker
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:id="@+id/t_destination"
+                    android:padding="10sp">
+                </NumberPicker>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:id="@+id/pricelinear"
+                android:paddingTop="10sp"
+                android:paddingBottom="10sp"
+                >
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/t_direction"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:textSize="20sp"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:text="Php 00.00"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/t_price"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:textSize="20sp"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:text="0 KM"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/t_km"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:textSize="20sp"
+                    android:textStyle="bold"/>
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:id="@+id/discountlinear"
+                android:layout_gravity="center"
+                android:paddingTop="10sp"
+                android:paddingBottom="10sp"
+
+                >
+
+                <RadioGroup
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:id="@+id/radiogroup"
+                    android:checkedButton= "@+id/td_regular">
+                    <RadioButton
+                        android:text="Reg"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/td_regular"
+                        />
+                    <RadioButton
+                        android:text="Senior"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/td_senior"
+                        />
+                    <RadioButton
+                        android:text="Student"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/td_student"
+                        />
+                    <RadioButton
+                        android:text="Baggage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/td_baggage"
+                        />
+                </RadioGroup>
+            </LinearLayout>
+
+
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</RelativeLayout>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:padding="10sp"
+        android:orientation="vertical">
+
+            <Button
+                android:text="Inspector"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/inspectors"
+                android:layout_weight="1"
+                android:background="@drawable/border_radius"
+                android:padding="10sp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+
+            <Button
+                android:text="Controller"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/controller"
+                android:layout_weight="1"
+                android:background="@drawable/border_radius"
+                android:padding="10sp"/>
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <Button
+                android:text="Arrival"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/arrival"
+                android:layout_weight="1"
+                android:background="@drawable/border_radius"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <Button
+                android:text="Inspection from Terminal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/ift"
+                android:padding="10sp"
+                android:layout_weight="1"
+                android:background="@drawable/border_radius"/>
+
+        </LinearLayout>
+</LinearLayout>
