@@ -19,6 +19,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
 import com.transport.organelles.transport_.Class.Costtype;
 import com.transport.organelles.transport_.Class.DBAccess;
 import com.transport.organelles.transport_.Class.DBAssets;
@@ -59,9 +60,12 @@ public class frmIngress extends AppCompatActivity {
     Spinner terminal;
 
     String[] ptype, ptype2;
-    ArrayList<Costtype> costtypes = null;
+    ArrayList<Costtype> costtypes = new ArrayList<>();
     ArrayList<Withholding> withholdings = null;
     ArrayList<List> uploadWith;
+
+    Costtype costtype;
+    ArrayList<Costtype> arrCost = new ArrayList<>();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -144,9 +148,11 @@ public class frmIngress extends AppCompatActivity {
     }
     private void objectListeners(){
 
-        tripId = GlobalVariable.getLasttrip();
+
         final DBQuery dbQuery = new DBQuery(frmIngress.this);
+        tripId = dbQuery.getLastTicket();
         gross = Double.parseDouble(dbQuery.getGross(tripId));
+
 
 
 
@@ -246,48 +252,59 @@ public class frmIngress extends AppCompatActivity {
             }
         });
 
-        b_expense.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent (frmIngress.this, frmExpense.class);
-                startActivity(intent);
-            }
-        });
-
-
-
-
 //        b_expense.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View v) {
-//                DBQuery dbQuery1 = new DBQuery(frmIngress.this);
-//                String trip = GlobalVariable.getLasttrip();
-//                LayoutInflater inflater = getLayoutInflater();
-//                View alertLayout = inflater.inflate(R.layout.frmexpense, null);
-//                costtypes = dbQuery1.expenseList(trip);
-//                final ExpenseAdapter adapter = new ExpenseAdapter(frmIngress.this, R.layout.expense_details,costtypes);
-//                ListView lv= (ListView) alertLayout.findViewById(R.id.list_expense);
-//                lv.setAdapter(adapter);
-//                AlertDialog.Builder alert = new AlertDialog.Builder(frmIngress.this);
-//                alert.setTitle("Expenses");
-//                alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//
-//                    }
-//                });
-//                alert.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        dialog.dismiss();
-//                    }
-//                });
-//
-//                alert.setView(alertLayout);
-//                alert.create().show();
-//
-//                }
-//            });
+//                Intent intent = new Intent (frmIngress.this, frmExpense.class);
+//                startActivity(intent);
+//            }
+//        });
+
+
+
+
+        b_expense.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DBQuery dbQuery1 = new DBQuery(frmIngress.this);
+                String trip = GlobalVariable.getLasttrip();
+                LayoutInflater inflater = getLayoutInflater();
+                View alertLayout = inflater.inflate(R.layout.frmexpense, null);
+                costtypes = dbQuery1.expenseList(trip);
+                final ExpenseAdapter adapter = new ExpenseAdapter(frmIngress.this, R.layout.expense_details,costtypes);
+                ListView lv= (ListView) alertLayout.findViewById(R.id.list_expense);
+                lv.setAdapter(adapter);
+                AlertDialog.Builder alert = new AlertDialog.Builder(frmIngress.this);
+                alert.setTitle("Expenses");
+                alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        for (int i = 0; i < costtypes.size(); i++) {
+                            costtype = new Costtype();
+                            costtype.getAmount();
+                            costtype.getCosttype();
+                            arrCost.add(costtype);
+
+                            saveCosttype();
+
+                        }
+
+
+                    }
+                });
+                alert.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+                alert.setView(alertLayout);
+                alert.create().show();
+
+                }
+            });
 
         b_withholding.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -494,8 +511,8 @@ public class frmIngress extends AppCompatActivity {
         dbQuery.getCondDri(trip);
         String cond = GlobalVariable.getCurrent_cond();
         String dri = GlobalVariable.getCurrent_dri();
-        String mode = GlobalVariable.getModeid();
-        String line = GlobalVariable.getLineid();
+        String mode = dbQuery.getMode(device);
+        String line = dbQuery.getLinefrmDB();
 
         dbQuery.getPercentCond(cond, mode, line);
         Double amountcond = Double.parseDouble(GlobalVariable.getCondpercent_amount());
@@ -544,9 +561,9 @@ public class frmIngress extends AppCompatActivity {
         }
 
         basisgross = totalgross;
-        String linename = GlobalVariable.getLine_name();
+        String linename = dbQuery.getLinefrmDB();
         String tag = dbQuery.getLineDB(linename);
-        String modeid = GlobalVariable.getModeid();
+        String modeid = dbQuery.getMode(device);
 
         dbQuery.getEmployeeID(dri, cond);
 
@@ -1111,6 +1128,18 @@ public class frmIngress extends AppCompatActivity {
 
 
     }
+
+    private void saveCosttype(){
+
+
+
+        Gson gson = new Gson();
+        String inputString= gson.toJson(arrCost);
+
+        Log.wtf("inputString= " , inputString+ "");
+
+    }
+
 
 
 

@@ -59,7 +59,8 @@ public class Splash extends AppCompatActivity {
                     "('" + devicename + "', 'PERMITNUMBER', '000-0000')," +
                     "('" + devicename + "', 'SERIALNUMBER', '" + serialnum + "')," +
                     "('" + devicename + "', 'LASTTICKETID', '0')," +
-                    "('" + devicename + "', 'LASTTRIPID', '0') ";
+                    "('" + devicename + "', 'LASTTRIPID', '0')," +
+                    "('" + devicename + "', 'LINE', '0') ";
             Log.wtf("logged sql", sqlQuery);
 
             if (!dba.executeQuery(sqlQuery)) {
@@ -69,6 +70,7 @@ public class Splash extends AppCompatActivity {
 
         }else{
 
+            dbQuery.getlastTicket(GlobalVariable.getPhoneName());
             String lastticketid = GlobalVariable.d_lastticketid;
             String lasttripid = GlobalVariable.d_lasttripid;
             Toast.makeText(Splash.this, lastticketid + " " + lasttripid , Toast.LENGTH_LONG).show();

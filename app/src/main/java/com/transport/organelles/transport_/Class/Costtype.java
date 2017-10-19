@@ -10,6 +10,11 @@ public class Costtype {
     String costtype;
     String amount;
 
+    public Costtype() {
+
+    }
+
+
     public Costtype( String costtype, String amount) {
 
         this.costtype = costtype;
@@ -17,14 +22,14 @@ public class Costtype {
     }
 
 
-    public String getCosttypeid() {
-        return costtypeid;
-    }
-
-    public void setCosttypeid(String costtypeid) {
-        this.costtypeid = costtypeid;
-    }
-
+//    public String getCosttypeid() {
+//        return costtypeid;
+//    }
+//
+//    public void setCosttypeid(String costtypeid) {
+//        this.costtypeid = costtypeid;
+//    }
+//
     public String getCosttype() {
         return costtype;
     }

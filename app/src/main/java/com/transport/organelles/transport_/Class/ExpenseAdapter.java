@@ -25,21 +25,78 @@ import java.util.List;
  * Created by Organelles on 9/20/2017.
  */
 
-public class ExpenseAdapter extends ArrayAdapter {
+public class ExpenseAdapter extends ArrayAdapter<Costtype> {
 
     private Context context;
-    private ArrayList<Costtype> costtype;
-    ArrayList<HashMap<String,String>> type;
+    ArrayList<Costtype> costtype;
+    LayoutInflater inflater;
+    //ArrayList<HashMap<String,String>> type;
 
-    public ExpenseAdapter(Context context,  int textViewResourceId,ArrayList objects) {
-        super(context, textViewResourceId, objects);
+    public ExpenseAdapter(Context context, int resource, ArrayList<Costtype> costtype) {
+        super(context, resource);
 
         this.context = context;
-        costtype = objects;
+        this.costtype = costtype;
+        this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
+    private static class ViewHolder {
+        TextView costtypeid;
+        TextView costtypename;
+        EditText amount;
 
-    private class ViewHolder {
+    }
+
+    @NonNull
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+
+        final ViewHolder holder;
+        if(convertView == null) {
+            convertView = inflater.inflate(R.layout.expense_details, null);
+            holder = new ViewHolder();
+            holder.costtypename = (TextView) convertView.findViewById(R.id.costtypeName);
+            holder.amount = (EditText)convertView.findViewById(R.id.costtype_amount);
+            convertView.setTag(holder);
+        }else{
+            holder = (ViewHolder)convertView.getTag();
+        }
+
+        Costtype type = costtype.get(position);
+        holder.costtypename.setText(type.getCosttype());
+        //holder.amount.setText(type.getAmount());
+        holder.amount.setId(position);
+        holder.costtypename.setId(position);
+
+
+        holder.amount.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if(!hasFocus) {
+                    final int position = v.getId();
+                    final EditText inputAmount = (EditText) v;
+                    costtype.get(position).setAmount(inputAmount.getText().toString());
+                    costtype.get(position).setCosttype(holder.costtypename.getText().toString());
+
+                }
+            }
+        });
+
+        setupItem(holder);
+        return convertView;
+    }
+    private void setupItem(ViewHolder holder) {
+        holder.costtypename.setText(holder.costtypename.getText().toString());
+        holder.amount.setText(String.valueOf(holder.amount.getText().toString()));
+    }
+    @Override
+    public int getCount() {
+        return costtype.size();
+    }
+}
+
+
+    /*private class ViewHolder {
         TextView costtypeid;
         TextView costtypename;
         EditText amount;
@@ -59,7 +116,7 @@ public class ExpenseAdapter extends ArrayAdapter {
 
     @Nullable
     @Override
-    public Object getItem(int position) {
+    public Costtype getItem(int position) {
         return costtype.get(position);
     }
 
@@ -127,3 +184,4 @@ public class ExpenseAdapter extends ArrayAdapter {
 //        }
 //    }
 }
+*/

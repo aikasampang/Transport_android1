@@ -406,6 +406,7 @@ public class frmDispatch extends AppCompatActivity {
                 Toast.makeText(frmDispatch.this, "Can't insert data to database!. UPDATE TRIP", Toast.LENGTH_SHORT).show();
             } else {
                 updateDirection();
+                updateLine();
             }
         }
     }
@@ -459,6 +460,23 @@ public class frmDispatch extends AppCompatActivity {
             }
         }
         insertCrew();
+
+    }
+
+    private void updateLine() {
+
+        String devicename = GlobalVariable.getPhoneName();
+        String line = GlobalVariable.getLineid();
+
+        sqlQuery = "UPDATE DEVICEDATA SET VALUE = '" + line + "' WHERE DEVICENAME = '" + devicename + "' AND KEY = 'LINE'";
+
+        if (!dba.executeQuery(sqlQuery)) {
+            Toast.makeText(frmDispatch.this, "Can't insert data to database!.", Toast.LENGTH_SHORT).show();
+        } else {
+            Log.wtf("update line", "update line");
+        }
+
+
 
     }
     private void insertCrew(){

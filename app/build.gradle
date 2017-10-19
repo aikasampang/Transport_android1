@@ -33,4 +33,5 @@ dependencies {
     compile files('libs/volley 1.0.19.jar')
     compile files('libs/SenterOpenApi_1.2.3.68_Common.jar')
     compile files('libs/SenterOpenApi_1.2.3.68_IoT.jar')
+    compile files('libs/gson-2.2.2.jar')
 }

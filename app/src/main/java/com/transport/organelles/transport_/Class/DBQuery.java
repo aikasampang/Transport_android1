@@ -23,6 +23,43 @@ public class DBQuery extends DBObject {
 
     }
 
+
+    /*getdispatch*/
+
+    public String getDirectionfromDB(){
+
+        String sql = "select VALUE from DEVICEDATA where KEY = 'DIRECTION'";
+        Cursor cursor = this.getDbConnection().rawQuery(sql, null);
+        cursor.moveToFirst();
+        String directionDB = cursor.getString(cursor.getColumnIndexOrThrow("VALUE"));
+        GlobalVariable.setDirectionfromDB(directionDB );
+        return directionDB ;
+    }
+
+    public String getLinefrmDB(){
+
+        String sql = "select VALUE from DEVICEDATA where KEY = 'LINE'";
+        Cursor cursor = this.getDbConnection().rawQuery(sql, null);
+        cursor.moveToFirst();
+        String lineDB = cursor.getString(cursor.getColumnIndexOrThrow("VALUE"));
+        GlobalVariable.setLinefromDB(lineDB );
+        return lineDB;
+    }
+
+    public String getLastTicket(){
+
+        String sql = "select VALUE from DEVICEDATA where KEY = 'LASTTRIPID'";
+        Cursor cursor = this.getDbConnection().rawQuery(sql, null);
+        cursor.moveToFirst();
+        String lastTrip = cursor.getString(cursor.getColumnIndexOrThrow("VALUE"));
+        GlobalVariable.setLasttrip(lastTrip);
+        cursor.close();
+
+        return lastTrip;
+
+    }
+
+
     public String[] getName(int emprole) {
 
         String query = "Select * from Employee where EMPLOYEEROLEID = '" +emprole+ "'";
@@ -824,9 +861,9 @@ public class DBQuery extends DBObject {
         }
     }
 
-    public String getLineDB(String linename){
+    public String getLineDB(String line){
 
-        String query = "select TAG from LINE where NAME ='"+ linename +"'";
+        String query = "select TAG from LINE where ID ='"+ line +"'";
         Cursor cursor = this.getDbConnection().rawQuery(query, null);
         cursor.moveToFirst();
         String tag = cursor.getString(cursor.getColumnIndexOrThrow("TAG"));
@@ -1166,7 +1203,7 @@ public class DBQuery extends DBObject {
 
     public ArrayList<Costtype> expenseList(String trip){
 
-        String sql = "select A.ID as COSTTYPEID, A.NAME as COSTTYPE, coalesce(X.AMOUNT,0) as AMOUNT from COSTTYPE A left join TRIPCOST X  on X.COSTTYPEID=A.ID AND X.TRIPID where (A.NAME != 'Special Trip' AND A.NAME != 'Refund')";
+        String sql = "select A.ID as COSTTYPEID, A.NAME as COSTTYPE, coalesce(X.AMOUNT,0) as AMOUNT from COSTTYPE A left join TRIPCOST X  on X.COSTTYPEID=A.ID AND X.TRIPID where A.REMARKS IS NOT 'SG'";
         Cursor cursor = this.getDbConnection().rawQuery(sql, null);
         ArrayList<Costtype> cost = new ArrayList<Costtype>();
         if(cursor.moveToFirst()){

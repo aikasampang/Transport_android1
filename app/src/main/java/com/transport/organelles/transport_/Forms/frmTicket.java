@@ -51,6 +51,7 @@ public class frmTicket extends AppCompatActivity {
     double ticketprice, km, totalkm2;
     String sqlQuery= "", hasHotspot="";
     private DBAccess dba;
+    String lineID;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -145,29 +146,44 @@ public class frmTicket extends AppCompatActivity {
     }
 
     private void objectListener(){
-
-
+        final DBQuery dbQuery = new DBQuery(frmTicket.this);
+        String directionDB = dbQuery.getDirectionfromDB();
 //        String direction = GlobalVariable.d_direct;
         String lDirection = GlobalVariable.getDirection();
         Log.wtf("DIRECTION!!!!", lDirection);
-        if(lDirection.toString().contains("SOUTH") ){
-            bound.setText("S BOUND");
 
-        }else if(lDirection.toString().contains("NORTH")){
-            bound.setText("N BOUND");
+        if(lDirection == null){
+            if(directionDB.toString().contains("-1")){
+                bound.setText("S BOUND");
+
+                String id  = dbQuery.getLinefrmDB();
+                ascending(id);
+
+            }else if(directionDB.toString().contains("1")){
+                bound.setText("N BOUND");
+                String id  = dbQuery.getLinefrmDB();
+                descending(id);
+            }
+        }else{
+            if(lDirection.toString().contains("SOUTH") ){
+                bound.setText("S BOUND");
+
+            }else if(lDirection.toString().contains("NORTH")){
+                bound.setText("N BOUND");
+            }
+
+            if(lDirection.toString().contains("SOUTH") ){
+                String id  = dbQuery.getLinefrmDB();
+                ascending(id);
+
+            }else if(lDirection.toString().contains("NORTH")){
+                String id  = dbQuery.getLinefrmDB();
+                descending(id);
+            }
+
+
+
         }
-
-
-        if(lDirection.toString().contains("SOUTH") ){
-            ascending();
-
-        }else if(lDirection.toString().contains("NORTH")){
-            descending();
-        }
-
-
-
-       final DBQuery dbQuery = new DBQuery(frmTicket.this);
 
         getDiscount();
 
@@ -235,10 +251,10 @@ public class frmTicket extends AppCompatActivity {
 
     }
 
-    private void ascending(){
+    private void ascending(final String id){
         Toast.makeText(frmTicket.this,"ascending", Toast.LENGTH_LONG ).show();
         final DBQuery dbQuery = new DBQuery(frmTicket.this);
-        final String id = GlobalVariable.getLineid();
+        //final String id = GlobalVariable.getLineid();
         Log.wtf("id", id);
         String[] o = dbQuery.getLineSegment(id, "ASC");
         origin.setMinValue(0);
@@ -283,10 +299,10 @@ public class frmTicket extends AppCompatActivity {
         });
 
     }
-    private void descending(){
+    private void descending(final String id){
         Toast.makeText(frmTicket.this,"descending", Toast.LENGTH_LONG ).show();
         final DBQuery dbQuery = new DBQuery(frmTicket.this);
-        final String id = GlobalVariable.getLineid();
+        //final String id = GlobalVariable.getLineid();
         Log.wtf("id", id);
         String[] o = dbQuery.getLineSegment(id, "DESC");
         origin.setMinValue(0);
@@ -386,14 +402,14 @@ public class frmTicket extends AppCompatActivity {
 
         DBQuery dbQuery = new DBQuery(frmTicket.this);
         String device = GlobalVariable.getPhoneName();
-        String line = GlobalVariable.getLineid();
-        String mode = GlobalVariable.getModeid();
+        String lineid  = dbQuery.getLinefrmDB();
+        String mode = dbQuery.getMode(device);
         int km = o_refpoint - d_refpoint;
         String totalkm1 = Integer.toString(Math.abs(km)) ;
-        Log.wtf("COMPUTE TICKET", type + line + mode);
-        String test = dbQuery.getdiscountrate(type, line, mode);
+        Log.wtf("COMPUTE TICKET", type + lineid + mode);
+        String test = dbQuery.getdiscountrate(type, lineid, mode);
 
-        dbQuery.getTicketAmount(mode, line, d_refpoint+ "", o_refpoint + "");
+        dbQuery.getTicketAmount(mode, lineid, d_refpoint+ "", o_refpoint + "");
         service_a = GlobalVariable.a_serviceid;
         amount_a = GlobalVariable.a_amount;
         minrange_a = GlobalVariable.a_minrange;

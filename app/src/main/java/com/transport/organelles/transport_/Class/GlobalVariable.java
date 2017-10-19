@@ -512,6 +512,23 @@ public class GlobalVariable {
         GlobalVariable.cashierID = cashierID;
     }
 
+    public static String directionfromDB;
 
+    public static String getDirectionfromDB() {
+        return directionfromDB;
+    }
 
+    public static void setDirectionfromDB(String directionfromDB) {
+        GlobalVariable.directionfromDB = directionfromDB;
+    }
+
+    public static String linefromDB;
+
+    public static String getLinefromDB() {
+        return linefromDB;
+    }
+
+    public static void setLinefromDB(String linefromDB) {
+        GlobalVariable.linefromDB = linefromDB;
+    }
 }
