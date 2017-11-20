@@ -1,11 +1,9 @@
-package com.transport.organelles.transport_.Forms;
+package com.transport.organelles.transport_.forms;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -14,24 +12,19 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
-import com.transport.organelles.transport_.Class.Costtype;
-import com.transport.organelles.transport_.Class.DBAccess;
-import com.transport.organelles.transport_.Class.DBAssets;
-import com.transport.organelles.transport_.Class.DBQuery;
-import com.transport.organelles.transport_.Class.ExpenseAdapter;
-import com.transport.organelles.transport_.Class.GlobalClass;
-import com.transport.organelles.transport_.Class.GlobalVariable;
-import com.transport.organelles.transport_.Class.Withholding;
-import com.transport.organelles.transport_.Class.WithholdingAdapter;
+import com.transport.organelles.transport_.classforms.Costtype;
+import com.transport.organelles.transport_.classforms.DBAccess;
+import com.transport.organelles.transport_.classforms.DBQuery;
+import com.transport.organelles.transport_.classforms.GlobalClass;
+import com.transport.organelles.transport_.classforms.GlobalVariable;
+import com.transport.organelles.transport_.classforms.Withholding;
 import com.transport.organelles.transport_.R;
 
-import java.sql.Array;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -39,10 +32,6 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.BlockingDeque;
-
-import static android.R.id.list;
 
 /**
  * Created by Organelles on 6/14/2017.
@@ -252,59 +241,60 @@ public class frmIngress extends AppCompatActivity {
             }
         });
 
-//        b_expense.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Intent intent = new Intent (frmIngress.this, frmExpense.class);
-//                startActivity(intent);
-//            }
-//        });
+        b_expense.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent (frmIngress.this, frmExpense.class);
+                startActivity(intent);
+            }
+        });
 
 ///test
 
 
-        b_expense.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                DBQuery dbQuery1 = new DBQuery(frmIngress.this);
-                String trip = GlobalVariable.getLasttrip();
-                LayoutInflater inflater = getLayoutInflater();
-                View alertLayout = inflater.inflate(R.layout.frmexpense, null);
-                costtypes = dbQuery1.expenseList(trip);
-                final ExpenseAdapter adapter = new ExpenseAdapter(frmIngress.this, R.layout.expense_details,costtypes);
-                ListView lv= (ListView) alertLayout.findViewById(R.id.list_expense);
-                lv.setAdapter(adapter);
-                AlertDialog.Builder alert = new AlertDialog.Builder(frmIngress.this);
-                alert.setTitle("Expenses");
-                alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                        for (int i = 0; i < costtypes.size(); i++) {
-                            costtype = new Costtype();
-                            costtype.getAmount();
-                            costtype.getCosttype();
-                            arrCost.add(costtype);
-
-                            saveCosttype();
-
-                        }
-
-
-                    }
-                });
-                alert.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-
-                alert.setView(alertLayout);
-                alert.create().show();
-
-                }
-            });
+//        b_expense.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                DBQuery dbQuery1 = new DBQuery(frmIngress.this);
+//                String trip = GlobalVariable.getLasttrip();
+//                LayoutInflater inflater = getLayoutInflater();
+//                View alertLayout = inflater.inflate(R.layout.frmexpense, null);
+//                costtypes = dbQuery1.expenseList(trip);
+//                final ExpenseAdapter adapter = new ExpenseAdapter(frmIngress.this, R.layout.expense_details,costtypes);
+//                final ListView lv= (ListView) alertLayout.findViewById(R.id.list_expense);
+//                lv.setAdapter(adapter);
+//                AlertDialog.Builder alert = new AlertDialog.Builder(frmIngress.this);
+//                alert.setTitle("Expenses");
+//                alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//
+//
+//                        for (int i = 0; i < costtypes.size(); i++) {
+//                            costtype = new Costtype();
+//                            costtype.getAmount();
+//                            costtype.getCosttype();
+//                            arrCost.add(costtype);
+//
+//                            saveCosttype();
+//
+//                        }
+//
+//
+//                    }
+//                });
+//                alert.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        dialog.dismiss();
+//                    }
+//                });
+//
+//                alert.setView(alertLayout);
+//                alert.create().show();
+//
+//                }
+//            });
 
         b_withholding.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -312,10 +302,14 @@ public class frmIngress extends AppCompatActivity {
                 withholdings = dbQuery.withholdingList();
                 LayoutInflater layoutInflater = getLayoutInflater();
                 View alertLayout = layoutInflater.inflate(R.layout.frmwithholding, null);
-
-                WithholdingAdapter adapter = new WithholdingAdapter(frmIngress.this, R.layout.withholding_details, withholdings);
-                ListView view = (ListView)alertLayout.findViewById(R.id.list_withholding);
-                view.setAdapter(adapter);
+                final EditText ed_valedri = (EditText) alertLayout.findViewById(R.id.valedri);
+                final EditText ed_valecon = (EditText) alertLayout.findViewById(R.id.valecon);
+                final EditText ed_otherpay = (EditText) alertLayout.findViewById(R.id.otherpay);
+                final EditText ed_epass = (EditText) alertLayout.findViewById(R.id.epass);
+                final EditText ed_alimall = (EditText) alertLayout.findViewById(R.id.alimall);
+                //WithholdingAdapter adapter = new WithholdingAdapter(frmIngress.this, R.layout.withholding_details, withholdings);
+//                ListView view = (ListView)alertLayout.findViewById(R.id.list_withholding);
+//                view.setAdapter(adapter);
                 AlertDialog.Builder builder = new AlertDialog.Builder(frmIngress.this);
                 builder.setTitle("Withholding");
                 builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -331,38 +325,74 @@ public class frmIngress extends AppCompatActivity {
                             Toast.makeText(frmIngress.this, "Can't delete data to database!. tripusage", Toast.LENGTH_SHORT).show();
                         } else {
                             Log.wtf("delete", "tripusage");
-                            String sql2 = "delete from TRIPWITHHOLDING where TRIPID='"+trip+"'";
+                            String sql2 = "delete from TRIPWITHHOLDING where TRIPID='" + trip + "'";
                             if (!dba.executeQuery(sql2)) {
                                 Toast.makeText(frmIngress.this, "Can't delete data to database!. tripwithholding", Toast.LENGTH_SHORT).show();
                             } else {
                                 Log.wtf("delete", "tripwithholding");
-
-                                withholdings = dbQuery.withholdingList();
-                               // List<Object> list = new ArrayList<Object>(Arrays.asList(withholdings));
-                                    for (Object list: withholdings){
-                                        Object x0 = list.equals(0);
-                                        Object x1 = list.equals(0);
-                                        Object x2 = list.equals(0);
-                                        Object x3 = list.equals(0);
-                                        if(x0.equals("W")){
-                                            String sql3 = "INSERT INTO TRIPWITHHOLDING VALUES('" + trip + "', '" + devicename + "', '"+ x1 +"','" + x3 + "') ";
-                                            if(!dba.executeQuery(sql3)){
-                                                Toast.makeText(frmIngress.this, "Can't insert data to database . TRIPWITHHOLDING", Toast.LENGTH_LONG).show();
-                                            }else{
-                                                Log.wtf("insert","tripusage");
-                                            }
-                                        }else{
-                                            String sql4 = "INSERT INTO TRIPUSAGE VALUES('" + trip + "', '" + devicename + "', '"+ x1 +"','" + x3 + "') ";
-                                            if(!dba.executeQuery(sql4)){
-                                                Toast.makeText(frmIngress.this, "Can't insert data to database . TRIPUSAGE", Toast.LENGTH_LONG).show();
-                                            }else{
-                                                Log.wtf("insert","tripusage");
-                                            }
-                                        }
-                                    }
                             }
                         }
-                    }
+
+                                String dri = ed_valedri.getText().toString();
+                                String con = ed_valecon.getText().toString();
+                                String pay = ed_otherpay.getText().toString();
+                                String ep = ed_epass.getText().toString();
+                                String mall = ed_alimall.getText().toString();
+
+                                String sql3 = "insert into TRIPWITHHOLDING (TRIPID, DEVICENAME, ATTRIBUTEID, AMOUNT)" +
+                                        "VALUES" +
+                                        "('"+trip+"', '"+ devicename+"' , '4', '"+dri+"' )," +
+                                        "('"+trip+"', '"+ devicename+"' , '5', '"+con+"' )," +
+                                        "('"+trip+"', '"+ devicename+"' , '6', '"+pay+"' );";
+                                if (!dba.executeQuery(sql3)) {
+                                    Toast.makeText(frmIngress.this, "Can't delete data to database!. tripwithholding", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Log.wtf("INSERT", "tripwithholding");
+                                }
+
+                                String sql4 = "insert into TRIPUSAGE (TRIPID, DEVICENAME, ATTRIBUTEID, QTY)" +
+                                        "VALUES" +
+                                        "('"+trip+"', '"+ devicename+"' , '4', '"+ep+"' )," +
+                                        "('"+trip+"', '"+ devicename+"' , '6', '"+mall+"' );";
+
+                                if (!dba.executeQuery(sql4)) {
+                                    Toast.makeText(frmIngress.this, "Can't delete data to database!. tripusage", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Log.wtf("INSERT", "tripusage");
+                                }
+
+
+
+//                                withholdings = dbQuery.withholdingList();
+//                               // List<Object> list = new ArrayList<Object>(Arrays.asList(withholdings));
+//                                    for (Object list: withholdings){
+//                                        Object x0 = list.equals(0);
+//                                        Object x1 = list.equals(0);
+//                                        Object x2 = list.equals(0);
+//                                        Object x3 = list.equals(0);
+//                                        Log.wtf("list", x0.toString());
+//                                        if(x0.equals("W")){
+//                                            String sql3 = "INSERT INTO TRIPWITHHOLDING VALUES('" + trip + "', '" + devicename + "', '"+ x1 +"','" + x3 + "') ";
+//                                            Log.wtf("sql", sql3);
+//                                            if(!dba.executeQuery(sql3)){
+//                                                Toast.makeText(frmIngress.this, "Can't insert data to database . TRIPWITHHOLDING", Toast.LENGTH_LONG).show();
+//                                            }else{
+//                                                Log.wtf("insert","tripusage");
+//                                            }
+//                                        }else{
+//                                            String sql4 = "INSERT INTO TRIPUSAGE VALUES('" + trip + "', '" + devicename + "', '"+ x1 +"','" + x3 + "') ";
+//                                            Log.wtf("sql", sql4);
+//                                            if(!dba.executeQuery(sql4)){
+//
+//                                                Toast.makeText(frmIngress.this, "Can't insert data to database . TRIPUSAGE", Toast.LENGTH_LONG).show();
+//                                            }else{
+//                                                Log.wtf("insert","tripusage");
+//                                            }
+//                                        }
+//                                    }
+                            }
+
+
                 });
                 builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
                     @Override

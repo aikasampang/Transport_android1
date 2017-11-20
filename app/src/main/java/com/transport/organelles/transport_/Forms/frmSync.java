@@ -1,9 +1,8 @@
-package com.transport.organelles.transport_.Forms;
+package com.transport.organelles.transport_.forms;
 
 import android.bluetooth.BluetoothAdapter;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.ReceiverCallNotAllowedException;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -15,7 +14,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.text.style.UpdateAppearance;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -31,18 +29,15 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.senter.support.openapi.StUhf;
-import com.transport.organelles.transport_.Class.DBAccess;
-import com.transport.organelles.transport_.Class.GlobalVariable;
+import com.transport.organelles.transport_.classforms.DBAccess;
+import com.transport.organelles.transport_.classforms.GlobalVariable;
 import com.transport.organelles.transport_.R;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.DateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;

@@ -1,4 +1,4 @@
-package com.transport.organelles.transport_.Forms;
+package com.transport.organelles.transport_.forms;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -19,13 +19,11 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.transport.organelles.transport_.Class.DBAccess;
-import com.transport.organelles.transport_.Class.DBQuery;
-import com.transport.organelles.transport_.Class.GlobalClass;
-import com.transport.organelles.transport_.Class.GlobalVariable;
+import com.transport.organelles.transport_.classforms.DBAccess;
+import com.transport.organelles.transport_.classforms.DBQuery;
+import com.transport.organelles.transport_.classforms.GlobalClass;
+import com.transport.organelles.transport_.classforms.GlobalVariable;
 import com.transport.organelles.transport_.R;
-
-import org.w3c.dom.Text;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

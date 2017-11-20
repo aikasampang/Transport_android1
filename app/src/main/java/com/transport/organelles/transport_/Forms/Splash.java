@@ -1,4 +1,4 @@
-package com.transport.organelles.transport_.Forms;
+package com.transport.organelles.transport_.forms;
 
 import android.content.Intent;
 import android.os.Build;
@@ -9,9 +9,9 @@ import android.util.Log;
 import android.view.WindowManager;
 import android.widget.Toast;
 
-import com.transport.organelles.transport_.Class.DBAccess;
-import com.transport.organelles.transport_.Class.DBQuery;
-import com.transport.organelles.transport_.Class.GlobalVariable;
+import com.transport.organelles.transport_.classforms.DBAccess;
+import com.transport.organelles.transport_.classforms.DBQuery;
+import com.transport.organelles.transport_.classforms.GlobalVariable;
 import com.transport.organelles.transport_.R;
 
 public class Splash extends AppCompatActivity {
@@ -73,7 +73,7 @@ public class Splash extends AppCompatActivity {
             dbQuery.getlastTicket(GlobalVariable.getPhoneName());
             String lastticketid = GlobalVariable.d_lastticketid;
             String lasttripid = GlobalVariable.d_lasttripid;
-            Toast.makeText(Splash.this, lastticketid + " " + lasttripid , Toast.LENGTH_LONG).show();
+            Toast.makeText(Splash.this, "Last ticket = " +lastticketid + " "  + "Last trip id = " + lasttripid , Toast.LENGTH_LONG).show();
 
 
         }

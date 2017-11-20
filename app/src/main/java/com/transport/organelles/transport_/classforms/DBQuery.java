@@ -1,16 +1,11 @@
-package com.transport.organelles.transport_.Class;
+package com.transport.organelles.transport_.classforms;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.provider.Settings;
+import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
-import org.json.JSONArray;
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Created by Organelles on 6/14/2017.
@@ -211,6 +206,16 @@ public class DBQuery extends DBObject {
         allSpinner = spinnerContent.toArray(allSpinner);
 
         return allSpinner;
+    }
+
+    public String getModeName(String modeId){
+
+        String sql = "Select NAME from MODE where ID  = '" + modeId + "'";
+        Cursor cursor = this.getDbConnection().rawQuery(sql, null);
+        cursor.moveToFirst();
+        String MODE = cursor.getString(cursor.getColumnIndexOrThrow("NAME"));
+        cursor.close();
+        return MODE;
     }
 
     public String getPassword(String name){
@@ -1203,7 +1208,7 @@ public class DBQuery extends DBObject {
 
     public ArrayList<Costtype> expenseList(String trip){
 
-        String sql = "select A.ID as COSTTYPEID, A.NAME as COSTTYPE, coalesce(X.AMOUNT,0) as AMOUNT from COSTTYPE A left join TRIPCOST X  on X.COSTTYPEID=A.ID AND X.TRIPID where A.REMARKS IS NOT 'SG'";
+        String sql = "select A.ID as COSTTYPEID, A.NAME as COSTTYPE, coalesce(X.AMOUNT,0) as AMOUNT from COSTTYPE A left join TRIPCOST X  on X.COSTTYPEID=A.ID AND X.TRIPID= '"+ trip+"' where A.REMARKS IS NOT 'SG'";
         Cursor cursor = this.getDbConnection().rawQuery(sql, null);
         ArrayList<Costtype> cost = new ArrayList<Costtype>();
         if(cursor.moveToFirst()){
@@ -1225,8 +1230,9 @@ public class DBQuery extends DBObject {
 
     public ArrayList<Withholding> withholdingList(){
 
-            String sql = "select 'W' as TAG, w.ID as TYPEID, w.NAME as TYPENAME, coalesce(t.AMOUNT,coalesce(w.AMOUNT,0)) as AMOUNT from WITHHOLDING w left join TRIPWITHHOLDING t on t.ATTRIBUTEID=w.ID where w.TAG=3 UNION ALL select 'U' as TAG, u.ID, u.NAME, coalesce(tu.QTY,0) from ATTRIBUTE u left join TRIPUSAGE tu on tu.ATTRIBUTEID=u.ID where u.ID in (4,6) ";
+        String sql = "select 'W' as TAG, w.ID as TYPEID, w.NAME as TYPENAME, coalesce(t.AMOUNT,coalesce(w.AMOUNT,0)) as AMOUNT from WITHHOLDING w left join TRIPWITHHOLDING t on t.ATTRIBUTEID=w.ID where w.TAG=3 UNION ALL select 'U' as TAG, u.ID, u.NAME, coalesce(tu.QTY,0) from ATTRIBUTE u left join TRIPUSAGE tu on tu.ATTRIBUTEID=u.ID where u.ID in (4,6) ";
         Cursor cursor = this.getDbConnection().rawQuery(sql, null);
+
         ArrayList<Withholding> with = new ArrayList<>();
 
         if(cursor.moveToFirst()){
@@ -1236,6 +1242,141 @@ public class DBQuery extends DBObject {
         }
         return with;
     }
+
+    public String dricomm (String trip){
+
+
+        String sql ="select A.ID as COSTTYPEID, A.NAME as COSTTYPE, coalesce(X.AMOUNT,0) as AMOUNT from COSTTYPE A left join TRIPCOST X on X.COSTTYPEID=A.ID AND X.TRIPID='"+trip+"' where A.NAME = 'Driver Comm'";
+        Cursor cursor = this.getDbConnection().rawQuery(sql, null);
+
+        //if( cursor != null && cursor.moveToFirst() ) {
+        cursor.moveToFirst();
+            String cost_id = cursor.getString(cursor.getColumnIndex("COSTTYPEID"));
+            String name = cursor.getString(cursor.getColumnIndex("COSTTYPE"));
+             String amount = cursor.getString(cursor.getColumnIndex("AMOUNT"));
+            cursor.close();
+            GlobalVariable.setDri_cost_id(cost_id);
+            GlobalVariable.setDri_cost_name(name);
+            GlobalVariable.setDri_cost_amount(amount + "");
+            return amount;
+        //}
+        //return amount;
+    }
+
+
+    public String condcomm (String trip){
+
+        String sql ="select A.ID as COSTTYPEID, A.NAME as COSTTYPE, coalesce(X.AMOUNT,0) as AMOUNT from COSTTYPE A left join TRIPCOST X on X.COSTTYPEID=A.ID AND X.TRIPID='"+trip+"' where A.NAME = 'Cond Comm' ";
+        Cursor cursor = this.getDbConnection().rawQuery(sql, null);
+        cursor.moveToFirst();
+        String cost_id = cursor.getString(cursor.getColumnIndex("COSTTYPEID"));
+        String name = cursor.getString(cursor.getColumnIndex("COSTTYPE"));
+        String amountc = cursor.getString(cursor.getColumnIndex("AMOUNT"));
+        cursor.close();
+        GlobalVariable.setCond_cost_id(cost_id);
+        GlobalVariable.setCond_cost_name(name);
+        GlobalVariable.setCond_cost_amount(amountc);
+
+
+        return amountc;
+
+    }
+
+    public String getCheckpoint(String km, String lineID){
+
+        String sql = "select NAME from LINESEGMENT where REFPOINT='"+ km + " AND LINEID='" + lineID+ "'";
+        Cursor cursor = this.getDbConnection().rawQuery(sql, null);
+        cursor.moveToFirst();
+        int c = cursor.getCount();
+        if(c > 0){
+            String name = cursor.getString(cursor.getColumnIndexOrThrow("NAME"));
+            return name;
+        }else{
+            return km;
+        }
+    }
+
+    //get passengers to north
+    public String getPassengersToNorth(SQLiteDatabase db, String tableName, String tripid, String date, String km) {
+        Log.d("","tableToString called");
+        String tableString = String.format("Table %s:\n", tableName);
+        String sql = "select ct.NAME, count(tk.ID), ct.ID from CUSTOMER c" +
+                "                            left join TICKET tk on c.ID=tk.CUSTOMERID" +
+                "                            left join CUSTOMERTYPE ct on ct.ID=c.CUSTOMERTYPEID\n" +
+                "                            where tk.TRIPID='"+ tripid +"' and tk.DATETIMESTAMP >='"+ date+"'" +
+                "                            and tk.TOREFPOINT >  '"+ km +"'" +  // if direction is 1? = > or <
+                "                            group by CT.NAME, ct.ID  " +
+                "                            order by ct.ID";
+        Cursor allRows  = this.getDbConnection().rawQuery("SELECT * FROM " + tableName, null);
+      //  Cursor allRows  = db.rawQuery("SELECT * FROM " + tableName, null);
+        tableString += cursorToString(allRows);
+        return tableString;
+    }
+
+    //get passengers to south
+    public String getPassengersToSouth(String tableName, String tripid, String date, String km) {
+        Log.d("","tableToString called");
+        String tableString = String.format("Table %s:\n", tableName);
+        String sql = "select ct.NAME, count(tk.ID), ct.ID from CUSTOMER c" +
+                "                            left join TICKET tk on c.ID=tk.CUSTOMERID" +
+                "                            left join CUSTOMERTYPE ct on ct.ID=c.CUSTOMERTYPEID\n" +
+                "                            where tk.TRIPID='"+ tripid +"' and tk.DATETIMESTAMP >='"+ date+"'" +
+                "                            and tk.TOREFPOINT <  '"+ km +"'" +  // if direction is 1? = > or <
+                "                            group by CT.NAME, ct.ID  " +
+                "                            order by ct.ID";
+        Cursor allRows  = this.getDbConnection().rawQuery(sql, null);
+        //  Cursor allRows  = db.rawQuery("SELECT * FROM " + tableName, null);
+        tableString += cursorToString(allRows);
+        return tableString;
+    }
+
+    public String cursorToString(Cursor cursor){
+        String cursorString = "";
+        if (cursor.moveToFirst() ){
+            String[] columnNames = cursor.getColumnNames();
+            for (String name: columnNames)
+                cursorString += String.format("%s ][ ", name);
+            cursorString += "\n";
+            do {
+                for (String name: columnNames) {
+                    cursorString += String.format("%s ][ ",
+                            cursor.getString(cursor.getColumnIndex(name)));
+                }
+                cursorString += "\n";
+            } while (cursor.moveToNext());
+        }
+        return cursorString;
+    }
+
+    public String getDateReverse(String km, String tripid){
+
+        String sql = "select DATETIMESTAMP from TRIPREVERSE where TRIPID = '"+km +"' and KMPOST = '"+ tripid+"'";
+        Cursor cursor = this.getDbConnection().rawQuery(sql, null);
+        cursor.moveToFirst();
+        String date = cursor.getString(cursor.getColumnIndex("DATETIMESTAMP"));
+        cursor.close();
+        return date;
+
+    }
+
+    public String getPassengersNorth(String tripid, String date, String km){
+        String sql = "select ct.NAME, count(tk.ID) as count, ct.ID from CUSTOMER c" +
+                "                            left join TICKET tk on c.ID=tk.CUSTOMERID" +
+                "                            left join CUSTOMERTYPE ct on ct.ID=c.CUSTOMERTYPEID" +
+                "                            where tk.TRIPID='"+ tripid +"' and tk.DATETIMESTAMP >='"+ date+"'" +
+                "                            and tk.TOREFPOINT >  '"+ km +"'" +  // if direction is 1? = > or <
+                "                            group by CT.NAME, ct.ID  " +
+                "                            order by ct.ID";
+        Cursor cursor = this.getDbConnection().rawQuery(sql, null);
+        cursor.moveToFirst();
+        String count = cursor.getString(cursor.getColumnIndex("count"));
+        cursor.close();
+        return count;
+    }
+
+
+
+
 
 
 //    public JSONArray converttojsonArray(String trip, String datetime){

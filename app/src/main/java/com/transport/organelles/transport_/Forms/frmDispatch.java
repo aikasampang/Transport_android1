@@ -1,16 +1,17 @@
-package com.transport.organelles.transport_.Forms;
+package com.transport.organelles.transport_.forms;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.*;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,70 +21,63 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.transport.organelles.transport_.Class.BluetoothService;
-import com.transport.organelles.transport_.Class.DBAccess;
-import com.transport.organelles.transport_.Class.DBObject;
-import com.transport.organelles.transport_.Class.DBQuery;
-import com.transport.organelles.transport_.Class.GlobalClass;
-import com.transport.organelles.transport_.Class.GlobalVariable;
+import com.transport.organelles.transport_.classforms.BluetoothService;
+import com.transport.organelles.transport_.classforms.DBAccess;
+import com.transport.organelles.transport_.classforms.DBQuery;
+import com.transport.organelles.transport_.classforms.DeviceListActivity;
+import com.transport.organelles.transport_.classforms.GlobalClass;
+import com.transport.organelles.transport_.classforms.GlobalVariable;
 import com.transport.organelles.transport_.R;
 
 import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 
 /**
  * Created by Organelles on 6/13/2017.
  */
 
-public class frmDispatch extends AppCompatActivity {
+public class frmDispatch extends ActionBarActivity {
 
     Button save;
     ListView list_dispatcher;
     private AutoCompleteTextView name, bus, driver, cond;
     Spinner line, direction, mode;
-    String line_, direction_, mode_,line_name, name_, bus_, driver_, cond_;
+    String line_, direction_, mode_, line_name, name_, bus_, driver_, cond_;
     private String dtstartTime = "", dtendTime = "";
-    String sqlQuery= "", sqlQuery2 = "";
+    String sqlQuery = "", sqlQuery2 = "";
     private DBAccess dba;
     private TextView txtDateTime;
     private static final boolean D = true;
     private static final String TAG = "BTPrinter";
-    // Name of the connected device
     private String mConnectedDeviceName = null;
-    // Local Bluetooth adapter
-    private BluetoothAdapter mBluetoothAdapter = null;
-    // Member object for the services
     private BluetoothService mService = null;
-
-
-    // Message types sent from the BluetoothService Handler
     public static final int MESSAGE_STATE_CHANGE = 1;
     public static final int MESSAGE_READ = 2;
     public static final int MESSAGE_WRITE = 3;
     public static final int MESSAGE_DEVICE_NAME = 4;
     public static final int MESSAGE_TOAST = 5;
-
-    // Key names received from the BluetoothService Handler
     public static final String DEVICE_NAME = "device_name";
     public static final String TOAST = "toast";
-
-    // Intent request codes
     private static final int REQUEST_CONNECT_DEVICE = 1;
     private static final int REQUEST_ENABLE_BT = 2;
-
+    LinearLayout linearLayout;
     Bundle bundle;
     String update = "";
-
+    BluetoothAdapter mBluetoothAdapter;
+    BluetoothSocket socket;
+    private static String bluetooth_name = "Qsprinter";
+    View include;
+    ImageView bluetooth;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -108,15 +102,15 @@ public class frmDispatch extends AppCompatActivity {
         mService = new BluetoothService(this, bluetoothHandler);
 
 
-        Bundle b= getIntent().getExtras();
+        Bundle b = getIntent().getExtras();
         bundle = b;
         update = b.getString("data");
 
 
-
     }
 
-    private void setObject(){
+    private void setObject() {
+
         name = (AutoCompleteTextView) findViewById(R.id.d_name);
         bus = (AutoCompleteTextView) findViewById(R.id.d_bus);
         cond = (AutoCompleteTextView) findViewById(R.id.d_cond);
@@ -125,32 +119,33 @@ public class frmDispatch extends AppCompatActivity {
         line = (Spinner) findViewById(R.id.spin_line);
         direction = (Spinner) findViewById(R.id.spin_direction);
         mode = (Spinner) findViewById(R.id.spin_mode);
-
+        include = findViewById(R.id.actionbar);
+        bluetooth = (ImageView) include.findViewById(R.id.bluetooth);
         final DBQuery db = new DBQuery(frmDispatch.this);
 
         String[] spinnerNames = db.getName(4);
-        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(frmDispatch.this,android.R.layout.simple_spinner_item, spinnerNames);
+        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(frmDispatch.this, android.R.layout.simple_spinner_item, spinnerNames);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         name.setAdapter(spinnerAdapter);
 
         String[] spinnerDriver = db.getName(1);
-        ArrayAdapter<String> spinnerAdapterDri = new ArrayAdapter<String>(frmDispatch.this,android.R.layout.simple_spinner_item, spinnerDriver);
+        ArrayAdapter<String> spinnerAdapterDri = new ArrayAdapter<String>(frmDispatch.this, android.R.layout.simple_spinner_item, spinnerDriver);
         spinnerAdapterDri.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         driver.setAdapter(spinnerAdapterDri);
 
         String[] spinnerCond = db.getName(2);
-        ArrayAdapter<String> spinnerAdapterCond = new ArrayAdapter<String>(frmDispatch.this,android.R.layout.simple_spinner_item, spinnerCond);
+        ArrayAdapter<String> spinnerAdapterCond = new ArrayAdapter<String>(frmDispatch.this, android.R.layout.simple_spinner_item, spinnerCond);
         spinnerAdapterCond.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         cond.setAdapter(spinnerAdapterCond);
 
         String[] spinnerBus = db.getBus();
-        ArrayAdapter<String> spinnerAdapterBus = new ArrayAdapter<String>(frmDispatch.this,android.R.layout.simple_spinner_item, spinnerBus);
+        ArrayAdapter<String> spinnerAdapterBus = new ArrayAdapter<String>(frmDispatch.this, android.R.layout.simple_spinner_item, spinnerBus);
         spinnerAdapterBus.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         bus.setAdapter(spinnerAdapterBus);
 
 
         String[] spinnerLists = db.getLine();
-        ArrayAdapter<String> spinnerAdapterDis = new ArrayAdapter<String>(frmDispatch.this,android.R.layout.simple_spinner_item, spinnerLists);
+        ArrayAdapter<String> spinnerAdapterDis = new ArrayAdapter<String>(frmDispatch.this, android.R.layout.simple_spinner_item, spinnerLists);
         spinnerAdapterDis.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         line.setAdapter(spinnerAdapterDis);
         line.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -162,7 +157,7 @@ public class frmDispatch extends AppCompatActivity {
                 DBQuery dbQuery = new DBQuery(frmDispatch.this);
                 String idfromName = dbQuery.getIDfromLine(line_);
                 line_ = idfromName;
-                Log.wtf("LINEID",idfromName);
+                Log.wtf("LINEID", idfromName);
                 GlobalVariable.setLineid(line_);
                 GlobalVariable.setLine_name(line_name);
                 getDirection(idfromName);
@@ -170,6 +165,7 @@ public class frmDispatch extends AppCompatActivity {
 
                 return;
             }
+
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
 
@@ -177,7 +173,7 @@ public class frmDispatch extends AppCompatActivity {
         });
 
         String[] spinnerMode = db.getMode();
-        ArrayAdapter<String> spinnerAdapterMode = new ArrayAdapter<String>(frmDispatch.this,android.R.layout.simple_spinner_item, spinnerMode);
+        ArrayAdapter<String> spinnerAdapterMode = new ArrayAdapter<String>(frmDispatch.this, android.R.layout.simple_spinner_item, spinnerMode);
         spinnerAdapterMode.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mode.setAdapter(spinnerAdapterMode);
         mode.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -188,25 +184,57 @@ public class frmDispatch extends AppCompatActivity {
                 DBQuery dbQuery = new DBQuery(frmDispatch.this);
                 mode_ = dbQuery.getIDfromMode(mode_);
                 GlobalVariable.setModeid(mode_);
+                GlobalVariable.setModeName(dbQuery.getModeName(mode_));
+
                 return;
             }
+
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
 
             }
         });
-
-
-
-
     }
 
-    private void objectListener(){
+    private void objectListener() {
+
+        bluetooth.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LayoutInflater inflater = getLayoutInflater();
+                View alertLayout = inflater.inflate(R.layout.modal_bluetooth, null);
+                final Button connect = (Button) alertLayout.findViewById(R.id.connect);
+                final Button disconnect = (Button) alertLayout.findViewById(R.id.disconnect);
+                AlertDialog.Builder alert = new AlertDialog.Builder(frmDispatch.this);
+
+                connect.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent serverIntent = new Intent(frmDispatch.this, DeviceListActivity.class);
+                        startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE);
+                    }
+                });
+
+                disconnect.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mService.stop();
+                    }
+                });
+                alert.setTitle("Bluetooth");
+                alert.setView(alertLayout);
+                alert.show();
+
+
+
+            }
+        });
+
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                if (name.getText().toString().equals("") || bus.getText().toString().equals("") || driver.getText().toString().equals("") || cond.getText().toString().equals("")){
+                if (name.getText().toString().equals("") || bus.getText().toString().equals("") || driver.getText().toString().equals("") || cond.getText().toString().equals("")) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(frmDispatch.this);
                     builder.setTitle("");
                     builder.setMessage("Please complete the required fields.");
@@ -217,7 +245,7 @@ public class frmDispatch extends AppCompatActivity {
                         }
                     });
                     builder.show();
-                }else{
+                } else {
 
                     LayoutInflater inflater = getLayoutInflater();
                     View alertLayout = inflater.inflate(R.layout.password, null);
@@ -232,16 +260,16 @@ public class frmDispatch extends AppCompatActivity {
                         public void onClick(DialogInterface dialog, int which) {
                             String pass = password.getText().toString();
                             String namedis = name.getText().toString();
-                            String rpass = password(pass,namedis);
+                            String rpass = password(pass, namedis);
 
-                            if(pass.equals(rpass)){
+                            if (pass.equals(rpass)) {
                                 saveDispatch();
-                                printDispatch();
+                               // printDispatch();
                                 dialog.dismiss();
                                 Intent intent = new Intent(frmDispatch.this, frmMain.class);
                                 startActivity(intent);
 
-                            }else{
+                            } else {
                                 Toast.makeText(frmDispatch.this, "Wrong Password", Toast.LENGTH_LONG).show();
                             }
                         }
@@ -256,10 +284,11 @@ public class frmDispatch extends AppCompatActivity {
                     alert.show();
 
 
-                   // saveDispatch();
+                    // saveDispatch();
                 }
             }
         });
+
     }
 
     private void setTitleBar() {
@@ -293,7 +322,7 @@ public class frmDispatch extends AppCompatActivity {
                                 txtDateTime.setText(currentDateTimeString);
                                 assert txtBattery != null;
                                 String batteryLevel = String.format("%6.0f", GlobalClass.getBatteryLevel(frmDispatch.this));
-                                txtBattery.setText( batteryLevel + "%          ");
+                                txtBattery.setText(batteryLevel + "%          ");
                             }
                         });
                     }
@@ -305,28 +334,29 @@ public class frmDispatch extends AppCompatActivity {
 
     }
 
-    private String password(String pass, String name){
+    private String password(String pass, String name) {
         DBQuery dbQuery = new DBQuery(frmDispatch.this);
         String n = dbQuery.getPassword(name);
         return n;
- }
+    }
 
-    private void getDirection(String line){
+    private void getDirection(String line) {
         final DBQuery db = new DBQuery(frmDispatch.this);
         String[] spinnerLists = db.getDirection(line);
-        ArrayAdapter<String> spinnerAdapterDis = new ArrayAdapter<String>(frmDispatch.this,android.R.layout.simple_spinner_item, spinnerLists);
+        ArrayAdapter<String> spinnerAdapterDis = new ArrayAdapter<String>(frmDispatch.this, android.R.layout.simple_spinner_item, spinnerLists);
         spinnerAdapterDis.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         direction.setAdapter(spinnerAdapterDis);
         direction.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
-                direction_= parent.getItemAtPosition(position).toString();
+                direction_ = parent.getItemAtPosition(position).toString();
                 GlobalVariable.d_direct = direction_;
                 GlobalVariable.setDirection(direction_);
-                Log.wtf("ID",direction_);
+                Log.wtf("ID", direction_);
                 return;
             }
+
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
 
@@ -336,12 +366,13 @@ public class frmDispatch extends AppCompatActivity {
 
     }
 
-    private void saveDispatch(){
+    private void saveDispatch() {
 
-        GlobalVariable.setName_bus(bus.getText().toString()) ;
+        GlobalVariable.setName_bus(bus.getText().toString());
         GlobalVariable.setName_driver(driver.getText().toString());
         GlobalVariable.setName_conductor(cond.getText().toString());
-        GlobalVariable.setName_dispatcher(name.getText().toString()); ;
+        GlobalVariable.setName_dispatcher(name.getText().toString());
+        ;
 
         DBQuery dbQuery = new DBQuery(frmDispatch.this);
         dba = DBAccess.getInstance(frmDispatch.this);
@@ -354,7 +385,7 @@ public class frmDispatch extends AppCompatActivity {
         dbQuery.getlastTicket(GlobalVariable.getPhoneName());
 
 
-        if(!update.equals("updatedispatch")) {
+        if (!update.equals("updatedispatch")) {
             int lasttrip = Integer.parseInt(GlobalVariable.d_lasttripid);
             int lasttripid = lasttrip + 1;
             String devicename = GlobalVariable.getPhoneName();
@@ -364,7 +395,7 @@ public class frmDispatch extends AppCompatActivity {
             String startDate = dtstartTime;
             String endDate = "";
             String tag = "";
-            String remarks ="" ;
+            String remarks = "";
 
             sqlQuery = "INSERT INTO `TRIP` (ID, DEVICENAME, LINE ,RESOURCEID, MODEID, STARTDATETIMESTAMP, ENDDATETIMESTAMP, TAG, REMARKS) " +
                     " VALUES ( '" + lasttripid + "', '" +
@@ -388,30 +419,32 @@ public class frmDispatch extends AppCompatActivity {
                 GlobalVariable.setLasttrip(last);
                 updateDirection();
                 insertTripInspection();
+                printDispatch();
 
             }
-        }else{
+        } else {
             String devicename = GlobalVariable.getPhoneName();
             String lineID = GlobalVariable.getLineid();
             String resourceID = resource;
             String modeID = mode;
-            String remarks = "" ;
+            String remarks = "";
             String id = GlobalVariable.d_lasttripid;
             GlobalVariable.setLasttrip(id);
 
 
-            String query = "Update TRIP set LINE='"+ lineID +"' AND RESOURCEID ='"+ resourceID+"' AND MODEID = '"+modeID+"' AND REMARKS='"+ remarks +"' WHERE ID='"+ id +"'";
+            String query = "Update TRIP set LINE='" + lineID + "' AND RESOURCEID ='" + resourceID + "' AND MODEID = '" + modeID + "' AND REMARKS='" + remarks + "' WHERE ID='" + id + "'";
             Log.wtf("logged sql update trip", query);
             if (!dba.executeQuery(query)) {
                 Toast.makeText(frmDispatch.this, "Can't insert data to database!. UPDATE TRIP", Toast.LENGTH_SHORT).show();
             } else {
                 updateDirection();
                 updateLine();
+                printDispatch();
             }
         }
     }
 
-    private void updateDirection (){
+    private void updateDirection() {
         DBQuery dbQuery = new DBQuery(frmDispatch.this);
         dbQuery.getLineRemarks(GlobalVariable.getLineid());
         String direction = GlobalVariable.getD_remarks();
@@ -419,17 +452,17 @@ public class frmDispatch extends AppCompatActivity {
         String devicename = GlobalVariable.getPhoneName();
 
 
-        if(direction.toString().equals("SB")){
+        if (direction.toString().equals("SB")) {
             int N = 1;
             String d_north = String.valueOf(N);
             GlobalVariable.d_direction = d_north;
-        }else{
+        } else {
             int S = -1;
             String d_south = String.valueOf(S);
             GlobalVariable.d_direction = d_south;
         }
 
-        if(!update.equals("updatedispatch")) {
+        if (!update.equals("updatedispatch")) {
 
             String d = GlobalVariable.d_direction;
             sqlQuery = "UPDATE DEVICEDATA SET VALUE = '" + d + "' WHERE DEVICENAME = '" + devicename + "' AND KEY = 'DIRECTION'";
@@ -448,7 +481,7 @@ public class frmDispatch extends AppCompatActivity {
                 Log.wtf("update tripid", "update lasttripid");
             }
 
-        }else{
+        } else {
 
             String d = GlobalVariable.d_direction;
             sqlQuery = "UPDATE DEVICEDATA SET VALUE = '" + d + "' WHERE DEVICENAME = '" + devicename + "' AND KEY = 'DIRECTION'";
@@ -477,9 +510,9 @@ public class frmDispatch extends AppCompatActivity {
         }
 
 
-
     }
-    private void insertCrew(){
+
+    private void insertCrew() {
 
         DBQuery dbQuery = new DBQuery(frmDispatch.this);
         String tripid = GlobalVariable.d_lasttripid;
@@ -487,8 +520,7 @@ public class frmDispatch extends AppCompatActivity {
         String id_dispatcher = dbQuery.getEmployeeID(name.getText().toString());
 
 
-
-        if(!update.equals("updatedispatch")) {
+        if (!update.equals("updatedispatch")) {
 
 
             sqlQuery = "INSERT INTO TRIPCREW VALUES('" + tripid + "', '" + devicename + "', '4','" + id_dispatcher + "') ";
@@ -513,9 +545,9 @@ public class frmDispatch extends AppCompatActivity {
                 }
             }
 
-        }else{
+        } else {
             String trip = GlobalVariable.d_lasttripid;
-            String query = "DELETE FROM TRIPCREW WHERE TRIPID = '" + trip  +"'";
+            String query = "DELETE FROM TRIPCREW WHERE TRIPID = '" + trip + "'";
             if (!dba.executeQuery(query)) {
                 Toast.makeText(frmDispatch.this, "Can't insert data to database!. DELETE TRIPCREW", Toast.LENGTH_SHORT).show();
             } else {
@@ -547,7 +579,8 @@ public class frmDispatch extends AppCompatActivity {
         }
 
     }
-    private void insertTripInspection(){
+
+    private void insertTripInspection() {
 
         Date dtTemp = new Date(DateFormat.getDateTimeInstance().format(new Date()));
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -564,23 +597,24 @@ public class frmDispatch extends AppCompatActivity {
 
 
         sqlQuery = "INSERT INTO `TRIPINSPECTION` (TRIPID, DEVICENAME, DATETIMESTAMP, EMPLOYEEID, ATTRIBUTEID, QTY, KMPOST, PCOUNT, LINESEGMENT, BCOUNT, TICKETID) " +
-                " VALUES ( '"+ trip +"', '" +
+                " VALUES ( '" + trip + "', '" +
                 devicename + "', '" +
                 datetime + "', '" +
-                dispatcher+ "', '5' , '0', '"+
-                origin+ "','0','1','0',' " +
+                dispatcher + "', '5' , '0', '" +
+                origin + "','0','1','0',' " +
                 lastticket + "' " +
                 " ); ";
-        Log.wtf("logged sql",sqlQuery);
+        Log.wtf("logged sql", sqlQuery);
 
         if (!dba.executeQuery(sqlQuery)) {
             Toast.makeText(frmDispatch.this, "Can't insert data to database!.", Toast.LENGTH_SHORT).show();
-        }else{
-            Log.wtf("","save tripinspecion");
+        } else {
+            Log.wtf("", "save tripinspecion");
         }
     }
 
-    private void printDispatch(){
+    private void printDispatch()
+    {
         dba = DBAccess.getInstance(frmDispatch.this);
         Calendar today = Calendar.getInstance();
         Date dtTemp = new Date(DateFormat.getDateTimeInstance().format(new Date()));
@@ -592,24 +626,37 @@ public class frmDispatch extends AppCompatActivity {
         int l = Integer.parseInt(GlobalVariable.d_lastticketid);
         int t = 1;
         int nextticket = l + t;
-        String format =  String.format("%1$05d ", nextticket);//String.format("%07d", "0");
+        String format = String.format("%1$05d ", nextticket);//String.format("%07d", "0");
         String origin = dbQuery.getOriginName(line_);
         String devicename = GlobalVariable.getPhoneName() + "\n";
-        String dispatch = "DISPATCH" +  "\n \n ";
+        String dispatch = "DISPATCH" + "\n \n ";
         String startDate = "Date:" + dtstartTime + "\n";
         String resourceID = "Bus:" + bus.getText().toString() + "\n";
         String lineID = "Line:" + line_name.toString() + "\n";
-        String dispatcher = "Dispatcher:" +name.getText().toString() + "\n";
+        GlobalVariable.setLine_name(line_name.toString());
+        String dispatcher = "Dispatcher:" + name.getText().toString() + "\n";
         String dri = "Driver:" + driver.getText().toString() + "\n";
         String conductor = "Conductor:" + cond.getText().toString() + "\n";
-        String opening = "Opening:" + format  +"\n"; //
-        String terminal = "Terminal: " + origin +"\n" ; //get origin
-        String battery = "Battery:" + batteryLevel+ "%" +  "\n"; //
+        String opening = "Opening:" + format + "\n"; //
+        String terminal = "Terminal: " + origin + "\n"; //get origin
+        String battery = "Battery:" + batteryLevel + "%" + "\n"; //
 
-        Log.wtf("toPrint", devicename + " " + dispatch + " " + startDate + " " + resourceID + " " + lineID + " " + dispatcher + " " + dri + " " +conductor + " "+ opening + " " + terminal + battery );
+        Log.wtf("toPrint", devicename + " " + dispatch + " " + startDate + " " + resourceID + " " + lineID + " " + dispatcher + " " + dri + " " + conductor + " " + opening + " " + terminal + battery);
+
+        callBluetooth(devicename + " " + dispatch + " " + startDate + " " + resourceID + " " + lineID + " " + dispatcher + " " + dri + " " + conductor + " " + opening + " " + terminal + battery);
 
     }
+
+//    @Override
+//    protected void onResume() {
+//        super.onResume();
+//
+//        mService = new BluetoothService(this, bluetoothHandler);
+//    }
+
     private void callBluetooth(String message) {
+
+
         // Check that we're actually connected before trying anything
         if (mService.getState() != BluetoothService.STATE_CONNECTED) {
             Toast.makeText(this, R.string.not_connected, Toast.LENGTH_SHORT)
@@ -617,10 +664,11 @@ public class frmDispatch extends AppCompatActivity {
             return;
         }
 
+
         // Check that there's actually something to send
         if (message.length() > 0) {
             // Get the message bytes and tell the BluetoothService to write
-            byte [] send ;
+            byte[] send;
             try {
                 send = message.getBytes("GBK");
             } catch (UnsupportedEncodingException e) {
@@ -636,7 +684,7 @@ public class frmDispatch extends AppCompatActivity {
 //				}
             }
             mService.write(send);
-            Log.wtf("bluetooth", "connected" + send + "" );
+            Log.wtf("bluetooth", "connected" + send + "");
             //
             // // Reset out string buffer to zero and clear the edit text field
             // mOutStringBuffer.setLength(0);
@@ -658,7 +706,7 @@ public class frmDispatch extends AppCompatActivity {
             startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
             // Otherwise, setup the session
         } else {
-            if (mService == null);
+            if (mService == null) ;
 
         }
     }
@@ -669,6 +717,7 @@ public class frmDispatch extends AppCompatActivity {
         if (D)
             Log.e(TAG, "-- ON STOP --");
     }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -680,14 +729,8 @@ public class frmDispatch extends AppCompatActivity {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
-    @Override
     public void onBackPressed() {
-
-
+        super.onBackPressed();
     }
 
     @Override
@@ -734,7 +777,7 @@ public class frmDispatch extends AppCompatActivity {
                         Log.i(TAG, "MESSAGE_STATE_CHANGE: " + msg.arg1);
                     switch (msg.arg1) {
                         case BluetoothService.STATE_CONNECTED:
-                            Toast.makeText(frmDispatch.this, R.string.title_connected_to   + mConnectedDeviceName, Toast.LENGTH_LONG).show();
+                            Toast.makeText(frmDispatch.this, R.string.title_connected_to + mConnectedDeviceName, Toast.LENGTH_LONG).show();
                             // mTitle.setText(R.string.title_connected_to);
                             // mTitle.append(mConnectedDeviceName);
                             break;
@@ -744,7 +787,7 @@ public class frmDispatch extends AppCompatActivity {
                             break;
                         case BluetoothService.STATE_LISTEN:
                         case BluetoothService.STATE_NONE:
-                            Log.wtf("BluetoothService","not connected!");
+                            Log.wtf("BluetoothService", "not connected!");
                             //  Toast.makeText(MapaTicketSales.this, R.string.title_not_connected, Toast.LENGTH_LONG).show();
                             //  mTitle.setText(R.string.title_not_connected);
                             break;
@@ -775,7 +818,6 @@ public class frmDispatch extends AppCompatActivity {
             }
         }
     };
-
 
 
 }

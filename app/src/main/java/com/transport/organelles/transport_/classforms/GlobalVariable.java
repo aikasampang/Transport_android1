@@ -1,4 +1,4 @@
-package com.transport.organelles.transport_.Class;
+package com.transport.organelles.transport_.classforms;
 
 import android.bluetooth.BluetoothAdapter;
 
@@ -530,5 +530,78 @@ public class GlobalVariable {
 
     public static void setLinefromDB(String linefromDB) {
         GlobalVariable.linefromDB = linefromDB;
+    }
+
+    public static String dri_cost_id;
+    public static String dri_cost_name;
+    public static String dri_cost_amount;
+
+    public static String getDri_cost_id() {
+        return dri_cost_id;
+    }
+
+    public static void setDri_cost_id(String dri_cost_id) {
+        GlobalVariable.dri_cost_id = dri_cost_id;
+    }
+
+    public static String getDri_cost_name() {
+        return dri_cost_name;
+    }
+
+    public static void setDri_cost_name(String dri_cost_name) {
+        GlobalVariable.dri_cost_name = dri_cost_name;
+    }
+
+    public static String getDri_cost_amount() {
+        return dri_cost_amount;
+    }
+
+    public static void setDri_cost_amount(String dri_cost_amount) {
+        GlobalVariable.dri_cost_amount = dri_cost_amount;
+    }
+
+    public static String cond_cost_id;
+    public static String cond_cost_name;
+    public static String cond_cost_amount;
+
+    public static String getCond_cost_id() {
+        return cond_cost_id;
+    }
+
+    public static void setCond_cost_id(String cond_cost_id) {
+        GlobalVariable.cond_cost_id = cond_cost_id;
+    }
+
+    public static String getCond_cost_name() {
+        return cond_cost_name;
+    }
+
+    public static void setCond_cost_name(String cond_cost_name) {
+        GlobalVariable.cond_cost_name = cond_cost_name;
+    }
+
+    public static String getCond_cost_amount() {
+        return cond_cost_amount;
+    }
+
+    public static void setCond_cost_amount(String cond_cost_amount) {
+        GlobalVariable.cond_cost_amount = cond_cost_amount;
+    }
+
+
+    public static String lineName;
+    public static String getLineName() {
+        return lineName;
+    }
+    public static void setLineName(String lineName) {
+        GlobalVariable.lineName = lineName;
+    }
+
+    public static String modeName;
+    public static String getModeName() {
+        return modeName;
+    }
+    public static void setModeName(String modeName) {
+        GlobalVariable.modeName = modeName;
     }
 }

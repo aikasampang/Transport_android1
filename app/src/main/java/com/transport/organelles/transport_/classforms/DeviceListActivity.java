@@ -1,5 +1,9 @@
-package com.transport.organelles.transport_.Forms;
+package com.transport.organelles.transport_.classforms;
 
+/**
+ * Created by Organelles on 10/30/2017.
+ */
+import java.util.Set;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -11,23 +15,24 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.AdapterView.OnItemClickListener;
 
 import com.transport.organelles.transport_.R;
 
-import java.util.Set;
 
 /**
- * Created by Organelles on 6/16/2017.
+ * This Activity appears as a dialog. It lists any paired devices and
+ * devices detected in the area after discovery. When a device is chosen
+ * by the user, the MAC address of the device is sent back to the parent
+ * Activity in the result Intent.
  */
-
 public class DeviceListActivity extends Activity {
-
-
     // Debugging
     private static final String TAG = "DeviceListActivity";
     private static final boolean D = true;
@@ -53,7 +58,7 @@ public class DeviceListActivity extends Activity {
 
         // Initialize the button to perform device discovery
         Button scanButton = (Button) findViewById(R.id.button_scan);
-        scanButton.setOnClickListener(new View.OnClickListener() {
+        scanButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 doDiscovery();
@@ -138,7 +143,7 @@ public class DeviceListActivity extends Activity {
     }
 
     // The on-click listener for all devices in the ListViews
-    private AdapterView.OnItemClickListener mDeviceClickListener = new AdapterView.OnItemClickListener() {
+    private OnItemClickListener mDeviceClickListener = new OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> av, View v, int arg2, long arg3) {
             // Cancel discovery because it's costly and we're about to connect
@@ -188,6 +193,5 @@ public class DeviceListActivity extends Activity {
             }
         }
     };
-
 
 }

@@ -1,4 +1,4 @@
-package com.transport.organelles.transport_.Class;
+package com.transport.organelles.transport_.classforms;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -10,7 +10,6 @@ import android.widget.TextView;
 
 import com.transport.organelles.transport_.R;
 
-import java.sql.Connection;
 import java.util.ArrayList;
 
 /**
@@ -37,8 +36,8 @@ public class WithholdingAdapter extends ArrayAdapter {
             LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = inflater.inflate(R.layout.withholding_details, null);
             viewHolder =  new ViewHolder();
-            viewHolder.withholding_typename = (TextView)convertView.findViewById(R.id.withholding_name);
-            viewHolder.withholding_amount = (TextView)convertView.findViewById(R.id.withholding_amount);
+            //viewHolder.withholding_typename = (TextView)convertView.findViewById(R.id.withholding_name);
+            //viewHolder.withholding_amount = (TextView)convertView.findViewById(R.id.withholding_amount);
             convertView.setTag(viewHolder);
         }else{
             viewHolder = (ViewHolder)convertView.getTag();

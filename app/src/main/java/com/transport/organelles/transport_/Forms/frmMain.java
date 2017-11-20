@@ -1,18 +1,19 @@
-package com.transport.organelles.transport_.Forms;
+package com.transport.organelles.transport_.forms;
 
 import android.app.AlertDialog;
+import android.bluetooth.BluetoothA2dp;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -23,23 +24,37 @@ import android.widget.GridView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.transport.organelles.transport_.Class.DBQuery;
-import com.transport.organelles.transport_.Class.GlobalClass;
-import com.transport.organelles.transport_.Class.GlobalVariable;
+import com.transport.organelles.transport_.classforms.BluetoothA2DPRequester;
+import com.transport.organelles.transport_.classforms.BluetoothBroadcastReceiver;
+import com.transport.organelles.transport_.classforms.DBQuery;
+import com.transport.organelles.transport_.classforms.GlobalClass;
+import com.transport.organelles.transport_.classforms.GlobalVariable;
 import com.transport.organelles.transport_.R;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * Created by Organelles on 6/8/2017.
  */
 
-public class frmMain extends AppCompatActivity {
+public class frmMain extends AppCompatActivity  implements BluetoothBroadcastReceiver.Callback, BluetoothA2DPRequester.Callback{
 
-    private TextView txtDateTime, companyName, deviceName, battStatus;
-
+    private TextView txtDateTime, companyName, deviceName, battStatus,datetime;
+    final static int REQUEST_ENABLE_BT = 1;
+    private static final UUID MY_UUID = UUID.fromString("0000110E-0000-1000-8000-00805F9B34FB");
+    BluetoothAdapter mBluetoothAdapter;
+    BluetoothSocket socket;
+    String dtstartTime = "";
+    private static String bluetooth_name = "Qsprinter";
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,77 +64,59 @@ public class frmMain extends AppCompatActivity {
         setModuleContent();
         //setTitleBar();
         setObjects();
-
+       // connectBluetooth();
+        objectListener();
         String test = GlobalVariable.d_lasttripid;
         String test2 = GlobalVariable.d_lineid;
         Log.wtf("TRIPID", test + "lineid" + test2);
 
+
     }
 
 
-    private void setObjects(){
+    private void setObjects() {
 
-        companyName = (TextView)findViewById(R.id.companyName);
-        deviceName = (TextView)findViewById(R.id.devicename);
-        battStatus = (TextView)findViewById(R.id.battstatus);
+        companyName = (TextView) findViewById(R.id.companyName);
+        deviceName = (TextView) findViewById(R.id.devicename);
+        battStatus = (TextView) findViewById(R.id.battstatus);
+        datetime = (TextView)findViewById(R.id.datetime);
 
         DBQuery dbQuery = new DBQuery(frmMain.this);
         String d = GlobalVariable.getPhoneName();
         String name = dbQuery.getDataDeviceCompany(d);
         String batteryLevel = String.format("%6.0f", GlobalClass.getBatteryLevel(frmMain.this));
+        Calendar today = Calendar.getInstance();
+        Date dtTemp = new Date(DateFormat.getDateTimeInstance().format(new Date()));
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        dtstartTime = formatter.format(dtTemp);
+
 
         companyName.setText(name);
         deviceName.setText(d);
-        battStatus.setText(batteryLevel + "%          ");
+        battStatus.setText(batteryLevel + "%");
+        datetime.setText(dtstartTime);
+    }
+
+    private void objectListener(){
+
+        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+
+        if(mBluetoothAdapter.isEnabled()){
+            onBluetoothConnected();
+            return;
+        }
+        if (mBluetoothAdapter.enable()) {
+            BluetoothBroadcastReceiver.register(this, this);
+        } else {
+            Log.e("TAG", "Unable to enable Bluetooth. Is Airplane Mode enabled?");
+        }
 
 
 
 
     }
 
-//    private void setTitleBar() {
-//        //Display login user
-//        TextView txtUser = (TextView) findViewById(R.id.txtUser);
-//        final TextView txtBattery = (TextView) findViewById(R.id.txtBattery);
-//        txtDateTime = (TextView) findViewById(R.id.txtDateTime);
-//
-//
-//        final String percent = "%";
-//        final String batteryLevel = "";
-//
-//        assert txtUser != null;
-//        txtUser.setText("Erjohn");
-//
-//
-//        //Thread use for time in mapa main
-//        Thread t = new Thread() {
-//
-//            @Override
-//            public void run() {
-//                try {
-//                    while (!isInterrupted()) {
-//                        Thread.sleep(1000);
-//                        runOnUiThread(new Runnable() {
-//                            @Override
-//                            public void run() {
-//
-//                                String currentDateTimeString = DateFormat.getTimeInstance().format(new Date());
-//                                assert txtDateTime != null;
-//                                txtDateTime.setText(currentDateTimeString);
-//                                assert txtBattery != null;
-//                                String batteryLevel = String.format("%6.0f", GlobalClass.getBatteryLevel(frmMain.this));
-//                                txtBattery.setText( batteryLevel + "%          ");
-//                            }
-//                        });
-//                    }
-//                } catch (InterruptedException ignored) {
-//                }
-//            }
-//        };
-//        t.start();
-//
-//    }
-    private void setModuleContent(){
+    private void setModuleContent() {
         //Fill grid with user module
         final mainGrid gridAdapter = new mainGrid(frmMain.this, GlobalVariable.moduleTXT, GlobalVariable.moduleIMG);
         final GridView myGrid = (GridView) findViewById(R.id.myGrid);
@@ -135,16 +132,16 @@ public class frmMain extends AppCompatActivity {
                         String trip = dbQuery.getTripId(device);
                         String ticket_count = dbQuery.getTicketCount(trip);
 
-                        if(trip.equals("0")){
+                        if (trip.equals("0")) {
                             String data = "newdata";
                             Intent intent = new Intent(getBaseContext(), frmDispatch.class);
                             intent.putExtra("data", data);
                             startActivity(intent);
 
-                        }else {
+                        } else {
                             AlertDialog.Builder builder = new AlertDialog.Builder(frmMain.this);
                             builder.setTitle("Dispatch");
-                            builder.setMessage("There is "+ticket_count+"number of ticket(s) on this trip");
+                            builder.setMessage("There is " + ticket_count + "number of ticket(s) on this trip");
                             builder.setPositiveButton("Edit", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
@@ -164,9 +161,8 @@ public class frmMain extends AppCompatActivity {
                         }
 
 
-
                     } else if ((Objects.equals(GlobalVariable.moduleTXT[position], "Ticketing"))) {
-                        Intent intent = new Intent (getBaseContext(), frmTicket.class);
+                        Intent intent = new Intent(getBaseContext(), frmTicket.class);
                         startActivity(intent);
 
 
@@ -187,7 +183,7 @@ public class frmMain extends AppCompatActivity {
                             public void onClick(View v) {
                                 String name_type = "inspector";
                                 String type = "3";
-                                Intent intent = new Intent (getBaseContext(), frmInspector.class);
+                                Intent intent = new Intent(getBaseContext(), frmInspector.class);
                                 intent.putExtra("name_type", name_type);
                                 intent.putExtra("type", type);
                                 startActivity(intent);
@@ -198,7 +194,7 @@ public class frmMain extends AppCompatActivity {
                             public void onClick(View v) {
                                 String name_type = "controller";
                                 String type = "4";
-                                Intent intent = new Intent (getBaseContext(), frmInspector.class);
+                                Intent intent = new Intent(getBaseContext(), frmInspector.class);
                                 intent.putExtra("name_type", name_type);
                                 intent.putExtra("type", type);
                                 startActivity(intent);
@@ -222,15 +218,12 @@ public class frmMain extends AppCompatActivity {
                         alert.show();
 
 
-
-
-
                     } else if ((Objects.equals(GlobalVariable.moduleTXT[position], "Partial"))) {
-                        Intent intent = new Intent (getBaseContext(), frmPartial.class);
+                        Intent intent = new Intent(getBaseContext(), frmPartial.class);
                         startActivity(intent);
 
                     } else if ((Objects.equals(GlobalVariable.moduleTXT[position], "Reverse"))) {
-                        Intent intent = new Intent (getBaseContext(), frmReverse.class);
+                        Intent intent = new Intent(getBaseContext(), frmReverse.class);
                         startActivity(intent);
 
                     } else if ((Objects.equals(GlobalVariable.moduleTXT[position], "Ingress"))) {
@@ -241,7 +234,7 @@ public class frmMain extends AppCompatActivity {
                         final EditText pass = (EditText) alertLayout.findViewById(R.id.password);
 
                         String[] spinnerNames = dbQuery.getName(5);
-                        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(frmMain.this,android.R.layout.simple_spinner_item, spinnerNames);
+                        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(frmMain.this, android.R.layout.simple_spinner_item, spinnerNames);
                         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                         name.setAdapter(spinnerAdapter);
 
@@ -258,11 +251,11 @@ public class frmMain extends AppCompatActivity {
                                 Log.wtf("cashierid", cashierID);
                                 GlobalVariable.setCashierID(cashierID);
                                 String authorize = dbQuery.getPassword(i_name);
-                                if(authorize.toString().equals(i_password)){
+                                if (authorize.toString().equals(i_password)) {
                                     dialog.dismiss();
-                                    Intent intent = new Intent (getBaseContext(), frmIngress.class);
+                                    Intent intent = new Intent(getBaseContext(), frmIngress.class);
                                     startActivity(intent);
-                                }else{
+                                } else {
                                     Toast.makeText(frmMain.this, "Wrong Password!!", Toast.LENGTH_LONG).show();
                                 }
                             }
@@ -276,14 +269,100 @@ public class frmMain extends AppCompatActivity {
                         alert.show();
 
 
-
-
-
                     }
                 }
             }
         });
     }
 
+//    private void pairDevice(BluetoothDevice device) {
+//        try {
+//            Log.d("pairDevice()", "Start Pairing...");
+//            Method m = device.getClass().getMethod("createBond", (Class[]) null);
+//            m.invoke(device, (Object[]) null);
+//            Log.d("pairDevice()", "Pairing finished.");
+//        } catch (Exception e) {
+//            Log.e("pairDevice()", e.getMessage());
+//        }
+//
+//    }
 
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+
+        if(requestCode == REQUEST_ENABLE_BT){
+            if(resultCode==RESULT_OK){
+                Toast.makeText(frmMain.this, "BlueTooth Turned On", Toast.LENGTH_LONG).show();
+            }else{
+                Toast.makeText(frmMain.this, "Cancelled", Toast.LENGTH_LONG).show();
+            }
+        }
+
+
+    }
+
+    @Override
+    public void onA2DPProxyReceived(BluetoothA2dp proxy) {
+        Method connect = getConnectMethod();
+        BluetoothDevice device = findBondedDeviceByName(mBluetoothAdapter, bluetooth_name);
+
+
+        //If either is null, just return. The errors have already been logged
+        if (connect == null || device == null) {
+            return;
+        }
+
+        try {
+            connect.setAccessible(true);
+            connect.invoke(proxy, device);
+        } catch (InvocationTargetException ex) {
+            Log.e("TAG", "Unable to invoke connect(BluetoothDevice) method on proxy. " + ex.toString());
+        } catch (IllegalAccessException ex) {
+            Log.e("TAG", "Illegal Access! " + ex.toString());
+        }
+
+    }
+
+    @Override
+    public void onBluetoothConnected() {
+        new BluetoothA2DPRequester(this).request(this, mBluetoothAdapter);
+    }
+
+    @Override
+    public void onBluetoothError() {
+        Log.e("Error", "There was an error enabling the Bluetooth Adapter.");
+    }
+
+
+    private Method getConnectMethod () {
+        try {
+            return BluetoothA2dp.class.getDeclaredMethod("connect", BluetoothDevice.class);
+        } catch (NoSuchMethodException ex) {
+            Log.e("tag", "Unable to find connect(BluetoothDevice) method in BluetoothA2dp proxy.");
+            return null;
+        }
+    }
+
+    private static BluetoothDevice findBondedDeviceByName (BluetoothAdapter adapter, String name) {
+        for (BluetoothDevice device : getBondedDevices(adapter)) {
+            if (name.matches(device.getName())) {
+                Log.v("TAG", String.format("Found device with name %s and address %s.", device.getName(), device.getAddress()));
+                return device;
+            }
+        }
+        Log.w("TAG", String.format("Unable to find device with name %s.", name));
+        return null;
+    }
+
+    private static Set<BluetoothDevice> getBondedDevices (BluetoothAdapter adapter) {
+        Set<BluetoothDevice> results = adapter.getBondedDevices();
+        if (results == null) {
+            results = new HashSet<BluetoothDevice>();
+        }
+        return results;
+    }
 }

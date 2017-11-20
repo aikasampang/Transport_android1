@@ -1,4 +1,4 @@
-package com.transport.organelles.transport_.Forms;
+package com.transport.organelles.transport_.forms;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -6,10 +6,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.WindowManager;
 import android.widget.TextView;
 
-import com.transport.organelles.transport_.Class.GlobalClass;
+import com.transport.organelles.transport_.classforms.GlobalClass;
 import com.transport.organelles.transport_.R;
-
-import org.w3c.dom.Text;
 
 import java.text.DateFormat;
 import java.util.Date;
@@ -25,7 +23,7 @@ public class ActionBar extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.actionbar);
+        setContentView(R.layout.actionbar_bluetooth);
         getSupportActionBar().hide();
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 

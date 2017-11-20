@@ -1,11 +1,7 @@
-package com.transport.organelles.transport_.Class;
+package com.transport.organelles.transport_.classforms;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,11 +11,7 @@ import android.widget.TextView;
 
 import com.transport.organelles.transport_.R;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 /**
  * Created by Organelles on 9/20/2017.
@@ -76,7 +68,6 @@ public class ExpenseAdapter extends ArrayAdapter<Costtype> {
                     final int position = v.getId();
                     final EditText inputAmount = (EditText) v;
                     costtype.get(position).setAmount(inputAmount.getText().toString());
-                    costtype.get(position).setCosttype(holder.costtypename.getText().toString());
 
                 }
             }

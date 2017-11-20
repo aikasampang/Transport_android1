@@ -1,4 +1,4 @@
-package com.transport.organelles.transport_.Class;
+package com.transport.organelles.transport_.classforms;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -10,8 +10,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
-import com.transport.organelles.transport_.Forms.frmDispatch;
-import com.transport.organelles.transport_.Forms.frmMain;
+import com.transport.organelles.transport_.forms.frmDispatch;
 
 import java.io.IOException;
 import java.io.InputStream;

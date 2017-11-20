@@ -66,7 +66,17 @@
                 android:drawableStart="@drawable/time"
                 android:id="@+id/txtDateTime"
                 android:textSize="12sp"/>
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:src="@drawable/nav_bluetooth"
+                android:id="@+id/bluetooth"
+                android:paddingRight="15sp" />
         </LinearLayout>
+
+
+
+
 
     </RelativeLayout>
 
@@ -157,12 +167,12 @@
                 android:id="@+id/t_remaining"
                 android:layout_weight="1"
                 android:gravity="center"/>
-            <Button
-                android:text="Hotspot"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:id="@+id/t_hotspot"
-                android:layout_weight="1" />
+            <!--<Button-->
+                <!--android:text="Hotspot"-->
+                <!--android:layout_width="0dp"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:id="@+id/t_hotspot"-->
+                <!--android:layout_weight="1" />-->
 
 
         </LinearLayout>
@@ -215,20 +225,62 @@
                 android:paddingBottom="10sp"
                 >
 
-                <NumberPicker
-                    android:layout_width="match_parent"
+                <ImageView
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:id="@+id/t_origin"
-                    android:padding="10sp">
-                </NumberPicker>
-                <NumberPicker
-                    android:layout_width="match_parent"
+                    android:background="@drawable/arrowback"/>
+
+
+                <EditText
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:id="@+id/t_destination"
-                    android:padding="10sp">
-                </NumberPicker>
+                    android:hint="test "
+                    android:id="@+id/edit_origin"
+                    android:gravity="center"
+                    android:layout_weight="1" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/arrowforward"/>
+
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/arrowback"/>
+
+
+                <EditText
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:hint="test "
+                    android:gravity="center"
+                    android:id="@+id/edit_destination"
+                    android:layout_weight="1" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/arrowforward"/>
+
+
+
+
+                <!--<NumberPicker-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_weight="1"-->
+                    <!--android:id="@+id/t_origin"-->
+                    <!--android:padding="10sp">-->
+                <!--</NumberPicker>-->
+                <!--<NumberPicker-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_weight="1"-->
+                    <!--android:id="@+id/t_destination"-->
+                    <!--android:padding="10sp">-->
+                <!--</NumberPicker>-->
             </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
