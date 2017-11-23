@@ -34,6 +34,7 @@ import com.transport.organelles.transport_.classforms.DBQuery;
 import com.transport.organelles.transport_.classforms.DeviceListActivity;
 import com.transport.organelles.transport_.classforms.GlobalClass;
 import com.transport.organelles.transport_.classforms.GlobalVariable;
+
 import com.transport.organelles.transport_.R;
 
 import java.io.UnsupportedEncodingException;
@@ -372,7 +373,7 @@ public class frmDispatch extends ActionBarActivity {
         GlobalVariable.setName_driver(driver.getText().toString());
         GlobalVariable.setName_conductor(cond.getText().toString());
         GlobalVariable.setName_dispatcher(name.getText().toString());
-        ;
+
 
         DBQuery dbQuery = new DBQuery(frmDispatch.this);
         dba = DBAccess.getInstance(frmDispatch.this);
