@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -26,6 +27,7 @@ import android.widget.Toast;
 
 import com.transport.organelles.transport_.classforms.BluetoothService;
 import com.transport.organelles.transport_.classforms.DBAccess;
+import com.transport.organelles.transport_.classforms.DBObject;
 import com.transport.organelles.transport_.classforms.DBQuery;
 import com.transport.organelles.transport_.classforms.DeviceListActivity;
 import com.transport.organelles.transport_.classforms.GlobalClass;
@@ -46,18 +48,19 @@ import java.util.Date;
 
 public class frmTicket extends AppCompatActivity {
 
-    private TextView txtDateTime, ticketno, bound, price, kmpost,tremaining ;
+    private TextView txtDateTime, ticketno, bound, price, kmpost, tremaining, o_name, d_name;
     NumberPicker origin, destination;
     RadioGroup radiogroup;
     RadioButton regular, senior, student, baggage, rb;
     Button print, gc, aoc, hotspot;
     String totalkm, paxtype, dtstartTime = "", hotspot_km, fare;
     int origin_v, des_v, o_refpoint, d_refpoint;
-    String service_a, amount_a, minrange_a, minamount_a ;
+    String service_a, amount_a, minrange_a, minamount_a;
     double ticketprice, km, totalkm2;
-    String sqlQuery= "", hasHotspot="";
+    String sqlQuery = "", hasHotspot = "";
     private DBAccess dba;
-    String lineID;  private static final boolean D = true;
+    String lineID;
+    private static final boolean D = true;
     private static final String TAG = "BTPrinter";
     // Name of the connected device
     private String mConnectedDeviceName = null;
@@ -82,6 +85,9 @@ public class frmTicket extends AppCompatActivity {
     private static final int REQUEST_ENABLE_BT = 2;
     View include;
     ImageView bluetooth;
+    EditText ed_origin, ed_des;
+    ImageView o_back, o_forward, d_back, d_forward;
+    Cursor cursor;
 
 
     @Override
@@ -108,31 +114,39 @@ public class frmTicket extends AppCompatActivity {
         mService = new BluetoothService(this, bluetoothHandler);
 
 
-
     }
 
 
+    private void setObject() {
 
-    private void setObject(){
-
-        ticketno = (TextView)findViewById(R.id.t_ticket);
-        tremaining = (TextView)findViewById(R.id.t_remaining);
-        bound = (TextView)findViewById(R.id.t_direction);
-        price = (TextView)findViewById(R.id.t_price);
-        kmpost = (TextView)findViewById(R.id.t_km);
-        origin = (NumberPicker)findViewById(R.id.t_origin);
-        destination = (NumberPicker)findViewById(R.id.t_destination);
+        ticketno = (TextView) findViewById(R.id.t_ticket);
+        tremaining = (TextView) findViewById(R.id.t_remaining);
+        bound = (TextView) findViewById(R.id.t_direction);
+        price = (TextView) findViewById(R.id.t_price);
+        kmpost = (TextView) findViewById(R.id.t_km);
+//        origin = (NumberPicker)findViewById(R.id.t_origin);
+//        destination = (NumberPicker)findViewById(R.id.t_destination);
         regular = (RadioButton) findViewById(R.id.td_regular);
-        senior = (RadioButton)findViewById(R.id.td_senior);
-        student = (RadioButton)findViewById(R.id.td_student);
-        baggage = (RadioButton)findViewById(R.id.td_baggage);
-        print = (Button)findViewById(R.id.t_print);
-        gc = (Button)findViewById(R.id.t_gc);
-        aoc = (Button)findViewById(R.id.t_aoc);
-        hotspot = (Button)findViewById(R.id.t_hotspot);
-        radiogroup = (RadioGroup)findViewById(R.id.radiogroup);
+        senior = (RadioButton) findViewById(R.id.td_senior);
+        student = (RadioButton) findViewById(R.id.td_student);
+        baggage = (RadioButton) findViewById(R.id.td_baggage);
+        print = (Button) findViewById(R.id.t_print);
+        gc = (Button) findViewById(R.id.t_gc);
+        aoc = (Button) findViewById(R.id.t_aoc);
+        //hotspot = (Button)findViewById(R.id.t_hotspot);
+        radiogroup = (RadioGroup) findViewById(R.id.radiogroup);
         include = findViewById(R.id.actionbar);
-        bluetooth = (ImageView)findViewById(R.id.bluetooth);
+        bluetooth = (ImageView) findViewById(R.id.bluetooth);
+
+        ed_origin = (EditText) findViewById(R.id.edit_origin);
+        ed_des = (EditText) findViewById(R.id.edit_destination);
+        o_back = (ImageView) findViewById(R.id.origin_back);
+        o_forward = (ImageView) findViewById(R.id.origin_forward);
+        d_back = (ImageView) findViewById(R.id.des_back);
+        d_forward = (ImageView) findViewById(R.id.des_forward);
+
+        o_name = (TextView)findViewById(R.id.origin_name);
+        d_name = (TextView)findViewById(R.id.des_name);
 
 
 //        DBQuery dbQuery = new DBQuery(frmTicket.this);
@@ -141,8 +155,6 @@ public class frmTicket extends AppCompatActivity {
 //        String line = dbQuery.getLine(value);
 //        GlobalVariable.d_lineid = line;
 //        Log.wtf("lineid", line);
-
-
 
 
     }
@@ -178,7 +190,7 @@ public class frmTicket extends AppCompatActivity {
                                 txtDateTime.setText(currentDateTimeString);
                                 assert txtBattery != null;
                                 String batteryLevel = String.format("%6.0f", GlobalClass.getBatteryLevel(frmTicket.this));
-                                txtBattery.setText( batteryLevel + "%          ");
+                                txtBattery.setText(batteryLevel + "%          ");
                             }
                         });
                     }
@@ -190,42 +202,47 @@ public class frmTicket extends AppCompatActivity {
 
     }
 
-    private void objectListener(){
+    private void objectListener() {
         final DBQuery dbQuery = new DBQuery(frmTicket.this);
         String directionDB = dbQuery.getDirectionfromDB();
 //        String direction = GlobalVariable.d_direct;
         String lDirection = GlobalVariable.getDirection();
         Log.wtf("DIRECTION!!!!", lDirection);
 
-        if(lDirection == null){
-            if(directionDB.toString().contains("-1")){
+        if (lDirection == null) {
+            if (directionDB.toString().contains("-1")) {
                 bound.setText("S BOUND");
 
-                String id  = dbQuery.getLinefrmDB();
-                ascending(id);
+                String id = dbQuery.getLinefrmDB();
+                ed_origin.setText(dbQuery.getSegment(id, "first"));
+                ed_des.setText(dbQuery.getSegment(id, "last"));
+                //  ascending(id);
 
-            }else if(directionDB.toString().contains("1")){
+            } else if (directionDB.toString().contains("1")) {
                 bound.setText("N BOUND");
-                String id  = dbQuery.getLinefrmDB();
-                descending(id);
+                String id = dbQuery.getLinefrmDB();
+                ed_origin.setText(dbQuery.getSegment(id, "first"));
+                ed_des.setText(dbQuery.getSegment(id, "last"));
+                // descending(id);
             }
-        }else{
-            if(lDirection.toString().contains("SOUTH") ){
+        } else {
+            if (lDirection.toString().contains("SOUTH")) {
                 bound.setText("S BOUND");
 
-            }else if(lDirection.toString().contains("NORTH")){
+            } else if (lDirection.toString().contains("NORTH")) {
                 bound.setText("N BOUND");
             }
 
-            if(lDirection.toString().contains("SOUTH") ){
-                String id  = dbQuery.getLinefrmDB();
-                ascending(id);
+            if (lDirection.toString().contains("SOUTH")) {
+                String id = dbQuery.getLinefrmDB();
+                ed_des.setText(dbQuery.getSegment(id, "first"));
+                //ascending(id);
 
-            }else if(lDirection.toString().contains("NORTH")){
-                String id  = dbQuery.getLinefrmDB();
-                descending(id);
+            } else if (lDirection.toString().contains("NORTH")) {
+                String id = dbQuery.getLinefrmDB();
+                ed_des.setText(dbQuery.getSegment(id, "last"));
+                //descending(id);
             }
-
 
 
         }
@@ -237,23 +254,23 @@ public class frmTicket extends AppCompatActivity {
             public void onClick(View v) {
                 String type = GlobalVariable.getPaxtype();
 
-                if(type.equals("1")){
+                if (type.equals("1")) {
                     String typename = "Regular";
                     saveTicket(type);
                     printTicket(typename);
-                }else if(type.equals("2")){
-                    String typename= "Senior";
+                } else if (type.equals("2")) {
+                    String typename = "Senior";
                     printTicket(typename);
                     saveTicket(type);
-                }else if(type.equals("3")){
+                } else if (type.equals("3")) {
                     String typename = "Student";
                     printTicket(typename);
                     saveTicket(type);
-                }else if(type.equals("5")){
+                } else if (type.equals("5")) {
                     String typename = "Baggage";
                     printTicket(typename);
                     saveTicket(type);
-                }else {
+                } else {
                     Toast.makeText(frmTicket.this, "Please select a Passenger Type.", Toast.LENGTH_LONG).show();
                 }
 
@@ -279,20 +296,20 @@ public class frmTicket extends AppCompatActivity {
         int l = Integer.parseInt(GlobalVariable.d_lastticketid);
         int t = 1;
         int nextticket = l + t;
-        String format =  String.format("%1$05d ", nextticket);//String.format("%07d", "0");
+        String format = String.format("%1$05d ", nextticket);//String.format("%07d", "0");
         ticketno.setText(format);
 
         int remain = dbQuery.getRemainingPax(GlobalVariable.d_lasttripid);
-        tremaining.setText(remain+"");
+        tremaining.setText(remain + "");
 
-        hotspot.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                hasHotspot = "1";
-                String line = GlobalVariable.getLineid();
-                hotspotPax(o_refpoint, line);
-            }
-        });
+//        hotspot.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                hasHotspot = "1";
+//                String line = GlobalVariable.getLineid();
+//                hotspotPax(o_refpoint, line);
+//            }
+//        });
 
         bluetooth.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -323,13 +340,152 @@ public class frmTicket extends AppCompatActivity {
                 alert.show();
 
 
+            }
+        });
+        initializeDB();
+        String textkm = Double.toString(kmpost());
+        String name = cursor.getString(cursor.getColumnIndex("NAME"));
+        o_name.setText(name);
+        cursor.moveToLast();
+        String namelast = cursor.getString(cursor.getColumnIndex("NAME"));
+        d_name.setText(namelast);
+        kmpost.setText(textkm + "KM");
+
+        o_forward.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(cursor.isLast()){
+                    cursor.moveToFirst();
+                    String first = cursor.getString(cursor.getColumnIndex("REFPOINT"));
+                    String name = cursor.getString(cursor.getColumnIndex("NAME"));
+                    ed_origin.setText(first);
+                    o_name.setText(name);
+                }else{
+                    cursor.moveToNext();
+                    String next = cursor.getString(cursor.getColumnIndex("REFPOINT"));
+                    String name = cursor.getString(cursor.getColumnIndex("NAME"));
+                    o_name.setText(name);
+                    ed_origin.setText(next);
+                }
+                getDiscount2();
+                String textkm = Double.toString(kmpost());
+                kmpost.setText(textkm + "KM");
+
+            }
+        });
+        o_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(cursor.isFirst()){
+                    cursor.moveToLast();
+                    String last = cursor.getString(cursor.getColumnIndex("REFPOINT"));
+                    String name = cursor.getString(cursor.getColumnIndex("NAME"));
+                    o_name.setText(name);
+                    ed_origin.setText(last);
+                }else if(cursor.isLast()){
+                    cursor.moveToPrevious();
+                    String first = cursor.getString(cursor.getColumnIndex("REFPOINT"));
+                    String name = cursor.getString(cursor.getColumnIndex("NAME"));
+                    o_name.setText(name);
+                    ed_origin.setText(first);
+                }else{
+                    cursor.moveToPrevious();
+                    String next = cursor.getString(cursor.getColumnIndex("REFPOINT"));
+                    String name = cursor.getString(cursor.getColumnIndex("NAME"));
+                    o_name.setText(name);
+                    ed_origin.setText(next);
+                }
+                getDiscount2();
+                String textkm = Double.toString(kmpost());
+                kmpost.setText(textkm + "KM");
+
 
             }
         });
 
 
+        d_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                 if(cursor.isFirst()){
+                    cursor.moveToLast();
+                    String last = cursor.getString(cursor.getColumnIndex("REFPOINT"));
+                     String name = cursor.getString(cursor.getColumnIndex("NAME"));
+                     d_name.setText(name);
+                    ed_des.setText(last);
+                }else if(cursor.isLast()){
+                    cursor.moveToPrevious();
+                    String first = cursor.getString(cursor.getColumnIndex("REFPOINT"));
+                     String name = cursor.getString(cursor.getColumnIndex("NAME"));
+                     d_name.setText(name);
+                     ed_des.setText(first);
+                }else{
+                    cursor.moveToPrevious();
+                    String next = cursor.getString(cursor.getColumnIndex("REFPOINT"));
+                     String name = cursor.getString(cursor.getColumnIndex("NAME"));
+                     d_name.setText(name);
+                     ed_des.setText(next);
+                }
+                getDiscount2();
+                String textkm = Double.toString(kmpost());
+                kmpost.setText(textkm + "KM");
 
-        }
+            }
+        });
+        d_forward.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(cursor.isLast()){
+                    cursor.moveToFirst();
+                    String first = cursor.getString(cursor.getColumnIndex("REFPOINT"));
+                    String name = cursor.getString(cursor.getColumnIndex("NAME"));
+                    d_name.setText(name);
+                    ed_des.setText(first);
+                }else{
+                    cursor.moveToNext();
+                    String next = cursor.getString(cursor.getColumnIndex("REFPOINT"));
+                    String name = cursor.getString(cursor.getColumnIndex("NAME"));
+                    d_name.setText(name);
+                    ed_des.setText(next);
+                }
+                getDiscount2();
+                String textkm = Double.toString(kmpost());
+                kmpost.setText(textkm + "KM");
+
+            }
+        });
+
+    }
+
+    private double kmpost(){
+
+        o_refpoint = Integer.valueOf(ed_origin.getText().toString());
+        d_refpoint = Integer.valueOf(ed_des.getText().toString());
+        int km = o_refpoint - d_refpoint;
+        String totalkm1 = Integer.toString(Math.abs(km)) ;
+        totalkm2 = Double.parseDouble(totalkm1);
+
+        return totalkm2;
+
+    }
+
+
+
+    private void initializeDB(){
+        DBQuery dbQuery = new DBQuery(frmTicket.this);
+        String id = dbQuery.getLinefrmDB();
+        DBObject dbObject = new DBObject(frmTicket.this);
+        String sql = "Select * from v_linesegment where LINEID ='"+id+"'";
+        cursor = dbObject.getDbConnection().rawQuery(sql, null);
+        cursor.moveToFirst();
+       // String first = cursor.getString(cursor.getColumnIndex("REFPOINT"));
+
+
+
+
+    }
+
+
 
     private void ascending(final String id){
         Toast.makeText(frmTicket.this,"ascending", Toast.LENGTH_LONG ).show();
@@ -484,6 +640,10 @@ public class frmTicket extends AppCompatActivity {
         String device = GlobalVariable.getPhoneName();
         String lineid  = dbQuery.getLinefrmDB();
         String mode = dbQuery.getMode(device);
+        //int km = o_refpoint - d_refpoint;
+        o_refpoint = Integer.valueOf(ed_origin.getText().toString());
+        d_refpoint = Integer.valueOf(ed_des.getText().toString());
+
         int km = o_refpoint - d_refpoint;
         String totalkm1 = Integer.toString(Math.abs(km)) ;
         Log.wtf("COMPUTE TICKET", type + lineid + mode);
@@ -679,9 +839,6 @@ public class frmTicket extends AppCompatActivity {
         Date dtTemp = new Date(DateFormat.getDateTimeInstance().format(new Date()));
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         dtstartTime = formatter.format(dtTemp);
-
-
-
 
         String companyName = c + "\n";
         String tin = "" + "\n";

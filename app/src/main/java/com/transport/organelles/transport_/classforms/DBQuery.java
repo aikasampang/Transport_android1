@@ -248,6 +248,26 @@ public class DBQuery extends DBObject {
         return id;
     }
 
+    public String getSegment(String lineid, String direction){
+
+        if(direction.equals("first")){
+            String sql = "Select REFPOINT from v_linesegment where LINEID ='"+lineid+"'";
+            Cursor cursor = this.getDbConnection().rawQuery(sql, null);
+            cursor.moveToFirst();
+            String first = cursor.getString(cursor.getColumnIndex("REFPOINT"));
+            cursor.close();
+            return first;
+
+        }else{
+            String sql = "Select REFPOINT from v_linesegment where LINEID ='"+lineid+"'";
+            Cursor cursor = this.getDbConnection().rawQuery(sql, null);
+            cursor.moveToLast();
+            String last = cursor.getString(cursor.getColumnIndex("REFPOINT"));
+            cursor.close();
+            return last;
+        }
+    }
+
     public String[] getLineSegment(String lineid, String direction){
 
         if(direction.toString().equals("ASC")) {

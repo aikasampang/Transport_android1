@@ -147,6 +147,7 @@
                 android:gravity="center"
                 android:paddingLeft="15sp"
                 android:paddingRight="50sp"
+                android:textStyle="bold"
                 />
 
             <TextView
@@ -156,7 +157,8 @@
                 android:layout_below="@+id/two"
                 android:id="@+id/text"
                 android:textSize="15sp"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:textStyle="bold"/>
 
 
             <TextView
@@ -166,7 +168,8 @@
                 android:layout_below="@+id/two"
                 android:id="@+id/t_remaining"
                 android:layout_weight="1"
-                android:gravity="center"/>
+                android:gravity="center"
+                android:textStyle="bold"/>
             <!--<Button-->
                 <!--android:text="Hotspot"-->
                 <!--android:layout_width="0dp"-->
@@ -225,44 +228,76 @@
                 android:paddingBottom="10sp"
                 >
 
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/arrowback"/>
-
-
-                <EditText
+                <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:hint="test "
-                    android:id="@+id/edit_origin"
-                    android:gravity="center"
-                    android:layout_weight="1" />
+                    android:padding="30sp"
+                    android:layout_weight="1">
 
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/arrowforward"/>
-
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/arrowback"/>
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/arrowback"
+                        android:id="@+id/origin_back"/>
 
 
-                <EditText
+                    <EditText
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:hint="test "
+                        android:id="@+id/edit_origin"
+                        android:gravity="center"
+                        android:layout_weight="1" />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/arrowforward"
+                        android:id="@+id/origin_forward"/>
+
+
+
+
+
+
+
+
+                </LinearLayout>
+
+
+
+                <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:hint="test "
-                    android:gravity="center"
-                    android:id="@+id/edit_destination"
-                    android:layout_weight="1" />
+                    android:padding="30sp"
+                    android:layout_weight="1">
 
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/arrowforward"/>
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/arrowback"
+                        android:id="@+id/des_back"/>
+
+
+                    <EditText
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:hint="test "
+                        android:gravity="center"
+                        android:id="@+id/edit_destination"
+                        android:layout_weight="1" />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/arrowforward"
+                        android:id="@+id/des_forward"/>
+
+
+
+
+                </LinearLayout>
 
 
 
@@ -282,6 +317,37 @@
                     <!--android:padding="10sp">-->
                 <!--</NumberPicker>-->
             </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:paddingTop="10sp"
+                android:paddingBottom="10sp"
+                >
+
+                <TextView
+                    android:text="ORIGIN"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/origin_name"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:textSize="20sp"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:text="DESTINATION"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/des_name"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:textSize="20sp"
+                    android:textStyle="bold"/>
+            </LinearLayout>
+
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
