@@ -100,29 +100,34 @@ public class frmReverse extends AppCompatActivity {
         final DBQuery dbQuery = new DBQuery(frmReverse.this);
         LayoutInflater inflater = getLayoutInflater();
         View alertLayout = inflater.inflate(R.layout.modal_employeelogin, null);
-        final AutoCompleteTextView name = (AutoCompleteTextView) alertLayout.findViewById(R.id.name);
+       // final AutoCompleteTextView name = (AutoCompleteTextView) alertLayout.findViewById(R.id.name);
         final EditText password = (EditText) alertLayout.findViewById(R.id.password);
 
-        String[] spinnerNames = dbQuery.getNames();
-        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(frmReverse.this,android.R.layout.simple_spinner_item, spinnerNames);
-        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        name.setAdapter(spinnerAdapter);
+//        String[] spinnerNames = dbQuery.getNames();
+//        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(frmReverse.this,android.R.layout.simple_spinner_item, spinnerNames);
+//        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//        name.setAdapter(spinnerAdapter);
         AlertDialog.Builder alert = new AlertDialog.Builder(frmReverse.this);
         alert.setTitle("Login");
         alert.setView(alertLayout);
         alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                i_name = name.getText().toString();
+                //i_name = name.getText().toString();
                 i_password = password.getText().toString();
 
-                String authorize = dbQuery.getPassword(i_name);
-                if(authorize.toString().equals(i_password)){
+                String authorize = dbQuery.getAuthenticate(i_password);
+                if(authorize.equals("invalid")){
                     dialog.dismiss();
+                    Toast.makeText(frmReverse.this, "Please input the right password for this User..", Toast.LENGTH_LONG).show();
+                    Intent intent = new Intent(frmReverse.this, frmMain.class);
+                    startActivity(intent);
+                    finish();
                 }else{
-                    Toast.makeText(frmReverse.this, "Wrong Password!!", Toast.LENGTH_LONG).show();
-                    Intent back = new Intent(frmReverse.this, frmMain.class);
-                    startActivity(back);
+                   dialog.dismiss();
+                    i_name = authorize;
+
+
                 }
             }
         });
@@ -213,8 +218,11 @@ public class frmReverse extends AppCompatActivity {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         dtstartTime = formatter.format(dtTemp);
 
-        String trip = GlobalVariable.getLasttrip();
+
+
+
         String device = GlobalVariable.getPhoneName();
+        String trip = dbQuery.getTripId(device);
         String datetime = dtstartTime;
         String direction = lDirection;
         String dispatcher = dbQuery.getEmployeeID(i_name);
@@ -265,9 +273,16 @@ public class frmReverse extends AppCompatActivity {
                 if (!dba.executeQuery(queryy)) {
                     Toast.makeText(frmReverse.this, "Can't insert data to database!.", Toast.LENGTH_SHORT).show();
                 }else{
-                    Log.wtf("","update directiondevicedata");
+                    Log.wtf("fuck","update directiondevicedata");
+                    String sql= "UPDATE DEVICEDATA SET VALUE = '" + line + "' WHERE DEVICENAME = '" + devicename + "' AND KEY = 'LINE'";
+                    Log.wtf("logged sql",queryy);
 
-                }
+                        if (!dba.executeQuery(sql)) {
+                            Toast.makeText(frmReverse.this, "Can't insert data to database!.", Toast.LENGTH_SHORT).show();
+                        }else {
+                            Log.wtf("fuck again","update linedevicedata");
+                        }
+                    }
 
             }
 

@@ -75,7 +75,7 @@
             android:screenOrientation="portrait" />
 
         <activity
-            android:name=".forms.frmInspectionfromTerminal"
+            android:name=".forms.frmDispatchfromTerminal"
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
 

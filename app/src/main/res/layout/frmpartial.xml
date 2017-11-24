@@ -148,49 +148,49 @@
                     android:id="@+id/p_amount" />
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingBottom="25sp"
-                >
+            <!--<LinearLayout-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:orientation="horizontal"-->
+                <!--android:paddingBottom="25sp"-->
+                <!--&gt;-->
 
-                <TextView
-                    android:text="Cashier:      "
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="20sp"/>
+                <!--<TextView-->
+                    <!--android:text="Cashier:      "-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:textSize="20sp"/>-->
 
-                <EditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="numberDecimal"
-                    android:ems="10"
-                    android:enabled="false"
-                    android:id="@+id/p_cashier" />
-            </LinearLayout>
+                <!--<EditText-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:inputType="numberDecimal"-->
+                    <!--android:ems="10"-->
+                    <!--android:enabled="false"-->
+                    <!--android:id="@+id/p_cashier" />-->
+            <!--</LinearLayout>-->
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingBottom="25sp"
-                >
+            <!--<LinearLayout-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:orientation="horizontal"-->
+                <!--android:paddingBottom="25sp"-->
+                <!--&gt;-->
 
-                <TextView
-                    android:text="Cashier PIN:      "
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="20sp"/>
+                <!--<TextView-->
+                    <!--android:text="Cashier PIN:      "-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:textSize="20sp"/>-->
 
-                <EditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="textPassword"
-                    android:ems="10"
-                    android:id="@+id/p_cashierpin"
-                    android:enabled="false"/>
-            </LinearLayout>
+                <!--<EditText-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:inputType="textPassword"-->
+                    <!--android:ems="10"-->
+                    <!--android:id="@+id/p_cashierpin"-->
+                    <!--android:enabled="false"/>-->
+            <!--</LinearLayout>-->
 
 
         </LinearLayout>

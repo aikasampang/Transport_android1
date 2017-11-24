@@ -25,7 +25,7 @@ import java.util.Date;
  * Created by Organelles on 7/3/2017.
  */
 
-public class frmInspectionfromTerminal extends AppCompatActivity {
+public class frmDispatchfromTerminal extends AppCompatActivity {
 
     AutoCompleteTextView name;
     EditText password;
@@ -53,9 +53,9 @@ public class frmInspectionfromTerminal extends AppCompatActivity {
         save = (Button)findViewById(R.id.ift_save);
     }
     private void objectListener(){
-        DBQuery dbQuery = new DBQuery(frmInspectionfromTerminal.this);
+        DBQuery dbQuery = new DBQuery(frmDispatchfromTerminal.this);
         String[] spinnerNames = dbQuery.getName(1);
-        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(frmInspectionfromTerminal.this,android.R.layout.simple_spinner_item, spinnerNames);
+        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(frmDispatchfromTerminal.this,android.R.layout.simple_spinner_item, spinnerNames);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         name.setAdapter(spinnerAdapter);
 
@@ -69,8 +69,8 @@ public class frmInspectionfromTerminal extends AppCompatActivity {
     private void saveTripInspection(){
         String n = name.getText().toString();
         String p = password.getText().toString();
-        DBQuery dbQuery = new DBQuery(frmInspectionfromTerminal.this);
-        dba = DBAccess.getInstance(frmInspectionfromTerminal.this);
+        DBQuery dbQuery = new DBQuery(frmDispatchfromTerminal.this);
+        dba = DBAccess.getInstance(frmDispatchfromTerminal.this);
         String authenticate = dbQuery.getPassword(n);
         if(authenticate.equals(p)){
             Date dtTemp = new Date(DateFormat.getDateTimeInstance().format(new Date()));
@@ -104,14 +104,14 @@ public class frmInspectionfromTerminal extends AppCompatActivity {
             Log.wtf("logged sql",sqlQuery);
 
             if (!dba.executeQuery(sqlQuery)) {
-                Toast.makeText(frmInspectionfromTerminal.this, "Can't insert data to database!.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(frmDispatchfromTerminal.this, "Can't insert data to database!.", Toast.LENGTH_SHORT).show();
             }else{
                 Log.wtf("test","save tripinspecion");
             }
 
 
         }else{
-            Toast.makeText(frmInspectionfromTerminal.this, "Wrong Password", Toast.LENGTH_SHORT).show();
+            Toast.makeText(frmDispatchfromTerminal.this, "Wrong Password", Toast.LENGTH_SHORT).show();
         }
     }
 }

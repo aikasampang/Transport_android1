@@ -35,10 +35,12 @@ import com.transport.organelles.transport_.classforms.GlobalClass;
 import com.transport.organelles.transport_.classforms.GlobalVariable;
 import com.transport.organelles.transport_.R;
 
+import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 
 /**
@@ -50,8 +52,8 @@ public class frmInspector extends AppCompatActivity {
     TextView txtDateTime, pax_count;
     EditText kmpost, pax_acount;
     Button save;
-    String name_type, type, sqlQuery, i_name, i_password;
-    String dtstartTime = "";
+    String name_type, type, sqlQuery, i_name, i_password, name_inspector;
+    String dtstartTime = "", lastreversedate;
     private DBAccess dba;
     ImageView bluetooth;
     public static final int MESSAGE_STATE_CHANGE = 1;
@@ -73,6 +75,8 @@ public class frmInspector extends AppCompatActivity {
     private static final String TAG = "BTPrinter";
     private String mConnectedDeviceName = null;
     private BluetoothService mService = null;
+    private List<String> list;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -231,13 +235,13 @@ public class frmInspector extends AppCompatActivity {
         final DBQuery dbQuery = new DBQuery(frmInspector.this);
         LayoutInflater inflater = getLayoutInflater();
         View alertLayout = inflater.inflate(R.layout.modal_employeelogin, null);
-        final AutoCompleteTextView name = (AutoCompleteTextView) alertLayout.findViewById(R.id.name);
+        //final AutoCompleteTextView name = (AutoCompleteTextView) alertLayout.findViewById(R.id.name);
         final EditText password = (EditText) alertLayout.findViewById(R.id.password);
 
-        String[] spinnerNames = dbQuery.getName(Integer.parseInt(type));
-        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(frmInspector.this,android.R.layout.simple_spinner_item, spinnerNames);
-        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        name.setAdapter(spinnerAdapter);
+//        String[] spinnerNames = dbQuery.getName(Integer.parseInt(type));
+//        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(frmInspector.this,android.R.layout.simple_spinner_item, spinnerNames);
+//        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//        name.setAdapter(spinnerAdapter);
         AlertDialog.Builder alert = new AlertDialog.Builder(frmInspector.this);
         alert.setTitle("Login");
         alert.setView(alertLayout);
@@ -246,15 +250,26 @@ public class frmInspector extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
 
 
-                i_name = name.getText().toString();
+               // i_name = name.getText().toString();
                 i_password = password.getText().toString();
 
-                String authorize = dbQuery.getPassword(i_name);
-                if(authorize.toString().equals(i_password)){
+                String authorize = dbQuery.getAuthenticate(i_password);
+                if(authorize.equals("invalid")){
                     dialog.dismiss();
+                    Toast.makeText(frmInspector.this, "Please input the right password for this User..", Toast.LENGTH_LONG).show();
+                    Intent intent = new Intent (frmInspector.this, frmMain.class);
+                    startActivity(intent);
+                    finish();
                 }else{
-                    Toast.makeText(frmInspector.this, "Wrong Password!!", Toast.LENGTH_LONG).show();
+                    name_inspector = authorize;
+                    dialog.dismiss();
                 }
+
+//                if(authorize.toString().equals(i_password)){
+//                    dialog.dismiss();
+//                }else{
+//                    Toast.makeText(frmInspector.this, "Wrong Password!!", Toast.LENGTH_LONG).show();
+//                }
             }
         });
         alert.setCancelable(false);
@@ -274,7 +289,7 @@ public class frmInspector extends AppCompatActivity {
         String trip = GlobalVariable.d_lasttripid;
         String devicename = GlobalVariable.getPhoneName();
         String datetime = dtstartTime;
-        String dispatcher = dbQuery.getEmployeeID(i_name);
+        String dispatcher = dbQuery.getEmployeeID(name_inspector);
         String origin = kmpost.getText().toString();
         String lastticket = GlobalVariable.d_lastticketid;
 
@@ -301,6 +316,7 @@ public class frmInspector extends AppCompatActivity {
             Toast.makeText(frmInspector.this, "Can't insert data to database!.", Toast.LENGTH_SHORT).show();
         }else{
             Log.wtf("TEST","save tripinspecion");
+            printInspector();
         }
 
 
@@ -317,6 +333,8 @@ public class frmInspector extends AppCompatActivity {
         dtstartTime = formatter.format(dtTemp);
 
         String check = dbQuery.getCheckpoint(kmpost.toString(), GlobalVariable.getLineid());
+        lastreversedate = dbQuery.getreversedate(GlobalVariable.getCashbond_id());
+        list = dbQuery.getListPassenger(GlobalVariable.getLasttrip(), lastreversedate, kmpost.getText().toString());
 
 
         String tripId = GlobalVariable.getLasttrip();
@@ -343,15 +361,55 @@ public class frmInspector extends AppCompatActivity {
         String pass = "Passengers :" + cpassengers + "\n";
         String inspect = "Inspection: " + kmpost.getText().toString() +"\n";
         String batteryLevel = String.format("%6.0f", GlobalClass.getBatteryLevel(frmInspector.this));
+        String tickets = list.toString();
 
 
 
+        callBluetooth(tickets);
 
 
 
 
 
     }
+    private void callBluetooth(String message) {
+
+
+        // Check that we're actually connected before trying anything
+        if (mService.getState() != BluetoothService.STATE_CONNECTED) {
+            Toast.makeText(this, R.string.not_connected, Toast.LENGTH_SHORT)
+                    .show();
+            return;
+        }
+
+
+        // Check that there's actually something to send
+        if (message.length() > 0) {
+            // Get the message bytes and tell the BluetoothService to write
+            byte[] send;
+            try {
+                send = message.getBytes("GBK");
+            } catch (UnsupportedEncodingException e) {
+                send = message.getBytes();
+//				//鍘婚櫎/n;
+//				int length = send.length;
+//				for(int i=0; i<length;i++){
+//					if(send[i]==10){
+//						for(int j =i;j<length-1;j++){
+//							send[j]=send[j+1];
+//						}
+//					}
+//				}
+            }
+            mService.write(send);
+            Log.wtf("bluetooth", "connected" + send + "");
+            //
+            // // Reset out string buffer to zero and clear the edit text field
+            // mOutStringBuffer.setLength(0);
+            // mOutEditText.setText(mOutStringBuffer);
+        }
+    }
+
 
 
 

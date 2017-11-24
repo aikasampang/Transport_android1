@@ -2,6 +2,7 @@ package com.transport.organelles.transport_.forms;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -46,16 +47,17 @@ public class frmPartial extends AppCompatActivity {
         getSupportActionBar().hide();
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setTitleBar();
+        employeeLogin();
         setObjects();
         objectListeners();
-        employeeLogin();
+
 
     }
     private void setObjects(){
         p_ticketsales = (TextView)findViewById(R.id.p_ticketsales);
         p_amount = (EditText) findViewById(R.id.p_amount);
-        p_cashiername = (EditText)findViewById(R.id.p_cashier);
-        p_cashierpin = (EditText)findViewById(R.id.p_cashierpin);
+//        p_cashiername = (EditText)findViewById(R.id.p_cashier);
+//        p_cashierpin = (EditText)findViewById(R.id.p_cashierpin);
         save = (Button)findViewById(R.id.p_save);
     }
 
@@ -72,7 +74,8 @@ public class frmPartial extends AppCompatActivity {
         });
 
         DBQuery dbQuery = new DBQuery(frmPartial.this);
-        String tripid = GlobalVariable.getLasttrip();
+        String name = GlobalVariable.getPhoneName();
+        String tripid = dbQuery.getTripId(name);
         String totaltickets = dbQuery.getTicketSales(tripid);
         p_ticketsales.setText(totaltickets);
     }
@@ -123,13 +126,13 @@ public class frmPartial extends AppCompatActivity {
         final DBQuery dbQuery = new DBQuery(frmPartial.this);
         LayoutInflater inflater = getLayoutInflater();
         View alertLayout = inflater.inflate(R.layout.modal_employeelogin, null);
-        final AutoCompleteTextView name = (AutoCompleteTextView) alertLayout.findViewById(R.id.name);
+       // final AutoCompleteTextView name = (AutoCompleteTextView) alertLayout.findViewById(R.id.name);
         final EditText password = (EditText) alertLayout.findViewById(R.id.password);
 
-        String[] spinnerNames = dbQuery.getName(5);
-        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(frmPartial.this,android.R.layout.simple_spinner_item, spinnerNames);
-        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        name.setAdapter(spinnerAdapter);
+//        String[] spinnerNames = dbQuery.getName(5);
+//        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(frmPartial.this,android.R.layout.simple_spinner_item, spinnerNames);
+//        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//        name.setAdapter(spinnerAdapter);
         AlertDialog.Builder alert = new AlertDialog.Builder(frmPartial.this);
         alert.setTitle("Login");
         alert.setView(alertLayout);
@@ -138,17 +141,22 @@ public class frmPartial extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
 
 
-                p_name = name.getText().toString();
+               // p_name = name.getText().toString();
                 p_password = password.getText().toString();
 
-                String authorize = dbQuery.getPassword(p_name);
-                if(authorize.toString().equals(p_password)){
+                String authorize = dbQuery.getAuthenticate(p_password);
+                if(authorize.equals("invalid")){
                     dialog.dismiss();
-                    p_cashiername.setText(p_name);
-                    p_cashierpin.setText(p_password);
-
+                    Toast.makeText(frmPartial.this, "Please input the right password for this User..", Toast.LENGTH_LONG).show();
+                    Intent intent = new Intent(frmPartial.this, frmMain.class);
+                    startActivity(intent);
+                    finish();
                 }else{
-                    Toast.makeText(frmPartial.this, "Wrong Password!!", Toast.LENGTH_LONG).show();
+                    dialog.dismiss();
+                    p_name = authorize;
+//                    p_cashiername.setText(p_name);
+//                    p_cashierpin.setText(p_password);
+
                 }
             }
         });

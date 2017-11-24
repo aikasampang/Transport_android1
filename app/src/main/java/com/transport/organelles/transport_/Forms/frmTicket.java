@@ -203,6 +203,9 @@ public class frmTicket extends AppCompatActivity {
     }
 
     private void objectListener() {
+
+        initializeDB();
+
         final DBQuery dbQuery = new DBQuery(frmTicket.this);
         String directionDB = dbQuery.getDirectionfromDB();
 //        String direction = GlobalVariable.d_direct;
@@ -247,7 +250,7 @@ public class frmTicket extends AppCompatActivity {
 
         }
 
-        getDiscount();
+
 
         print.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -342,13 +345,13 @@ public class frmTicket extends AppCompatActivity {
 
             }
         });
-        initializeDB();
+
         String textkm = Double.toString(kmpost());
-        String name = cursor.getString(cursor.getColumnIndex("NAME"));
-        o_name.setText(name);
-        cursor.moveToLast();
-        String namelast = cursor.getString(cursor.getColumnIndex("NAME"));
-        d_name.setText(namelast);
+//        String name = cursor.getString(cursor.getColumnIndex("NAME"));
+//        o_name.setText(name);
+//        cursor.moveToLast();
+//        String namelast = cursor.getString(cursor.getColumnIndex("NAME"));
+//        d_name.setText(namelast);
         kmpost.setText(textkm + "KM");
 
         o_forward.setOnClickListener(new View.OnClickListener() {
@@ -478,9 +481,16 @@ public class frmTicket extends AppCompatActivity {
         String sql = "Select * from v_linesegment where LINEID ='"+id+"'";
         cursor = dbObject.getDbConnection().rawQuery(sql, null);
         cursor.moveToFirst();
-       // String first = cursor.getString(cursor.getColumnIndex("REFPOINT"));
-
-
+        String first = cursor.getString(cursor.getColumnIndex("REFPOINT"));
+        String name = cursor.getString(cursor.getColumnIndex("NAME"));
+        ed_origin.setText(first);
+        o_name.setText(name);
+        cursor.moveToLast();
+        String last = cursor.getString(cursor.getColumnIndex("REFPOINT"));
+        String des = cursor.getString(cursor.getColumnIndex("NAME"));
+        ed_des.setText(last);
+        d_name.setText(des);
+        getDiscount2();
 
 
     }
@@ -594,7 +604,8 @@ public class frmTicket extends AppCompatActivity {
             final String line = GlobalVariable.d_lineid;
 
             @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
+            public void onCheckedChanged(RadioGroup group, int checkedId)
+            {
                  rb = (RadioButton) group.findViewById(checkedId);
                 if( null != rb && checkedId > -1){
                     Toast.makeText(frmTicket.this, rb.getText(), Toast.LENGTH_LONG).show();

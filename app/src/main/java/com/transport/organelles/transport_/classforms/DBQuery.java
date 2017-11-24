@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Organelles on 6/14/2017.
@@ -1317,9 +1318,8 @@ public class DBQuery extends DBObject {
     }
 
     //get passengers to north
-    public String getPassengersToNorth(SQLiteDatabase db, String tableName, String tripid, String date, String km) {
-        Log.d("","tableToString called");
-        String tableString = String.format("Table %s:\n", tableName);
+    public String[]  getPassengersToNorth(SQLiteDatabase db, String tableName, String tripid, String date, String km) {
+
         String sql = "select ct.NAME, count(tk.ID), ct.ID from CUSTOMER c" +
                 "                            left join TICKET tk on c.ID=tk.CUSTOMERID" +
                 "                            left join CUSTOMERTYPE ct on ct.ID=c.CUSTOMERTYPEID\n" +
@@ -1327,10 +1327,12 @@ public class DBQuery extends DBObject {
                 "                            and tk.TOREFPOINT >  '"+ km +"'" +  // if direction is 1? = > or <
                 "                            group by CT.NAME, ct.ID  " +
                 "                            order by ct.ID";
-        Cursor allRows  = this.getDbConnection().rawQuery("SELECT * FROM " + tableName, null);
-      //  Cursor allRows  = db.rawQuery("SELECT * FROM " + tableName, null);
-        tableString += cursorToString(allRows);
-        return tableString;
+        Cursor allRows  = this.getDbConnection().rawQuery(sql, null);
+        ArrayList<String> list = new ArrayList<String>();
+
+        String[] allSpinner = new String[list.size()];
+        allSpinner = list.toArray(allSpinner);
+        return allSpinner;
     }
 
     //get passengers to south
@@ -1394,8 +1396,77 @@ public class DBQuery extends DBObject {
         return count;
     }
 
+    public String getAuthenticate(String pass){
 
+        String sql = "Select NAME from EMPLOYEE where PIN ='"+ pass+"'";
+        Cursor cursor = this.getDbConnection().rawQuery(sql, null);
+        int count = cursor.getCount();
+        cursor.moveToFirst();
+        String name = cursor.getString(cursor.getColumnIndex("NAME"));
+        if(count > 1){
+            return "invalid";
+        }else{
+            return name;
+        }
+    }
 
+    public String getreversedate(String tripid){
+
+        String sql ="select DATETIMESTAMP from TRIPREVERSE where TRIPID='"+ tripid +"' order by DATETIMESTAMP desc";
+        Cursor cursor = this.getDbConnection().rawQuery(sql, null);
+        cursor.moveToFirst();
+        int count = cursor.getCount();
+        if(count == 0){
+            String sql1= "select STARTDATETIMESTAMP from TRIP where ID='"+ tripid+"'";
+            Cursor cursor1 = this.getDbConnection().rawQuery(sql1,null);
+            cursor1.moveToFirst();
+            String date = cursor.getString(cursor.getColumnIndex("STARTDATETIMESTAMP"));
+            cursor1.close();
+            return date;
+        }else {
+            String date = cursor.getString(cursor.getColumnIndex("DATETIMESTAMP"));
+            cursor.close();
+            return date;
+        }
+
+    }
+
+    public List<String> getListPassenger(String trip, String date, String kmpost){
+
+        String sql = "select tk.DATETIMESTAMP, tk.ID, FROMREFPOINT, TOREFPOINT, NETAMOUNT, c.REMARKS from TICKET tk " +
+                "                               left join CUSTOMER c on c.ID=tk.CUSTOMERID " +
+                "                   where TRIPID='"+ trip+"' and DATETIMESTAMP>='"+date+"'" +
+                "                   and TOREFPOINT  > "+ kmpost+" " +
+                "                   order by tk.ID ";
+        Cursor cursor = this.getDbConnection().rawQuery(sql,null);
+        List<String> list = new ArrayList<>();
+        if (cursor.moveToFirst()){
+            list.add(cursor.getString(cursor.getColumnIndex("DATETIMESTAMP")));
+            list.add(cursor.getString(cursor.getColumnIndex("FROMREFPOINT")));
+            list.add(cursor.getString(cursor.getColumnIndex("TOREFPOINT")));
+            list.add(cursor.getString(cursor.getColumnIndex("NETAMOUNT")));
+            list.add(cursor.getString(cursor.getColumnIndex("REMARKS")));
+            while(cursor.moveToNext()){
+                list.add(cursor.getString(cursor.getColumnIndex("DATETIMESTAMP")));
+                list.add(cursor.getString(cursor.getColumnIndex("FROMREFPOINT")));
+                list.add(cursor.getString(cursor.getColumnIndex("TOREFPOINT")));
+                list.add(cursor.getString(cursor.getColumnIndex("NETAMOUNT")));
+                list.add(cursor.getString(cursor.getColumnIndex("REMARKS")));
+            }
+        }
+        cursor.close();
+        return list;
+    }
+
+    public String universalcode(){
+
+        String sql = "select REMARKS from ATTRIBUTE WHERE NAME = 'INGRESS'";
+        Cursor cursor = this.getDbConnection().rawQuery(sql, null);
+        cursor.moveToFirst();
+        String ingress = cursor.getString(cursor.getColumnIndex("REMARKS"));
+        cursor.close();
+        return ingress;
+    }
 
 
 

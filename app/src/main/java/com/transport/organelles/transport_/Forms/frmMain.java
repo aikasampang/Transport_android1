@@ -26,6 +26,7 @@ import android.widget.Toast;
 
 import com.transport.organelles.transport_.classforms.BluetoothA2DPRequester;
 import com.transport.organelles.transport_.classforms.BluetoothBroadcastReceiver;
+import com.transport.organelles.transport_.classforms.DBObject;
 import com.transport.organelles.transport_.classforms.DBQuery;
 import com.transport.organelles.transport_.classforms.GlobalClass;
 import com.transport.organelles.transport_.classforms.GlobalVariable;
@@ -210,7 +211,7 @@ public class frmMain extends AppCompatActivity  implements BluetoothBroadcastRec
                         ift.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                Intent intent = new Intent(getBaseContext(), frmInspectionfromTerminal.class);
+                                Intent intent = new Intent(getBaseContext(), frmDispatchfromTerminal.class);
                                 startActivity(intent);
                             }
                         });
@@ -230,43 +231,50 @@ public class frmMain extends AppCompatActivity  implements BluetoothBroadcastRec
                         final DBQuery dbQuery = new DBQuery(frmMain.this);
                         LayoutInflater inflater = getLayoutInflater();
                         View alertLayout = inflater.inflate(R.layout.modal_employeelogin, null);
-                        final AutoCompleteTextView name = (AutoCompleteTextView) alertLayout.findViewById(R.id.name);
+                        //final AutoCompleteTextView name = (AutoCompleteTextView) alertLayout.findViewById(R.id.name);
                         final EditText pass = (EditText) alertLayout.findViewById(R.id.password);
 
-                        String[] spinnerNames = dbQuery.getName(5);
-                        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(frmMain.this, android.R.layout.simple_spinner_item, spinnerNames);
-                        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                        name.setAdapter(spinnerAdapter);
-
                         AlertDialog.Builder alert = new AlertDialog.Builder(frmMain.this);
-                        alert.setTitle("Login");
+                        alert.setTitle("Code");
                         alert.setView(alertLayout);
                         alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-
-                                String i_name = name.getText().toString();
-                                String i_password = pass.getText().toString();
-                                String cashierID = dbQuery.getIDfromName(i_name);
-                                Log.wtf("cashierid", cashierID);
-                                GlobalVariable.setCashierID(cashierID);
-                                String authorize = dbQuery.getPassword(i_name);
-                                if (authorize.toString().equals(i_password)) {
+                                DBQuery db = new DBQuery(frmMain.this);
+                                String code = db.universalcode();
+                                String pw = pass.getText().toString();
+                                if(code.equals(pw)){
+                                    login();
                                     dialog.dismiss();
-                                    Intent intent = new Intent(getBaseContext(), frmIngress.class);
-                                    startActivity(intent);
-                                } else {
-                                    Toast.makeText(frmMain.this, "Wrong Password!!", Toast.LENGTH_LONG).show();
+                                }else{
+                                    Toast.makeText(frmMain.this, "Please input the correct password..", Toast.LENGTH_LONG).show();
+                                    dialog.dismiss();
                                 }
                             }
                         });
-                        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        alert.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
                             }
                         });
+                        alert.setCancelable(false);
                         alert.show();
+
+
+
+
+
+
+
+
+
+
+//                        String[] spinnerNames = dbQuery.getName(5);
+//                        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(frmMain.this, android.R.layout.simple_spinner_item, spinnerNames);
+//                        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                        //name.setAdapter(spinnerAdapter);
+
 
 
                     }
@@ -287,6 +295,53 @@ public class frmMain extends AppCompatActivity  implements BluetoothBroadcastRec
 //
 //    }
 
+    public void login(){
+        final DBQuery dbQuery = new DBQuery(frmMain.this);
+        LayoutInflater inflater = getLayoutInflater();
+        View alertLayout = inflater.inflate(R.layout.modal_employeelogin, null);
+        //final AutoCompleteTextView name = (AutoCompleteTextView) alertLayout.findViewById(R.id.name);
+        final EditText pass = (EditText) alertLayout.findViewById(R.id.password);
+        AlertDialog.Builder alert = new AlertDialog.Builder(frmMain.this);
+        alert.setTitle("Login");
+        alert.setView(alertLayout);
+        alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                //String i_name = name.getText().toString();
+                String i_password = pass.getText().toString();
+                //String cashierID = dbQuery.getIDfromName(i_name);
+                //Log.wtf("cashierid", cashierID);
+                // GlobalVariable.setCashierID(cashierID);
+                String authorize = dbQuery.getAuthenticate(i_password);
+                if (authorize.equals("invalid")) {
+                    Toast.makeText(frmMain.this, "Wrong Password!!", Toast.LENGTH_LONG).show();
+                    dialog.dismiss();
+                } else {
+                    dialog.dismiss();
+                    Intent intent = new Intent(getBaseContext(), frmIngress.class);
+                    startActivity(intent);
+                }
+            }
+        });
+        alert.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        alert.setCancelable(false);
+        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        alert.show();
+
+
+
+    }
 
 
     @Override
