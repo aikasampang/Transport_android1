@@ -93,10 +93,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:paddingLeft="5sp"
-                android:paddingRight="5sp"
-                android:horizontalSpacing="5sp"
-                android:verticalSpacing="5sp"
+                android:paddingLeft="3sp"
+                android:paddingRight="3sp"
+                android:paddingTop="10sp"
+                android:horizontalSpacing="3sp"
+                android:verticalSpacing="3sp"
                 android:stretchMode="columnWidth"
                 android:numColumns="2" >
 

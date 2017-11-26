@@ -428,8 +428,14 @@
                         android:id="@+id/td_baggage"
                         />
                 </RadioGroup>
+
             </LinearLayout>
 
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sustain"
+                android:id="@+id/t_sustain"/>
 
 
         </LinearLayout>

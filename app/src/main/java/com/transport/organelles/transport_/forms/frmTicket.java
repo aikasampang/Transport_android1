@@ -17,6 +17,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.NumberPicker;
@@ -88,6 +90,7 @@ public class frmTicket extends AppCompatActivity {
     EditText ed_origin, ed_des;
     ImageView o_back, o_forward, d_back, d_forward;
     Cursor cursor;
+    CheckBox sustain;
 
 
     @Override
@@ -147,7 +150,7 @@ public class frmTicket extends AppCompatActivity {
 
         o_name = (TextView)findViewById(R.id.origin_name);
         d_name = (TextView)findViewById(R.id.des_name);
-
+        sustain = (CheckBox)findViewById(R.id.t_sustain);
 
 //        DBQuery dbQuery = new DBQuery(frmTicket.this);
 //        String device = GlobalVariable.getPhoneName();
@@ -455,6 +458,38 @@ public class frmTicket extends AppCompatActivity {
                 String textkm = Double.toString(kmpost());
                 kmpost.setText(textkm + "KM");
 
+            }
+        });
+        
+        sustain.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked && regular.isChecked()){
+                    Toast.makeText(frmTicket.this, "sustain regular", Toast.LENGTH_SHORT).show();
+                    baggage.setEnabled(false);
+                    student.setEnabled(false);
+                    senior.setEnabled(false);
+                }else if(isChecked && senior.isChecked()){
+                    Toast.makeText(frmTicket.this, "sustain senior", Toast.LENGTH_SHORT).show();
+                    baggage.setEnabled(false);
+                    student.setEnabled(false);
+                    regular.setEnabled(false);
+                }else if(isChecked && student.isChecked()){
+                    Toast.makeText(frmTicket.this, "sustain senior", Toast.LENGTH_SHORT).show();
+                    baggage.setEnabled(false);
+                    senior.setEnabled(false);
+                    regular.setEnabled(false);
+                }else if(isChecked && baggage.isChecked()){
+                    Toast.makeText(frmTicket.this, "sustain senior", Toast.LENGTH_SHORT).show();
+                    student.setEnabled(false);
+                    senior.setEnabled(false);
+                    regular.setEnabled(false);
+                }else{
+                    baggage.setEnabled(true);
+                    student.setEnabled(true);
+                    senior.setEnabled(true);
+                    regular.setEnabled(true);
+                }
             }
         });
 
