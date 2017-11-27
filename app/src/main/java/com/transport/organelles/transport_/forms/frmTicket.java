@@ -102,7 +102,7 @@ public class frmTicket extends AppCompatActivity {
         setTitleBar();
         setObject();
         objectListener();
-        //getDiscount();
+        getDiscount();
 
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
@@ -115,6 +115,7 @@ public class frmTicket extends AppCompatActivity {
 
         // Initialize the BluetoothService to perform bluetooth connections
         mService = new BluetoothService(this, bluetoothHandler);
+
 
 
     }
@@ -258,6 +259,15 @@ public class frmTicket extends AppCompatActivity {
         print.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                // Check that we're actually connected before trying anything
+                if (mService.getState() != BluetoothService.STATE_CONNECTED) {
+                    Toast.makeText(frmTicket.this, R.string.not_connected, Toast.LENGTH_SHORT)
+                            .show();
+                    return;
+                }
+
+
                 String type = GlobalVariable.getPaxtype();
 
                 if (type.equals("1")) {
@@ -338,7 +348,8 @@ public class frmTicket extends AppCompatActivity {
                 disconnect.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        mService.stop();
+                        if (mService != null)
+                            mService.stop();
                     }
                 });
                 alert.setTitle("Bluetooth");
@@ -880,6 +891,8 @@ public class frmTicket extends AppCompatActivity {
         String devicename = GlobalVariable.getPhoneName();
         String c = dbQuery.getCompanyName(devicename);
         String l = dbQuery.getLastTicket(devicename);
+        String dri = dbQuery.nameDriver(dbQuery.getLastTrip(), "1");
+        String cond= dbQuery.nameDriver(dbQuery.getLastTrip(), "2");
 
         Calendar today = Calendar.getInstance();
         Date dtTemp = new Date(DateFormat.getDateTimeInstance().format(new Date()));
@@ -895,19 +908,19 @@ public class frmTicket extends AppCompatActivity {
         String date = "Date:" + dtstartTime + "\n";
         String vehicle = "Vehicle:" + GlobalVariable.d_busname;
         String price = "Amount Due:" + ticketprice + "pesos" + "\n";
-        String o = "From:" + o_refpoint + "\n";
-        String d = "To:" + d_refpoint + "\n";
+        String o = "From:" + o_refpoint ;
+        String d = " - " + d_refpoint + "\n";
         String type = "Type:" + typename + "\n";
-        String driver = "Driver:" + GlobalVariable.getName_driver() + "\n";
-        String cond = "Conductor:" + GlobalVariable.getName_conductor()+ "\n";
+        String driver = "Driver:" + dri + "\n";
+        String conductor = "Conductor:" + cond + "\n";
 
 
         Log.wtf("Print Ticket", companyName + tin + mn + accdtn + p + device + date + vehicle + price +
-        o + d + type + driver + cond);
+        o + d + type + driver + conductor);
 
 
         callBluetooth(companyName + tin + mn + accdtn + p + device + date + vehicle + price +
-                o + d + type + driver + cond);
+                o + d + type + driver + conductor);
 
 
     }
@@ -1064,11 +1077,6 @@ public class frmTicket extends AppCompatActivity {
         tremaining.setText(String.valueOf(remain));
     }
 
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-    }
-
     private void callBluetooth(String message) {
         // Check that we're actually connected before trying anything
         if (mService.getState() != BluetoothService.STATE_CONNECTED) {
@@ -1095,7 +1103,6 @@ public class frmTicket extends AppCompatActivity {
         }
     }
 
-
     @Override
     public void onStart() {
         super.onStart();
@@ -1110,24 +1117,20 @@ public class frmTicket extends AppCompatActivity {
             startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
             // Otherwise, setup the session
         } else {
-            if (mService == null);
+            if (mService == null) ;
 
         }
     }
 
-//    @Override
-//    protected void onResume() {
-//        super.onResume();
-//
-//        mService = new BluetoothService(this, bluetoothHandler);
-//    }
-
     @Override
     public void onStop() {
         super.onStop();
+        if (mService != null)
+            mService.stop();
         if (D)
             Log.e(TAG, "-- ON STOP --");
     }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -1136,6 +1139,11 @@ public class frmTicket extends AppCompatActivity {
             mService.stop();
         if (D)
             Log.e(TAG, "--- ON DESTROY ---");
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 
     @Override
@@ -1182,7 +1190,7 @@ public class frmTicket extends AppCompatActivity {
                         Log.i(TAG, "MESSAGE_STATE_CHANGE: " + msg.arg1);
                     switch (msg.arg1) {
                         case BluetoothService.STATE_CONNECTED:
-                            Toast.makeText(frmTicket.this, R.string.title_connected_to   + mConnectedDeviceName, Toast.LENGTH_LONG).show();
+                            Toast.makeText(frmTicket.this, R.string.title_connected_to + mConnectedDeviceName, Toast.LENGTH_LONG).show();
                             // mTitle.setText(R.string.title_connected_to);
                             // mTitle.append(mConnectedDeviceName);
                             break;
@@ -1192,7 +1200,7 @@ public class frmTicket extends AppCompatActivity {
                             break;
                         case BluetoothService.STATE_LISTEN:
                         case BluetoothService.STATE_NONE:
-                            Log.wtf("BluetoothService","not connected!");
+                            Log.wtf("BluetoothService", "not connected!");
                             //  Toast.makeText(MapaTicketSales.this, R.string.title_not_connected, Toast.LENGTH_LONG).show();
                             //  mTitle.setText(R.string.title_not_connected);
                             break;
@@ -1223,6 +1231,9 @@ public class frmTicket extends AppCompatActivity {
             }
         }
     };
+
+
+
 
 
 }

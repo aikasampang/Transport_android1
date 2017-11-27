@@ -55,6 +55,7 @@ public class frmMain extends AppCompatActivity  implements BluetoothBroadcastRec
     BluetoothAdapter mBluetoothAdapter;
     BluetoothSocket socket;
     String dtstartTime = "";
+    String data;
     private static String bluetooth_name = "Qsprinter";
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -131,7 +132,7 @@ public class frmMain extends AppCompatActivity  implements BluetoothBroadcastRec
                         DBQuery dbQuery = new DBQuery(frmMain.this);
                         String device = GlobalVariable.getPhoneName();
                         String trip = dbQuery.getTripId(device);
-                        String ticket_count = dbQuery.getTicketCount(trip);
+                        int ticket_count = dbQuery.getTicketCount(trip);
 
                         if (trip.equals("0")) {
                             String data = "newdata";
@@ -139,144 +140,172 @@ public class frmMain extends AppCompatActivity  implements BluetoothBroadcastRec
                             intent.putExtra("data", data);
                             startActivity(intent);
 
-                        } else {
-                            AlertDialog.Builder builder = new AlertDialog.Builder(frmMain.this);
-                            builder.setTitle("Dispatch");
-                            builder.setMessage("There is " + ticket_count + "number of ticket(s) on this trip");
-                            builder.setPositiveButton("Edit", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    String data = "updatedispatch";
-                                    Intent intent = new Intent(getBaseContext(), frmDispatch.class);
-                                    intent.putExtra("data", data);
-                                    startActivity(intent);
-                                }
-                            });
-                            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
-                                }
-                            });
-                            builder.show();
+                        } else { //update dispatch
+
+                            if (ticket_count == 0) { // ticket = 0
+                                AlertDialog.Builder builder = new AlertDialog.Builder(frmMain.this);
+                                builder.setTitle("Dispatch");
+                                builder.setMessage("There is " + ticket_count + "number of ticket(s) on this trip");
+                                builder.setPositiveButton("Edit", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        String data = "updatedispatch";
+                                        Intent intent = new Intent(getBaseContext(), frmDispatch.class);
+                                        intent.putExtra("data", data);
+                                        startActivity(intent);
+                                    }
+                                });
+                                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                });
+                                builder.setCancelable(false);
+                                builder.show();
+
+
+                            } else { //have tickets
+                                AlertDialog.Builder builder = new AlertDialog.Builder(frmMain.this);
+                                builder.setTitle("Dispatch")
+                                        .setMessage("There is" + ticket_count + "number of ticket(s) on this trip")
+                                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                dialog.dismiss();
+                                            }
+                                        })
+                                        .show();
+                            }
                         }
 
 
                     } else if ((Objects.equals(GlobalVariable.moduleTXT[position], "Ticketing"))) {
-                        Intent intent = new Intent(getBaseContext(), frmTicket.class);
-                        startActivity(intent);
-
+                        data = getCheckDatabase();
+                        if (data.equals("0")) {
+                            Toast.makeText(frmMain.this, "Please dispatch first.. ", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Intent intent = new Intent(getBaseContext(), frmTicket.class);
+                            startActivity(intent);
+                        }
 
                     } else if ((Objects.equals(GlobalVariable.moduleTXT[position], "Inspector"))) {
-
-                        LayoutInflater inflater = getLayoutInflater();
-                        View alertLayout = inflater.inflate(R.layout.menu_control, null);
-                        final Button inspector = (Button) alertLayout.findViewById(R.id.inspectors);
-                        final Button controller = (Button) alertLayout.findViewById(R.id.controller);
-                        final Button arrival = (Button) alertLayout.findViewById(R.id.arrival);
-                        final Button ift = (Button) alertLayout.findViewById(R.id.ift);
-                        AlertDialog.Builder alert = new AlertDialog.Builder(frmMain.this);
-                        alert.setTitle("Select Operation");
+                        data = getCheckDatabase();
+                        if (data.equals("0")) {
+                            Toast.makeText(frmMain.this, "Please dispatch first.. ", Toast.LENGTH_SHORT).show();
+                        } else {
 
 
-                        inspector.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                String name_type = "inspector";
-                                String type = "3";
-                                Intent intent = new Intent(getBaseContext(), frmInspector.class);
-                                intent.putExtra("name_type", name_type);
-                                intent.putExtra("type", type);
-                                startActivity(intent);
-                            }
-                        });
-                        controller.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                String name_type = "controller";
-                                String type = "4";
-                                Intent intent = new Intent(getBaseContext(), frmInspector.class);
-                                intent.putExtra("name_type", name_type);
-                                intent.putExtra("type", type);
-                                startActivity(intent);
-                            }
-                        });
-                        arrival.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                Intent intent = new Intent(getBaseContext(), frmArrival.class);
-                                startActivity(intent);
-                            }
-                        });
-                        ift.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                Intent intent = new Intent(getBaseContext(), frmDispatchfromTerminal.class);
-                                startActivity(intent);
-                            }
-                        });
-                        alert.setView(alertLayout);
-                        alert.show();
+                            LayoutInflater inflater = getLayoutInflater();
+                            View alertLayout = inflater.inflate(R.layout.menu_control, null);
+                            final Button inspector = (Button) alertLayout.findViewById(R.id.inspectors);
+                            final Button controller = (Button) alertLayout.findViewById(R.id.controller);
+                            final Button arrival = (Button) alertLayout.findViewById(R.id.arrival);
+                            final Button ift = (Button) alertLayout.findViewById(R.id.ift);
+                            AlertDialog.Builder alert = new AlertDialog.Builder(frmMain.this);
+                            alert.setTitle("Select Operation");
 
+
+                            inspector.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    String name_type = "inspector";
+                                    String type = "3";
+                                    Intent intent = new Intent(getBaseContext(), frmInspector.class);
+                                    intent.putExtra("name_type", name_type);
+                                    intent.putExtra("type", type);
+                                    startActivity(intent);
+                                }
+                            });
+                            controller.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    String name_type = "controller";
+                                    String type = "4";
+                                    Intent intent = new Intent(getBaseContext(), frmInspector.class);
+                                    intent.putExtra("name_type", name_type);
+                                    intent.putExtra("type", type);
+                                    startActivity(intent);
+                                }
+                            });
+                            arrival.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Intent intent = new Intent(getBaseContext(), frmArrival.class);
+                                    startActivity(intent);
+                                }
+                            });
+                            ift.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Intent intent = new Intent(getBaseContext(), frmDispatchfromTerminal.class);
+                                    startActivity(intent);
+                                }
+                            });
+                            alert.setView(alertLayout);
+                            alert.show();
+                        }
 
                     } else if ((Objects.equals(GlobalVariable.moduleTXT[position], "Partial"))) {
-                        Intent intent = new Intent(getBaseContext(), frmPartial.class);
-                        startActivity(intent);
+                        data = getCheckDatabase();
+                        if (data.equals("0")) {
+                            Toast.makeText(frmMain.this, "Please dispatch first.. ", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Intent intent = new Intent(getBaseContext(), frmPartial.class);
+                            startActivity(intent);
+                        }
 
                     } else if ((Objects.equals(GlobalVariable.moduleTXT[position], "Reverse"))) {
-                        Intent intent = new Intent(getBaseContext(), frmReverse.class);
-                        startActivity(intent);
+                        data = getCheckDatabase();
+                        if (data.equals("0")) {
+                            Toast.makeText(frmMain.this, "Please dispatch first.. ", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Intent intent = new Intent(getBaseContext(), frmReverse.class);
+                            startActivity(intent);
+                        }
 
                     } else if ((Objects.equals(GlobalVariable.moduleTXT[position], "Ingress"))) {
-                        final DBQuery dbQuery = new DBQuery(frmMain.this);
-                        LayoutInflater inflater = getLayoutInflater();
-                        View alertLayout = inflater.inflate(R.layout.modal_employeelogin, null);
-                        //final AutoCompleteTextView name = (AutoCompleteTextView) alertLayout.findViewById(R.id.name);
-                        final EditText pass = (EditText) alertLayout.findViewById(R.id.password);
+                        data = getCheckDatabase();
+                        if (data.equals("0")) {
+                            Toast.makeText(frmMain.this, "Please dispatch first.. ", Toast.LENGTH_SHORT).show();
+                        } else {
+                            final DBQuery dbQuery = new DBQuery(frmMain.this);
+                            LayoutInflater inflater = getLayoutInflater();
+                            View alertLayout = inflater.inflate(R.layout.modal_employeelogin, null);
+                            //final AutoCompleteTextView name = (AutoCompleteTextView) alertLayout.findViewById(R.id.name);
+                            final EditText pass = (EditText) alertLayout.findViewById(R.id.password);
 
-                        AlertDialog.Builder alert = new AlertDialog.Builder(frmMain.this);
-                        alert.setTitle("Code");
-                        alert.setView(alertLayout);
-                        alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                DBQuery db = new DBQuery(frmMain.this);
-                                String code = db.universalcode();
-                                String pw = pass.getText().toString();
-                                if(code.equals(pw)){
-                                    login();
-                                    dialog.dismiss();
-                                }else{
-                                    Toast.makeText(frmMain.this, "Please input the correct password..", Toast.LENGTH_LONG).show();
+                            AlertDialog.Builder alert = new AlertDialog.Builder(frmMain.this);
+                            alert.setTitle("Code");
+                            alert.setView(alertLayout);
+                            alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    DBQuery db = new DBQuery(frmMain.this);
+                                    String code = db.universalcode();
+                                    String pw = pass.getText().toString();
+                                    if (code.equals(pw)) {
+                                        login();
+                                        dialog.dismiss();
+                                    } else {
+                                        Toast.makeText(frmMain.this, "Please input the correct password..", Toast.LENGTH_LONG).show();
+                                        dialog.dismiss();
+                                    }
+                                }
+                            });
+                            alert.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
                                     dialog.dismiss();
                                 }
-                            }
-                        });
-                        alert.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        });
-                        alert.setCancelable(false);
-                        alert.show();
-
-
-
-
-
-
-
-
-
-
+                            });
+                            alert.setCancelable(false);
+                            alert.show();
 //                        String[] spinnerNames = dbQuery.getName(5);
 //                        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(frmMain.this, android.R.layout.simple_spinner_item, spinnerNames);
 //                        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                        //name.setAdapter(spinnerAdapter);
-
-
-
+                            //name.setAdapter(spinnerAdapter);
+                        }
                     }
                 }
             }
@@ -341,6 +370,12 @@ public class frmMain extends AppCompatActivity  implements BluetoothBroadcastRec
 
 
 
+    }
+
+    public String getCheckDatabase(){
+        DBQuery dbQuery = new DBQuery(frmMain.this);
+        String hasValue = dbQuery.checkdatabase();
+        return hasValue;
     }
 
 

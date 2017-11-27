@@ -44,7 +44,7 @@ public class DBQuery extends DBObject {
 
     public String getLastTicket(){
 
-        String sql = "select VALUE from DEVICEDATA where KEY = 'LASTTRIPID'";
+        String sql = "select VALUE from DEVICEDATA where KEY = 'LASTTICKETID'";
         Cursor cursor = this.getDbConnection().rawQuery(sql, null);
         cursor.moveToFirst();
         String lastTrip = cursor.getString(cursor.getColumnIndexOrThrow("VALUE"));
@@ -448,16 +448,15 @@ public class DBQuery extends DBObject {
         return n;
     }
 
-    public String getTicketCount(String id){
+    public int getTicketCount(String id){
 
         String query = "Select * from TICKET where TRIPID = '"+ id +"'";
         Cursor cursor = this.getDbConnection().rawQuery(query, null);
-        String count = cursor.getCount() + "";
-        String none = "-1";
-        if(cursor != null & cursor.getCount() > 0){
+        int count = cursor.getCount();
+        if(cursor.getCount() > 0){
             return count;
         }
-        return none;
+        return count;
 
     }
 
@@ -1466,6 +1465,68 @@ public class DBQuery extends DBObject {
         String ingress = cursor.getString(cursor.getColumnIndex("REMARKS"));
         cursor.close();
         return ingress;
+    }
+
+    public String checkdatabase(){
+
+        String sql = "SELECT VALUE FROM DEVICEDATA WHERE KEY = 'LINE' ";
+        Cursor cursor = this.getDbConnection().rawQuery(sql,null);
+        cursor.moveToFirst();
+        String value = cursor.getString(cursor.getColumnIndex("VALUE"));
+        cursor.close();
+        return value;
+    }
+
+    public String getCompanyName(){
+
+        String sql = "SELECT VALUE FROM DEVICEDATA WHERE KEY = 'CLIENTNAME'";
+        Cursor cursor = this.getDbConnection().rawQuery(sql, null);
+        cursor.moveToFirst();
+        String value = cursor.getString(cursor.getColumnIndex("VALUE"));
+        cursor.close();
+        return value;
+    }
+
+    public String nameDriver(String tripid, String role){
+
+
+        if(role.equals("1")){
+            String sql = "select EMPLOYEEID from tripcrew where employeeroleid = '1' AND TRIPID ='"+ tripid+"'";
+            Cursor cursor = this.getDbConnection().rawQuery(sql, null);
+            cursor.moveToFirst();
+            String employeeid = cursor.getString(cursor.getColumnIndex("EMPLOYEEID"));
+            String sql1 = "select NAME from employee where ID = '"+ employeeid+"'";
+            cursor.close();
+            Cursor cursor1 = this.getDbConnection().rawQuery(sql1, null);
+            cursor.moveToFirst();
+            String name = cursor1.getString(cursor1.getColumnIndex("NAME"));
+            return name;
+        }else {
+
+
+            String sql = "select employeeid from tripcrew where employeeroleid = 2 AND TRIPID ='" + tripid + "'";
+            Cursor cursor = this.getDbConnection().rawQuery(sql, null);
+            cursor.moveToFirst();
+            String employeeid = cursor.getString(cursor.getColumnIndex("EMPLOYEEID"));
+            String sql1 = "select name from employee where ID = '" + employeeid + "'";
+            Cursor cursor1 = this.getDbConnection().rawQuery(sql1, null);
+            cursor.moveToFirst();
+            String name = cursor1.getString(cursor.getColumnIndex("NAME"));
+            return name;
+        }
+    }
+
+    public String getLastTrip(){
+
+        String sql = "select VALUE from DEVICEDATA where KEY = 'LASTTRIPID'";
+        Cursor cursor = this.getDbConnection().rawQuery(sql, null);
+        cursor.moveToFirst();
+        String lasttrip = cursor.getString(cursor.getColumnIndex("VALUE"));
+        cursor.close();
+        return  lasttrip;
+
+
+
     }
 
 

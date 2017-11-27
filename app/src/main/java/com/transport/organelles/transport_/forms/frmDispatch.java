@@ -213,6 +213,7 @@ public class frmDispatch extends ActionBarActivity {
                     public void onClick(View v) {
                         Intent serverIntent = new Intent(frmDispatch.this, DeviceListActivity.class);
                         startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE);
+
                     }
                 });
 
@@ -235,6 +236,14 @@ public class frmDispatch extends ActionBarActivity {
             @Override
             public void onClick(View v) {
 
+                // Check that we're actually connected before trying anything
+                if (mService.getState() != BluetoothService.STATE_CONNECTED) {
+                    Toast.makeText(frmDispatch.this, R.string.not_connected, Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+
+
                 if (name.getText().toString().equals("") || bus.getText().toString().equals("") || driver.getText().toString().equals("") || cond.getText().toString().equals("")) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(frmDispatch.this);
                     builder.setTitle("");
@@ -245,6 +254,7 @@ public class frmDispatch extends ActionBarActivity {
                             dialog.dismiss();
                         }
                     });
+                    builder.setCancelable(false);
                     builder.show();
                 } else {
 
@@ -297,13 +307,14 @@ public class frmDispatch extends ActionBarActivity {
         TextView txtUser = (TextView) findViewById(R.id.txtUser);
         final TextView txtBattery = (TextView) findViewById(R.id.txtBattery);
         txtDateTime = (TextView) findViewById(R.id.txtDateTime);
-
+        DBQuery dbQuery = new DBQuery(frmDispatch.this);
 
         final String percent = "%";
         final String batteryLevel = "";
 
         assert txtUser != null;
-        txtUser.setText("Erjohn");
+        String company = dbQuery.getCompanyName();
+        txtUser.setText(company);
 
 
         //Thread use for time in mapa main
@@ -386,8 +397,8 @@ public class frmDispatch extends ActionBarActivity {
         dbQuery.getlastTicket(GlobalVariable.getPhoneName());
 
 
-        if (!update.equals("updatedispatch")) {
-            int lasttrip = Integer.parseInt(GlobalVariable.d_lasttripid);
+        if (!update.equals("updatedispatch")) { //new dispatch
+            int lasttrip = Integer.parseInt(dbQuery.getLastTrip());
             int lasttripid = lasttrip + 1;
             String devicename = GlobalVariable.getPhoneName();
             String lineID = GlobalVariable.getLineid();
@@ -412,15 +423,16 @@ public class frmDispatch extends ActionBarActivity {
             Log.wtf("logged sql", sqlQuery);
 
             if (!dba.executeQuery(sqlQuery)) {
-                Toast.makeText(frmDispatch.this, "Can't insert data to database!. TRIP", Toast.LENGTH_SHORT).show();
+                Toast.makeText(frmDispatch.this, "Can't insert data in Dispatch..", Toast.LENGTH_SHORT).show();
             } else {
                 String last = String.valueOf(lasttripid);
                 Log.wtf("lasttip", last);
-                GlobalVariable.d_lasttripid = last;
                 GlobalVariable.setLasttrip(last);
                 updateDirection();
+                updateLine();
                 insertTripInspection();
                 printDispatch();
+
 
             }
         } else {
@@ -429,14 +441,14 @@ public class frmDispatch extends ActionBarActivity {
             String resourceID = resource;
             String modeID = mode;
             String remarks = "";
-            String id = GlobalVariable.d_lasttripid;
+            String id = dbQuery.getLastTrip();
             GlobalVariable.setLasttrip(id);
 
 
             String query = "Update TRIP set LINE='" + lineID + "' AND RESOURCEID ='" + resourceID + "' AND MODEID = '" + modeID + "' AND REMARKS='" + remarks + "' WHERE ID='" + id + "'";
             Log.wtf("logged sql update trip", query);
             if (!dba.executeQuery(query)) {
-                Toast.makeText(frmDispatch.this, "Can't insert data to database!. UPDATE TRIP", Toast.LENGTH_SHORT).show();
+                Toast.makeText(frmDispatch.this, "Can't insert data in Dispatch..", Toast.LENGTH_SHORT).show();
             } else {
                 updateDirection();
                 updateLine();
@@ -449,7 +461,7 @@ public class frmDispatch extends ActionBarActivity {
         DBQuery dbQuery = new DBQuery(frmDispatch.this);
         dbQuery.getLineRemarks(GlobalVariable.getLineid());
         String direction = GlobalVariable.getD_remarks();
-        String trip = GlobalVariable.d_lasttripid;
+        String trip = GlobalVariable.getLasttrip();
         String devicename = GlobalVariable.getPhoneName();
 
 
@@ -516,7 +528,7 @@ public class frmDispatch extends ActionBarActivity {
     private void insertCrew() {
 
         DBQuery dbQuery = new DBQuery(frmDispatch.this);
-        String tripid = GlobalVariable.d_lasttripid;
+        String tripid = dbQuery.getLastTrip();
         String devicename = GlobalVariable.getPhoneName();
         String id_dispatcher = dbQuery.getEmployeeID(name.getText().toString());
 
@@ -589,7 +601,7 @@ public class frmDispatch extends ActionBarActivity {
         DBQuery dbQuery = new DBQuery(frmDispatch.this);
 
 
-        String trip = GlobalVariable.d_lasttripid;
+        String trip = dbQuery.getLastTrip();
         String devicename = GlobalVariable.getPhoneName();
         String datetime = dtstartTime;
         String dispatcher = dbQuery.getEmployeeID(name.getText().toString());
@@ -646,6 +658,8 @@ public class frmDispatch extends ActionBarActivity {
 
         callBluetooth(devicename + " " + dispatch + " " + startDate + " " + resourceID + " " + lineID + " " + dispatcher + " " + dri + " " + conductor + " " + opening + " " + terminal + battery);
 
+        GlobalVariable.setName_driver(driver.getText().toString());
+        GlobalVariable.setName_conductor(cond.getText().toString());
     }
 
 //    @Override
@@ -715,6 +729,8 @@ public class frmDispatch extends ActionBarActivity {
     @Override
     public void onStop() {
         super.onStop();
+        if (mService != null)
+            mService.stop();
         if (D)
             Log.e(TAG, "-- ON STOP --");
     }
