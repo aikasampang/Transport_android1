@@ -1351,6 +1351,39 @@ public class DBQuery extends DBObject {
         return tableString;
     }
 
+    public List<String> getPassengerTicket(String direction, String tripid, String date, String km){ //ticket details in inspector report
+
+        String gDirection ;
+
+        if(direction.equals("1")){
+            gDirection = ">";
+        }else{
+            gDirection = "<";
+        }
+
+        String sql = "select ct.NAME AS NAME, count(tk.ID) AS COUNT, ct.ID AS ID from CUSTOMER c" +
+                "                            left join TICKET tk on c.ID=tk.CUSTOMERID" +
+                "                            left join CUSTOMERTYPE ct on ct.ID=c.CUSTOMERTYPEID\n" +
+                "                            where tk.TRIPID='"+ tripid +"' and tk.DATETIMESTAMP >='"+ date+"'" +
+                "                            and tk.TOREFPOINT '"+ gDirection+"'  '"+ km +"'" +  // if direction is 1? = > or <
+                "                            group by CT.NAME, ct.ID  " +
+                "                            order by ct.ID";
+        Cursor cursor = this.getDbConnection().rawQuery(sql, null);
+        List<String> list = new ArrayList<>();
+        if (cursor.moveToFirst()){
+            list.add(cursor.getString(cursor.getColumnIndex("NAME")));
+            list.add(cursor.getString(cursor.getColumnIndex("COUNT")));
+            list.add(cursor.getString(cursor.getColumnIndex("ID")));
+            while(cursor.moveToNext()){
+                list.add(cursor.getString(cursor.getColumnIndex("NAME")));
+                list.add(cursor.getString(cursor.getColumnIndex("COUNT")));
+                list.add(cursor.getString(cursor.getColumnIndex("ID")));
+            }
+        }
+        cursor.close();
+        return list;
+    }
+
     public String cursorToString(Cursor cursor){
         String cursorString = "";
         if (cursor.moveToFirst() ){
@@ -1430,31 +1463,26 @@ public class DBQuery extends DBObject {
 
     }
 
-    public List<String> getListPassenger(String trip, String date, String kmpost){
+    public String getCash(String trip, String date, String kmpost, String direction){ // get net amount
 
-        String sql = "select tk.DATETIMESTAMP, tk.ID, FROMREFPOINT, TOREFPOINT, NETAMOUNT, c.REMARKS from TICKET tk " +
+       final String gDirection;
+        if(direction.equals("1")){
+            gDirection = ">";
+        }else{
+            gDirection = "<";
+        }
+
+
+        String sql = "select tk.DATETIMESTAMP, tk.ID, FROMREFPOINT, TOREFPOINT, SUM(NETAMOUNT)as NETAMT, c.REMARKS from TICKET tk " +
                 "                               left join CUSTOMER c on c.ID=tk.CUSTOMERID " +
                 "                   where TRIPID='"+ trip+"' and DATETIMESTAMP>='"+date+"'" +
-                "                   and TOREFPOINT  > "+ kmpost+" " +
+                "                   and TOREFPOINT  '"+gDirection+"' "+ kmpost+" " +
                 "                   order by tk.ID ";
         Cursor cursor = this.getDbConnection().rawQuery(sql,null);
-        List<String> list = new ArrayList<>();
-        if (cursor.moveToFirst()){
-            list.add(cursor.getString(cursor.getColumnIndex("DATETIMESTAMP")));
-            list.add(cursor.getString(cursor.getColumnIndex("FROMREFPOINT")));
-            list.add(cursor.getString(cursor.getColumnIndex("TOREFPOINT")));
-            list.add(cursor.getString(cursor.getColumnIndex("NETAMOUNT")));
-            list.add(cursor.getString(cursor.getColumnIndex("REMARKS")));
-            while(cursor.moveToNext()){
-                list.add(cursor.getString(cursor.getColumnIndex("DATETIMESTAMP")));
-                list.add(cursor.getString(cursor.getColumnIndex("FROMREFPOINT")));
-                list.add(cursor.getString(cursor.getColumnIndex("TOREFPOINT")));
-                list.add(cursor.getString(cursor.getColumnIndex("NETAMOUNT")));
-                list.add(cursor.getString(cursor.getColumnIndex("REMARKS")));
-            }
-        }
+        String netmount = cursor.getString(cursor.getColumnIndex("NETAMT"));
         cursor.close();
-        return list;
+        return netmount;
+
     }
 
     public String universalcode(){

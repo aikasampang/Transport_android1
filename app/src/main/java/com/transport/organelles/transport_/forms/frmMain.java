@@ -210,7 +210,7 @@ public class frmMain extends AppCompatActivity  implements BluetoothBroadcastRec
                                 @Override
                                 public void onClick(View v) {
                                     String name_type = "inspector";
-                                    String type = "3";
+                                    String type = "1";
                                     Intent intent = new Intent(getBaseContext(), frmInspector.class);
                                     intent.putExtra("name_type", name_type);
                                     intent.putExtra("type", type);
@@ -221,7 +221,7 @@ public class frmMain extends AppCompatActivity  implements BluetoothBroadcastRec
                                 @Override
                                 public void onClick(View v) {
                                     String name_type = "controller";
-                                    String type = "4";
+                                    String type = "2";
                                     Intent intent = new Intent(getBaseContext(), frmInspector.class);
                                     intent.putExtra("name_type", name_type);
                                     intent.putExtra("type", type);
