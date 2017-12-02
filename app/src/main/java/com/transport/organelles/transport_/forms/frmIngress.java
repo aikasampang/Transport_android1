@@ -1188,6 +1188,17 @@ public class frmIngress extends AppCompatActivity {
 
     private void printTripReport(){
 
+        DBQuery dbQuery = new DBQuery(frmIngress.this);
+        Calendar today = Calendar.getInstance();
+        Date dtTemp = new Date(DateFormat.getDateTimeInstance().format(new Date()));
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        dtstartTime = formatter.format(dtTemp);
+
+        String title = "Ingresso"+ "\n";
+        String device = GlobalVariable.getPhoneName()+ "-" + dbQuery.getLastTicket();
+
+        String date = "Date: " + dtstartTime + "\n";
+
 
 
     }
