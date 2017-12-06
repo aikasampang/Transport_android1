@@ -593,11 +593,28 @@ public class DBQuery extends DBObject {
     }
 
     public String getRemainingPaxControl(String id, String km){
-        try{
-            String query = "select tk.*, t.LINE, (case when torefpoint>fromrefpoint then 1 else -1 end) as direction, coalesce(ct.TAG,0) as TAG2 from TICKET \n" +
-                    "tk left join TRIP t on t.ID=tk.TRIPID left join CUSTOMER c on c.ID=tk.CUSTOMERID left join CUSTOMERTYPE ct on ct.ID=c.ID where \n" +
-                    "TRIPID ='"+id+"'and torefpoint >= '"+km+"' order by ID ";
-            Cursor cursor = this.getDbConnection().rawQuery(query,null);
+
+
+            String sql = "select tk.*, t.LINE, (case when torefpoint>fromrefpoint then 1 else -1 end) as direction, coalesce(ct.TAG,0) as TAG2 \n" +
+                    "                            from TICKET tk left join TRIP t on t.ID=tk.TRIPID " +
+                    "                            left join CUSTOMER c on c.ID=tk.CUSTOMERID " +
+                    "                            left join CUSTOMERTYPE ct on ct.ID=c.CUSTOMERTYPEID " +
+                    "                            where TRIPID='"+id+"' order by ID";
+
+//            String query = "select tk.*, t.LINE, (case when torefpoint>fromrefpoint then 1 else -1 end) as direction, coalesce(ct.TAG,0) as TAG2 from TICKET " +
+//                    "tk left join TRIP t on t.ID=tk.TRIPID left join CUSTOMER c on c.ID=tk.CUSTOMERID left join CUSTOMERTYPE ct on ct.ID=c.ID where " +
+//                    "TRIPID ='"+id+"'and torefpoint >= '"+km+"' order by ID ";
+            Cursor cursor = this.getDbConnection().rawQuery(sql,null);
+            int c = cursor.getCount();
+
+            if(c == 0 ){
+                Log.wtf("controlled", "walang laman");
+            }else{
+                Log.wtf("controlled", cursor.getCount() + "");
+            }
+
+
+
             if(cursor.getCount() > 0){
                 Log.wtf("controlled", cursor.getCount() + "");
                 return cursor.getCount() +"";
@@ -605,10 +622,7 @@ public class DBQuery extends DBObject {
                 Log.wtf("controlled", "this row is empty");
                 return "0";
             }
-        }catch (Exception e){
-            Log.wtf("exception", "error:" + e);
-        }
-        return "0";
+
 
     }
 
@@ -1304,7 +1318,7 @@ public class DBQuery extends DBObject {
 
     public String getCheckpoint(String km, String lineID){
 
-        String sql = "select NAME from LINESEGMENT where REFPOINT='"+ km + " AND LINEID='" + lineID+ "'";
+        String sql = "select NAME from LINESEGMENT where REFPOINT='"+ km + "' AND LINEID='" + lineID+ "'";
         Cursor cursor = this.getDbConnection().rawQuery(sql, null);
         cursor.moveToFirst();
         int c = cursor.getCount();
@@ -1365,7 +1379,7 @@ public class DBQuery extends DBObject {
                 "                            left join TICKET tk on c.ID=tk.CUSTOMERID" +
                 "                            left join CUSTOMERTYPE ct on ct.ID=c.CUSTOMERTYPEID\n" +
                 "                            where tk.TRIPID='"+ tripid +"' and tk.DATETIMESTAMP >='"+ date+"'" +
-                "                            and tk.TOREFPOINT '"+ gDirection+"'  '"+ km +"'" +  // if direction is 1? = > or <
+                "                            and tk.TOREFPOINT "+ gDirection+"  "+ km +"" +  // if direction is 1? = > or <
                 "                            group by CT.NAME, ct.ID  " +
                 "                            order by ct.ID";
         Cursor cursor = this.getDbConnection().rawQuery(sql, null);
@@ -1404,7 +1418,7 @@ public class DBQuery extends DBObject {
 
     public String getDateReverse(String km, String tripid){
 
-        String sql = "select DATETIMESTAMP from TRIPREVERSE where TRIPID = '"+km +"' and KMPOST = '"+ tripid+"'";
+        String sql = "select DATETIMESTAMP from TRIPREVERSE where KMPOST = '"+km +"' and TRIPID = '"+ tripid+"'";
         Cursor cursor = this.getDbConnection().rawQuery(sql, null);
         cursor.moveToFirst();
         String date = cursor.getString(cursor.getColumnIndex("DATETIMESTAMP"));
@@ -1434,12 +1448,16 @@ public class DBQuery extends DBObject {
         Cursor cursor = this.getDbConnection().rawQuery(sql, null);
         int count = cursor.getCount();
         cursor.moveToFirst();
-        String name = cursor.getString(cursor.getColumnIndex("NAME"));
-        if(count > 1){
+        if(count == 0){
             return "invalid";
         }else{
+            String name = cursor.getString(cursor.getColumnIndex("NAME"));
             return name;
         }
+
+
+
+
     }
 
     public String getreversedate(String tripid){
@@ -1452,7 +1470,7 @@ public class DBQuery extends DBObject {
             String sql1= "select STARTDATETIMESTAMP from TRIP where ID='"+ tripid+"'";
             Cursor cursor1 = this.getDbConnection().rawQuery(sql1,null);
             cursor1.moveToFirst();
-            String date = cursor.getString(cursor.getColumnIndex("STARTDATETIMESTAMP"));
+            String date = cursor1.getString(cursor1.getColumnIndex("STARTDATETIMESTAMP"));
             cursor1.close();
             return date;
         }else {
@@ -1524,9 +1542,8 @@ public class DBQuery extends DBObject {
             cursor.moveToFirst();
             String employeeid = cursor.getString(cursor.getColumnIndex("EMPLOYEEID"));
             String sql1 = "select NAME from employee where ID = '"+ employeeid+"'";
-            cursor.close();
             Cursor cursor1 = this.getDbConnection().rawQuery(sql1, null);
-            cursor.moveToFirst();
+            cursor1.moveToFirst();
             String name = cursor1.getString(cursor1.getColumnIndex("NAME"));
             return name;
         }else {
@@ -1538,8 +1555,8 @@ public class DBQuery extends DBObject {
             String employeeid = cursor.getString(cursor.getColumnIndex("EMPLOYEEID"));
             String sql1 = "select name from employee where ID = '" + employeeid + "'";
             Cursor cursor1 = this.getDbConnection().rawQuery(sql1, null);
-            cursor.moveToFirst();
-            String name = cursor1.getString(cursor.getColumnIndex("NAME"));
+            cursor1.moveToFirst();
+            String name = cursor1.getString(cursor1.getColumnIndex("NAME"));
             return name;
         }
     }
@@ -1556,6 +1573,69 @@ public class DBQuery extends DBObject {
 
 
     }
+    public String getLineDb(){
+
+        String sql = "select VALUE from DEVICEDATA where KEY = 'LINE'";
+        Cursor cursor = this.getDbConnection().rawQuery(sql, null);
+        cursor.moveToFirst();
+        String line = cursor.getString(cursor.getColumnIndex("VALUE"));
+        cursor.close();
+        return  line;
+
+
+
+    }
+
+    public String getResourceName(String id){
+
+        String sql = "SELECT RESOURCEID FROM TRIP WHERE ID ='"+ id+"'";
+        Cursor cursor = this.getDbConnection().rawQuery(sql, null);
+        cursor.moveToFirst();
+        String res = cursor.getString(cursor.getColumnIndex("RESOURCEID"));
+        cursor.close();
+
+        String sql1 = "select DESCRIPTION FROM RESOURCE WHERE ID ='"+ res +"'";
+        Cursor cursor1 = this.getDbConnection().rawQuery(sql1, null);
+        cursor1.moveToFirst();
+        String des = cursor1.getString(cursor1.getColumnIndex("DESCRIPTION"));
+        return  des;
+    }
+
+    public String getModeNameTrip (String id){
+
+        String sql = "select modeid from trip where ID ='"+ id+"'";
+        Cursor cursor = this.getDbConnection().rawQuery(sql, null);
+        cursor.moveToFirst();
+        String modenum = cursor.getString(cursor.getColumnIndex("MODEID"));
+        cursor.close();
+
+
+        String sql2 = "select NAME from Mode where id = '" +modenum+ "'";
+        Cursor cursor1 = this.getDbConnection().rawQuery(sql2, null);
+        cursor1.moveToFirst();
+        String ModeName = cursor1.getString(cursor1.getColumnIndexOrThrow("NAME"));
+        cursor1.close();
+
+        return ModeName;
+
+    }
+
+    public String getLineName(String id){
+
+        String sql = " select line from trip where ID ='" + id+"'";
+        Cursor cursor = this.getDbConnection().rawQuery(sql,null);
+        cursor.moveToFirst();
+        String line = cursor.getString(cursor.getColumnIndex("LINE"));
+        cursor.close();
+
+        String sql2 = "select name from LINE where id ='"+ line +"'";
+        Cursor cursor1 = this.getDbConnection().rawQuery(sql2, null);
+        cursor1.moveToFirst();
+        String name = cursor1.getString(cursor1.getColumnIndex("NAME"));
+        cursor1.close();
+        return name;
+    }
+
 
 
 

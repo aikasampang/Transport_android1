@@ -1103,6 +1103,14 @@ public class frmTicket extends AppCompatActivity {
         }
     }
 
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+
+
+    }
+
     @Override
     public void onStart() {
         super.onStart();
