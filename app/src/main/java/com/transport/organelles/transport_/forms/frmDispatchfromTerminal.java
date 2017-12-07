@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -42,11 +43,12 @@ import java.util.Date;
 public class frmDispatchfromTerminal extends AppCompatActivity {
 
     AutoCompleteTextView name;
-    EditText password;
+    EditText count;
     Button save;
     String direct, direction, dtstartTime;
     String sqlQuery = "";
     DBAccess dba;
+    String i_password, name_inspector;
 
     private TextView txtDateTime;
     private static final boolean D = true;
@@ -76,6 +78,7 @@ public class frmDispatchfromTerminal extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setObject();
         objectListener();
+        employeeLogin();
 
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
@@ -95,18 +98,17 @@ public class frmDispatchfromTerminal extends AppCompatActivity {
     private void setObject(){
 
 
-        name  = (AutoCompleteTextView)findViewById(R.id.ift_name);
-        password = (EditText)findViewById(R.id.ift_password);
+       // name  = (AutoCompleteTextView)findViewById(R.id.ift_name);
+        count = (EditText)findViewById(R.id.paxCount);
         save = (Button)findViewById(R.id.ift_save);
-        include = findViewById(R.id.actionbar);
-        bluetooth = (ImageView) include.findViewById(R.id.bluetooth);
+        bluetooth = (ImageView)findViewById(R.id.bluetooth);
     }
     private void objectListener(){
-        DBQuery dbQuery = new DBQuery(frmDispatchfromTerminal.this);
-        String[] spinnerNames = dbQuery.getName(1);
-        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(frmDispatchfromTerminal.this,android.R.layout.simple_spinner_item, spinnerNames);
-        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        name.setAdapter(spinnerAdapter);
+//        DBQuery dbQuery = new DBQuery(frmDispatchfromTerminal.this);
+//        String[] spinnerNames = dbQuery.getName(1);
+//        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(frmDispatchfromTerminal.this,android.R.layout.simple_spinner_item, spinnerNames);
+//        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//        name.setAdapter(spinnerAdapter);
 
         save.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -148,13 +150,61 @@ public class frmDispatchfromTerminal extends AppCompatActivity {
             }
         });
     }
+    private void employeeLogin(){
+        final DBQuery dbQuery = new DBQuery(frmDispatchfromTerminal.this);
+        LayoutInflater inflater = getLayoutInflater();
+        View alertLayout = inflater.inflate(R.layout.modal_employeelogin, null);
+        //final AutoCompleteTextView name = (AutoCompleteTextView) alertLayout.findViewById(R.id.name);
+        final EditText password = (EditText) alertLayout.findViewById(R.id.password);
+
+//        String[] spinnerNames = dbQuery.getName(Integer.parseInt(type));
+//        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(frmInspector.this,android.R.layout.simple_spinner_item, spinnerNames);
+//        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//        name.setAdapter(spinnerAdapter);
+        AlertDialog.Builder alert = new AlertDialog.Builder(frmDispatchfromTerminal.this);
+        alert.setTitle("Login");
+        alert.setView(alertLayout);
+        alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+
+                // i_name = name.getText().toString();
+                i_password = password.getText().toString();
+
+                String authorize = dbQuery.getAuthenticate(i_password);
+                if(authorize.equals("invalid")){
+                    dialog.dismiss();
+                    Toast.makeText(frmDispatchfromTerminal.this, "Please input the right password for this User..", Toast.LENGTH_LONG).show();
+                    Intent intent = new Intent (frmDispatchfromTerminal.this, frmMain.class);
+                    startActivity(intent);
+                    finish();
+                }else{
+                    name_inspector = authorize;
+                    dialog.dismiss();
+                }
+
+//                if(authorize.toString().equals(i_password)){
+//                    dialog.dismiss();
+//                }else{
+//                    Toast.makeText(frmInspector.this, "Wrong Password!!", Toast.LENGTH_LONG).show();
+//                }
+            }
+        });
+        alert.setCancelable(false);
+        alert.show();
+
+
+    }
+
+
     private void saveTripInspection(){
-        String n = name.getText().toString();
-        String p = password.getText().toString();
+        //String n = name.getText().toString();
+       // String p = password.getText().toString();
         DBQuery dbQuery = new DBQuery(frmDispatchfromTerminal.this);
         dba = DBAccess.getInstance(frmDispatchfromTerminal.this);
-        String authenticate = dbQuery.getPassword(n);
-        if(authenticate.equals(p)){
+//        String authenticate = dbQuery.getPassword(n);
+//        if(authenticate.equals(p)){
             Date dtTemp = new Date(DateFormat.getDateTimeInstance().format(new Date()));
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             dtstartTime = formatter.format(dtTemp);
@@ -171,7 +221,7 @@ public class frmDispatchfromTerminal extends AppCompatActivity {
             String trip = GlobalVariable.d_lasttripid;
             String devicename = GlobalVariable.getPhoneName();
             String datetime = dtstartTime;
-            String dispatcher = dbQuery.getEmployeeID(name.getText().toString());
+            String dispatcher = dbQuery.getEmployeeID(name_inspector);
             String origin = direction;
             String lastticket = GlobalVariable.d_lastticketid;
             //check pcount and qty both 0
@@ -179,7 +229,7 @@ public class frmDispatchfromTerminal extends AppCompatActivity {
                     " VALUES ( '"+ trip +"', '" +
                     devicename + "', '" +
                     datetime + "', '" +
-                    dispatcher+ "', '11' , '0', '"+
+                    dispatcher+ "', '10' , '0', '"+
                     origin+ "','0','1','"+ direct +"','0', '" +
                     lastticket + "' " +
                     " ); ";
@@ -193,9 +243,10 @@ public class frmDispatchfromTerminal extends AppCompatActivity {
             }
 
 
-        }else{
-            Toast.makeText(frmDispatchfromTerminal.this, "Wrong Password", Toast.LENGTH_SHORT).show();
-        }
+//        }else{
+//            Toast.makeText(frmDispatchfromTerminal.this, "Wrong Password", Toast.LENGTH_SHORT).show();
+//        }
+
     }
 
     private void printDispatchTerminal() {
@@ -212,16 +263,19 @@ public class frmDispatchfromTerminal extends AppCompatActivity {
         String linename = GlobalVariable.getLine_name();
         //String dispatcher = dbQuery.nameDriver()
 
-        String title = "DISPATCH FROM TERMINAL";
+        String title = "DISPATCH FROM TERMINAL" + "\n";
         String date = "Date: " + dtstartTime + "\n";
-        String Bus = "Bus :" +  busname+  "\n";
-        String line = "Line :" +  linename + "\n";
+        String Bus = "Bus: " +  dbQuery.getResourceName(tripid)+  "\n";
+        String line = "Line: " +  dbQuery.getLineName(tripid) + "\n";
+        String inspector = "Dispatcher: " + dbQuery.nameDriver(tripid, "4")  + "\n";
+        String Driver = "Driver: " + dbQuery.nameDriver(tripid, "1")   + "\n";
+        String Conductor = "Conductor : " + dbQuery.nameDriver(tripid, "2")  + "\n";
         // String inspector = "Dispatcher : " +   + "\n";
         //String Driver = "Driver : " +   + "\n";
         //String Conductor = "Conductor : " +   + "\n";
-        String lastticket = dbQuery.getLastTicket();
-
-        callBluetooth(title + date + Bus + line + lastticket);
+        String lastticket ="Passenger: "+count.getText().toString() ;
+        Log.wtf("dispath from arrival",title + date + Bus + line + inspector+ Driver + Conductor +lastticket);
+        callBluetooth(title + date + Bus + line + inspector+ Driver + Conductor +lastticket);
 
 
     }

@@ -92,9 +92,8 @@ public class frmArrival extends AppCompatActivity {
     private void setObject(){
         name = (AutoCompleteTextView)findViewById(R.id.a_name);
         password = (EditText)findViewById(R.id.a_password);
-        save = (Button)findViewById(R.id.a_save);
-        include = findViewById(R.id.actionbar);
-        bluetooth = (ImageView) include.findViewById(R.id.bluetooth);
+        save = (Button)findViewById(R.id.a_save); //print
+        bluetooth = (ImageView)findViewById(R.id.bluetooth);
     }
 
     private void objectListener(){
@@ -207,20 +206,23 @@ public class frmArrival extends AppCompatActivity {
         String busname = GlobalVariable.getName_bus();
         String linename = GlobalVariable.getLine_name();
         //String dispatcher = dbQuery.nameDriver()
-
-        String title = "ARRIVAL";
+        int l = Integer.parseInt(dbQuery.getLastTicket());
+        String title = "ARRIVAL" + "\n";
         String date = "Date: " + dtstartTime + "\n";
-        String Bus = "Bus :" +  busname+  "\n";
-        String line = "Line :" +  linename + "\n";
-       // String inspector = "Dispatcher : " +   + "\n";
-        //String Driver = "Driver : " +   + "\n";
-        //String Conductor = "Conductor : " +   + "\n";
-        String lastticket = dbQuery.getLastTicket();
+        String Bus = "Bus: " +  dbQuery.getResourceName(tripid)+  "\n";
+        String line = "Line: " +  dbQuery.getLineName(tripid) + "\n";
+        String inspector = "Dispatcher: " + dbQuery.nameDriver(tripid, "4")  + "\n";
+        String Driver = "Driver: " + dbQuery.nameDriver(tripid, "1")   + "\n";
+        String Conductor = "Conductor : " + dbQuery.nameDriver(tripid, "2")  + "\n";
+        String lastticket = "Last ticket:  "+String.format("%1$05d ", l) + "\n";
 
-        callBluetooth(title + date + Bus + line + lastticket);
+        Log.wtf("arrival",  title + date + Bus + line + inspector+ Driver + Conductor + lastticket);
+
+        callBluetooth(title + date + Bus + line + inspector+ Driver + Conductor + lastticket);
 
 
     }
+
 
 
     private void callBluetooth(String message) {

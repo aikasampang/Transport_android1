@@ -38,6 +38,7 @@ import com.transport.organelles.transport_.R;
 import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -76,6 +77,7 @@ public class frmInspector extends AppCompatActivity {
     private String mConnectedDeviceName = null;
     private BluetoothService mService = null;
     private List<String> list;
+    private List<String> listTicket;
 
 
     @Override
@@ -349,7 +351,7 @@ public class frmInspector extends AppCompatActivity {
         lastreversedate = dbQuery.getreversedate(dbQuery.getLastTrip());
         String direct = dbQuery.getDirectionfromDB();
         list = dbQuery.getPassengerTicket(direct, dbQuery.getLastTrip(), lastreversedate, kmpost.getText().toString());
-
+        listTicket = dbQuery.getlistTicket(direct, dbQuery.getLastTrip(), lastreversedate, kmpost.getText().toString());
 
         String tripId = dbQuery.getLastTrip();
         String device = GlobalVariable.getPhoneName();
@@ -375,13 +377,31 @@ public class frmInspector extends AppCompatActivity {
         //String pass = "Passengers :" + cpassengers + "\n";
         String inspect = "Inspection: " + kmpost.getText().toString() +"\n";
         String batteryLevel = "Battery Level : " +String.format("%6.0f", GlobalClass.getBatteryLevel(frmInspector.this)) + "%" + "\n";
-        String tickets = list.get(0)+": " + list.get(1) + "\n";
+        String passengerCount = list.get(0)+": " + list.get(1) + "\n";
+        String tickets = Arrays.toString(listTicket.toArray()) + "\n";
 
         Log.wtf("To print", Name + " " + title + " " + deviceticket+ " " + date  + " " +vehicle + " " + driver + " " + cond + " " +
-                inspector + " " + route + " " + Mode + " " + checkpoint + " " + direction+ " "  + tickets +
-                " " + inspect + " " + batteryLevel );
+                inspector + " " + route + " " + Mode + " " + checkpoint + " " + direction+ " "  + passengerCount +
+                " " + inspect + " " + batteryLevel + " " + tickets);
 
-       // callBluetooth(tickets);
+
+
+        String[] array = tickets.split("(\\d+,\\d+,\\d+)");
+        String[] items = tickets.split(",");
+        for (String item : array)
+        {
+            System.out.println("item = " + item);
+        }
+
+
+        String[] parts= tickets.split(",");
+        String[] fiveinput = Arrays.copyOf(parts, 5);
+        for(String entry:fiveinput){
+            System.out.println("tickets : "+entry);
+        }
+
+
+        // callBluetooth(tickets);
 
 
 
@@ -397,8 +417,13 @@ public class frmInspector extends AppCompatActivity {
         Date dtTemp = new Date(DateFormat.getDateTimeInstance().format(new Date()));
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         dtstartTime = formatter.format(dtTemp);
-        lastreversedate = dbQuery.getreversedate(GlobalVariable.getCashbond_id());
-        String check = dbQuery.getCheckpoint(kmpost.toString(), GlobalVariable.getLineid());
+        lastreversedate = dbQuery.getreversedate(dbQuery.getLastTrip());
+        String direct = dbQuery.getDirectionfromDB();
+        list = dbQuery.getPassengerTicket(direct, dbQuery.getLastTrip(), lastreversedate, kmpost.getText().toString());
+        listTicket = dbQuery.getlistTicket(direct, dbQuery.getLastTrip(), lastreversedate, kmpost.getText().toString());
+
+
+        String check = dbQuery.getCheckpoint(kmpost.getText().toString(), GlobalVariable.getLineid());
         String tripId = dbQuery.getLastTrip();
         String device = GlobalVariable.getPhoneName();
         String Name = dbQuery.getCompanyName(device) + "\n";
@@ -406,14 +431,14 @@ public class frmInspector extends AppCompatActivity {
         String ticketCount = dbQuery.getLastTicket(device);
         String deviceticket = device + ticketCount + "\n";
         String date = "Date : " + dtstartTime + "\n";
-        String vehicle = "Vehicle:" + GlobalVariable.d_busname;
-        String driver = "Driver:" + GlobalVariable.getName_driver() + "\n";
-        String cond = "Conductor:" + GlobalVariable.getName_conductor()+ "\n";
-        String inspector = "Inspector:" + dbQuery.getEmployeeID(i_name)+ "\n";
-        String route = "ROUTE" + GlobalVariable.getLine_name()+ "\n";
-        String Mode = "MODE" + GlobalVariable.getModeName()+ "\n";
-        String checkpoint = "Checkpoint" + check + "\n";
-        String direction = "Direction" + GlobalVariable.getDirection();
+        String vehicle =  "Vehicle: " + dbQuery.getResourceName(tripId)+ "\n";
+        String driver = "Driver: " + dbQuery.nameDriver(tripId, "1") + "\n";
+        String cond = "Conductor: " + dbQuery.nameDriver(tripId, "2") + "\n";
+        String inspector = "Inspector:" + name_inspector+ "\n";
+        String route = "ROUTE: " + dbQuery.getLineName(tripId)+ "\n";
+        String Mode = "MODE: " + dbQuery.getModeNameTrip(tripId)+ "\n";
+        String checkpoint = "Checkpoint: " + check + "\n";
+        String direction = "Direction: " + dbQuery.getDirectionfromDB() + "\n";
         int seg = dbQuery.getTripCount(tripId);
 
         if(seg == 1){
@@ -426,23 +451,23 @@ public class frmInspector extends AppCompatActivity {
             segment = seg + "th Trip";
         }
         String segmentnum = "Segment No: " + segment + "\n";
-        String cash = dbQuery.getCash(dbQuery.getDirectionfromDB(),dbQuery.getLastTrip(), lastreversedate, kmpost.getText().toString());
+        String cash = "Cash: " + "Php"+  dbQuery.getCash(dbQuery.getLastTrip(), lastreversedate, kmpost.getText().toString(), dbQuery.getDirectionfromDB()) + ".00 "+ "\n";
 
         int l = Integer.parseInt(dbQuery.getLastTicket());
         //      int t = 1;
         //   int nextticket = l+t;
-        String lastticket = "Last ticket:  "+String.format("%1$05d ", l);//String.format("%07d", "0");
-        String datereverse = dbQuery.getDateReverse(kmpost.getText().toString(), tripId);
-        String cpassengers = dbQuery.getPassengersNorth(tripId, datereverse ,kmpost.getText().toString() );
-        String pass = "Passengers :" + cpassengers + "\n";
-        String inspect = "Inspection: " + kmpost.getText().toString() +"\n";
-        String batteryLevel = String.format("%6.0f", GlobalClass.getBatteryLevel(frmInspector.this));
+        String lastticket = "Last ticket:  "+String.format("%1$05d ", l) + "\n";//String.format("%07d", "0");
+        String passengerCount = list.get(0)+": " + list.get(1) + "\n";
+        String inspect = "Control Count: " + pax_acount.getText().toString() +"\n";
+        String batteryLevel = "Battery Level: " + String.format("%6.0f", GlobalClass.getBatteryLevel(frmInspector.this)) + "%";
 
         Log.wtf("To print", Name + " " + title + " " + deviceticket+ " " + date  + " " +vehicle + " " + driver + " " + cond + " " +
         inspector + " " + route + " " + Mode + " " + checkpoint + " " + direction + " " + segmentnum + " " + cash + " " + lastticket +
-        " "  + pass + " " + inspect + " " + batteryLevel );
+        " "  + passengerCount + " " + inspect + " " + batteryLevel );
 
-        //callBluetooth();
+        callBluetooth(Name + " " + title + " " + deviceticket+ " " + date  + " " +vehicle + " " + driver + " " + cond + " " +
+                inspector + " " + route + " " + Mode + " " + checkpoint + " " + direction + " " + segmentnum + " " + cash + " " + lastticket +
+                " "  + passengerCount + " " + inspect + " " + batteryLevel);
     }
 
 

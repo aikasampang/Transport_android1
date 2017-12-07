@@ -1494,9 +1494,10 @@ public class DBQuery extends DBObject {
         String sql = "select tk.DATETIMESTAMP, tk.ID, FROMREFPOINT, TOREFPOINT, SUM(NETAMOUNT)as NETAMT, c.REMARKS from TICKET tk " +
                 "                               left join CUSTOMER c on c.ID=tk.CUSTOMERID " +
                 "                   where TRIPID='"+ trip+"' and DATETIMESTAMP>='"+date+"'" +
-                "                   and TOREFPOINT  '"+gDirection+"' "+ kmpost+" " +
+                "                   and TOREFPOINT  "+gDirection+" "+ kmpost+" " +
                 "                   order by tk.ID ";
         Cursor cursor = this.getDbConnection().rawQuery(sql,null);
+        cursor.moveToFirst();
         String netmount = cursor.getString(cursor.getColumnIndex("NETAMT"));
         cursor.close();
         return netmount;
@@ -1635,6 +1636,42 @@ public class DBQuery extends DBObject {
         cursor1.close();
         return name;
     }
+
+    public List<String> getlistTicket(String direction, String tripid, String date , String km){
+
+        String gDirection ;
+
+        if(direction.equals("1")){
+            gDirection = ">";
+        }else{
+            gDirection = "<";
+        }
+
+        String sql = "select tk.DATETIMESTAMP, tk.ID, FROMREFPOINT, TOREFPOINT, NETAMOUNT, c.REMARKS from TICKET tk" +
+                "                               left join CUSTOMER c on c.ID=tk.CUSTOMERID " +
+                "                   where TRIPID='"+tripid+"' and DATETIMESTAMP>='"+ date +"'" +
+                "                    and TOREFPOINT "+ gDirection+"   "+km+ " " +
+                "                   order by tk.ID";
+
+        Cursor cursor = this.getDbConnection().rawQuery(sql, null);
+        List<String> list = new ArrayList<>();
+        if (cursor.moveToFirst()){
+            list.add(cursor.getString(cursor.getColumnIndex("DATETIMESTAMP")));
+            list.add(cursor.getString(cursor.getColumnIndex("ID")));
+            list.add(cursor.getString(cursor.getColumnIndex("FROMREFPOINT")));
+            list.add(cursor.getString(cursor.getColumnIndex("TOREFPOINT")));
+            list.add(cursor.getString(cursor.getColumnIndex("NETAMOUNT")));
+        }while(cursor.moveToNext()){
+            list.add(cursor.getString(cursor.getColumnIndex("DATETIMESTAMP")));
+            list.add(cursor.getString(cursor.getColumnIndex("ID")));
+            list.add(cursor.getString(cursor.getColumnIndex("FROMREFPOINT")));
+            list.add(cursor.getString(cursor.getColumnIndex("TOREFPOINT")));
+            list.add(cursor.getString(cursor.getColumnIndex("NETAMOUNT")));
+        }
+
+        return list;
+
+        }
 
 
 
