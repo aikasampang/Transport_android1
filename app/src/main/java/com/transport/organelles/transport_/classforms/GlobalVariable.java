@@ -604,4 +604,60 @@ public class GlobalVariable {
     public static void setModeName(String modeName) {
         GlobalVariable.modeName = modeName;
     }
+
+
+    public static String tripline;
+    public static String tripvehicle;
+    public static String tripdri;
+    public static String tripcond;
+    public static String tripcashier;
+    public static String tripvmode;
+
+    public static String getTripline() {
+        return tripline;
+    }
+
+    public static void setTripline(String tripline) {
+        GlobalVariable.tripline = tripline;
+    }
+
+    public static String getTripvehicle() {
+        return tripvehicle;
+    }
+
+    public static void setTripvehicle(String tripvehicle) {
+        GlobalVariable.tripvehicle = tripvehicle;
+    }
+
+    public static String getTripdri() {
+        return tripdri;
+    }
+
+    public static void setTripdri(String tripdri) {
+        GlobalVariable.tripdri = tripdri;
+    }
+
+    public static String getTripcond() {
+        return tripcond;
+    }
+
+    public static void setTripcond(String tripcond) {
+        GlobalVariable.tripcond = tripcond;
+    }
+
+    public static String getTripcashier() {
+        return tripcashier;
+    }
+
+    public static void setTripcashier(String tripcashier) {
+        GlobalVariable.tripcashier = tripcashier;
+    }
+
+    public static String getTripvmode() {
+        return tripvmode;
+    }
+
+    public static void setTripvmode(String tripvmode) {
+        GlobalVariable.tripvmode = tripvmode;
+    }
 }

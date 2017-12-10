@@ -261,11 +261,11 @@ public class frmTicket extends AppCompatActivity {
             public void onClick(View v) {
 
                 // Check that we're actually connected before trying anything
-                if (mService.getState() != BluetoothService.STATE_CONNECTED) {
-                    Toast.makeText(frmTicket.this, R.string.not_connected, Toast.LENGTH_SHORT)
-                            .show();
-                    return;
-                }
+//                if (mService.getState() != BluetoothService.STATE_CONNECTED) {
+//                    Toast.makeText(frmTicket.this, R.string.not_connected, Toast.LENGTH_SHORT)
+//                            .show();
+//                    return;
+//                }
 
 
                 String type = GlobalVariable.getPaxtype();
@@ -919,8 +919,8 @@ public class frmTicket extends AppCompatActivity {
         o + d + type + driver + conductor);
 
 
-        callBluetooth(companyName + tin + mn + accdtn + p + device + date + vehicle + price +
-                o + d + type + driver + conductor);
+        //callBluetooth(companyName + tin + mn + accdtn + p + device + date + vehicle + price +
+          //      o + d + type + driver + conductor);
 
 
     }

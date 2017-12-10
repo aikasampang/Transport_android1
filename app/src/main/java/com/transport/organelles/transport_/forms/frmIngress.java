@@ -1197,6 +1197,16 @@ public class frmIngress extends AppCompatActivity {
         String device = GlobalVariable.getPhoneName()+ "-" + dbQuery.getLastTicket();
 
         String date = "Date: " + dtstartTime + "\n";
+        String transdate = "TransDate: " + "\n";
+        String transtime = "TransTime: " + "\n";
+        String vehicle = "Vehicle:" + "\n";
+        String dri = "Driver: " + dbQuery.nameDriver(dbQuery.getLastTrip(), "1");
+        String cond= "Conductor: " + dbQuery.nameDriver(dbQuery.getLastTrip(), "2");
+        String cashier = "Cashier" + "\n";
+        String line = "Line: " + "\n";
+        String mode = "Mode: " + "\n";
+
+
 
 
 

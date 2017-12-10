@@ -1673,6 +1673,43 @@ public class DBQuery extends DBObject {
 
         }
 
+    public String tripData(String tripid) {
+
+        String sql = "select t.*, l.NAME as LINENAME, r.DESCRIPTION as VEHICLE," +
+                "d.NAME as DRIVER, c.NAME as CONDUCTOR, cs.NAME as CASHIER, m.NAME as VEHICLEMODE" +
+                "from TRIP t " +
+                "left join RESOURCE r on r.ID=t.RESOURCEID " +
+                "left join MODE m on m.ID=t.MODEID " +
+                "left join LINE l on l.ID=t.LINEID " +
+                "left join TRIPCREW tcd on tcd.TRIPID=t.ID and tcd.EMPLOYEEROLEID=1" +
+                "left join EMPLOYEE d on d.ID=tcd.EMPLOYEEID" +
+                "left join TRIPCREW tcc on tcc.TRIPID=t.ID and tcd.EMPLOYEEROLEID=2" +
+                "left join EMPLOYEE c on c.ID=tcc.EMPLOYEEID" +
+                "left join TRIPCREW tcs on tcs.TRIPID=t.ID and tcs.EMPLOYEEROLEID=5" +
+                "left join EMPLOYEE cs on cs.ID=tcs.EMPLOYEEID" +
+                "where t.ID = '"+tripid+"'";
+
+        Cursor cursor = this.getDbConnection().rawQuery(sql, null);
+        cursor.moveToFirst();
+        String  linename = cursor.getString(cursor.getColumnIndex("LINENAME"));
+        String  vehicle = cursor.getString(cursor.getColumnIndex("VEHICLE"));
+        String  dri = cursor.getString(cursor.getColumnIndex("DRIVER"));
+        String  cond = cursor.getString(cursor.getColumnIndex("CONDUCTOR"));
+        String  cashier = cursor.getString(cursor.getColumnIndex("CASHIER"));
+        String  vmode = cursor.getString(cursor.getColumnIndex("VEHICLEMODE"));
+        cursor.close();
+
+        GlobalVariable.setTripline(linename);
+        GlobalVariable.setTripvehicle(vehicle);
+        GlobalVariable.setTripdri(dri);
+        GlobalVariable.setTripcond(cond);
+        GlobalVariable.setTripcashier(cashier);
+        GlobalVariable.setTripvmode(vmode);
+
+        return linename;
+
+
+    }
 
 
 

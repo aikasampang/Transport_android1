@@ -237,10 +237,10 @@ public class frmDispatch extends ActionBarActivity {
             public void onClick(View v) {
 
                 // Check that we're actually connected before trying anything
-                if (mService.getState() != BluetoothService.STATE_CONNECTED) {
-                    Toast.makeText(frmDispatch.this, R.string.not_connected, Toast.LENGTH_LONG).show();
-                    return;
-                }
+//                if (mService.getState() != BluetoothService.STATE_CONNECTED) {
+//                    Toast.makeText(frmDispatch.this, R.string.not_connected, Toast.LENGTH_LONG).show();
+//                    return;
+//                }
 
 
 
@@ -656,7 +656,7 @@ public class frmDispatch extends ActionBarActivity {
 
         Log.wtf("toPrint", devicename + " " + dispatch + " " + startDate + " " + resourceID + " " + lineID + " " + dispatcher + " " + dri + " " + conductor + " " + opening + " " + terminal + battery);
 
-        callBluetooth(devicename + " " + dispatch + " " + startDate + " " + resourceID + " " + lineID + " " + dispatcher + " " + dri + " " + conductor + " " + opening + " " + terminal + battery);
+        //callBluetooth(devicename + " " + dispatch + " " + startDate + " " + resourceID + " " + lineID + " " + dispatcher + " " + dri + " " + conductor + " " + opening + " " + terminal + battery);
 
         GlobalVariable.setName_driver(driver.getText().toString());
         GlobalVariable.setName_conductor(cond.getText().toString());
