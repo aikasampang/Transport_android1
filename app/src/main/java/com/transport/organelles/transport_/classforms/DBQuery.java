@@ -1680,7 +1680,7 @@ public class DBQuery extends DBObject {
                 "from TRIP t " +
                 "left join RESOURCE r on r.ID=t.RESOURCEID " +
                 "left join MODE m on m.ID=t.MODEID " +
-                "left join LINE l on l.ID=t.LINEID " +
+                "left join LINE l on l.ID=t.LINE " +
                 "left join TRIPCREW tcd on tcd.TRIPID=t.ID and tcd.EMPLOYEEROLEID=1" +
                 "left join EMPLOYEE d on d.ID=tcd.EMPLOYEEID" +
                 "left join TRIPCREW tcc on tcc.TRIPID=t.ID and tcd.EMPLOYEEROLEID=2" +
@@ -1707,6 +1707,126 @@ public class DBQuery extends DBObject {
         GlobalVariable.setTripvmode(vmode);
 
         return linename;
+
+
+    }
+
+    public void dispatchIngresso( String tripid){
+
+        String sql = "select STARTDATETIMESTAMP,e.NAME,min(tk.ID) as MINTK, t.REMARKS" +
+                " from TRIP t left join TRIPCREW tc on tc.TRIPID=t.ID and tc.DEVICENAME=t.DEVICENAME and tc.EMPLOYEEROLEID=4 " +
+                " left join EMPLOYEE e on e.ID=tc.EMPLOYEEID " +
+                " left join TICKET tk on tk.TRIPID=t.ID " +
+                " where t.ID = '"+ tripid + "'" +
+                " group by STARTDATETIMESTAMP,e.NAME, t.REMARKS" +
+                " ";
+        Cursor cursor = this.getDbConnection().rawQuery(sql, null);
+        cursor.moveToFirst();
+        String ddate = cursor.getString(cursor.getColumnIndex("STARTDATETIMESTAMP"));
+        String dname = cursor.getString(cursor.getColumnIndex("NAME"));
+        String dticket = cursor.getString(cursor.getColumnIndex("MINTK"));
+        String dremarks = cursor.getString(cursor.getColumnIndex("REMARKS"));
+        cursor.close();
+        GlobalVariable.setD_ingDate(ddate);
+        GlobalVariable.setD_ingName(dname);
+        GlobalVariable.setD_ingMintk(dticket);
+        GlobalVariable.setD_ingRemarks(dremarks);
+
+    }
+
+    public void tripcostIngress(String tripid){ // get Cost and total
+
+        String sql = "select C.NAME as NAME, T.AMOUNT as AMOUNT from TRIPCOST T left join COSTTYPE C on C.ID=T.COSTTYPEID where T.TRIPID='"+ tripid+"'";
+        Cursor cursor = this.getDbConnection().rawQuery(sql, null);
+        cursor.moveToFirst();
+        String name = cursor.getString(cursor.getColumnIndex("NAME"));
+        String amount = cursor.getString(cursor.getColumnIndex("AMOUNT"));
+        cursor.close();
+    }
+
+    public void arrivalIngress(String tripid){
+
+        String sql = "select DATETIMESTAMP, e.NAME, KMPOST, TICKETID, QTY  from TRIPINSPECTION ti left join EMPLOYEE e on e.ID=ti.EMPLOYEEID \n" +
+                " where ATTRIBUTEID=11 and TRIPID='"+ tripid+"'";
+
+        Cursor c = this.getDbConnection().rawQuery(sql, null);
+        c.moveToFirst();
+        String datetime = c.getString(c.getColumnIndex("DATETIMESTAMP"));
+        String name = c.getString(c.getColumnIndex("NAME"));
+        String post = c.getString(c.getColumnIndex("KMPOST"));
+        String tkid = c.getString(c.getColumnIndex("TICKETID"));
+        String qty = c.getString(c.getColumnIndex("QTY"));
+        c.close();
+
+        GlobalVariable.setArr_datetime(datetime);
+        GlobalVariable.setArr_name(name);
+        GlobalVariable.setArr__tkid(tkid);
+        GlobalVariable.setArr_qty(qty);
+        GlobalVariable.setArr_post(post);
+    }
+
+
+
+    public void dispatchTerminalIngress( String tripid){
+
+        String sql = " select DATETIMESTAMP, e.NAME, KMPOST, TICKETID, QTY  from TRIPINSPECTION ti left join EMPLOYEE e on e.ID=ti.EMPLOYEEID\n" +
+                "    where ATTRIBUTEID=10 and TRIPID='"+ tripid +"'";
+        Cursor c = this.getDbConnection().rawQuery(sql, null);
+        c.moveToFirst();
+        String datetime = c.getString(c.getColumnIndex("DATETIMESTAMP"));
+        String name = c.getString(c.getColumnIndex("NAME"));
+        String post = c.getString(c.getColumnIndex("KMPOST"));
+        String tkid = c.getString(c.getColumnIndex("TICKETID"));
+        String qty = c.getString(c.getColumnIndex("QTY"));
+        c.close();
+        GlobalVariable.setDt_datetime(datetime);
+        GlobalVariable.setDt_name(name);
+        GlobalVariable.setDt_tkid(tkid);
+        GlobalVariable.setDt_qty(qty);
+        GlobalVariable.setDt_kmpost(post);
+    }
+
+    public void inspectionIngress(String tripid){
+
+        String sql = " select DATETIMESTAMP, e.NAME, KMPOST, TICKETID, QTY  from TRIPINSPECTION ti left join EMPLOYEE e on e.ID=ti.EMPLOYEEID\n" +
+                "  where ATTRIBUTEID=1 and TRIPID='"+tripid+"'";
+        Cursor c = this.getDbConnection().rawQuery(sql, null);
+        c.moveToFirst();
+
+        String datetime = c.getString(c.getColumnIndex("DATETIMESTAMP"));
+        String name = c.getString(c.getColumnIndex("NAME"));
+        String post = c.getString(c.getColumnIndex("KMPOST"));
+        String tkid = c.getString(c.getColumnIndex("TICKETID"));
+        String qty = c.getString(c.getColumnIndex("QTY"));
+
+        GlobalVariable.setI_datetime(datetime);
+        GlobalVariable.setI_name(name);
+        GlobalVariable.setI_tkid(tkid);
+        GlobalVariable.setI_qty(qty);
+        GlobalVariable.setI_kmpost(post);
+        c.close();
+
+    }
+
+
+    public void controlledIngress( String tripid){
+        String sql = "select DATETIMESTAMP, e.NAME, KMPOST, TICKETID, QTY  from TRIPINSPECTION ti left join EMPLOYEE e on e.ID=ti.EMPLOYEEID\n" +
+                "  where ATTRIBUTEID=2 and TRIPID='" + tripid +"'";
+
+        Cursor c = this.getDbConnection().rawQuery(sql, null);
+        c.moveToFirst();
+        String datetime = c.getString(c.getColumnIndex("DATETIMESTAMP"));
+        String name = c.getString(c.getColumnIndex("NAME"));
+        String post = c.getString(c.getColumnIndex("KMPOST"));
+        String tkid = c.getString(c.getColumnIndex("TICKETID"));
+        String qty = c.getString(c.getColumnIndex("QTY"));
+
+        GlobalVariable.setC_datetime(datetime);
+        GlobalVariable.setC_name(name);
+        GlobalVariable.setC_tkid(tkid);
+        GlobalVariable.setC_qty(qty);
+        GlobalVariable.setC_kmpost(post);
+        c.close();
 
 
     }

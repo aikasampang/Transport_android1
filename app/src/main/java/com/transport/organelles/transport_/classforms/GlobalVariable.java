@@ -660,4 +660,247 @@ public class GlobalVariable {
     public static void setTripvmode(String tripvmode) {
         GlobalVariable.tripvmode = tripvmode;
     }
+
+
+    public static String d_ingDate;
+    public static String d_ingName;
+    public static String d_ingMintk;
+    public static String d_ingRemarks;
+
+    public static String getD_ingDate() {
+        return d_ingDate;
+    }
+
+    public static void setD_ingDate(String d_ingDate) {
+        GlobalVariable.d_ingDate = d_ingDate;
+    }
+
+    public static String getD_ingName() {
+        return d_ingName;
+    }
+
+    public static void setD_ingName(String d_ingName) {
+        GlobalVariable.d_ingName = d_ingName;
+    }
+
+    public static String getD_ingMintk() {
+        return d_ingMintk;
+    }
+
+    public static void setD_ingMintk(String d_ingMintk) {
+        GlobalVariable.d_ingMintk = d_ingMintk;
+    }
+
+    public static String getD_ingRemarks() {
+        return d_ingRemarks;
+    }
+
+    public static void setD_ingRemarks(String d_ingRemarks) {
+        GlobalVariable.d_ingRemarks = d_ingRemarks;
+    }
+
+    public static String costName;
+    public static String costAmount;
+
+    public static String getCostName() {
+        return costName;
+    }
+
+    public static void setCostName(String costName) {
+        GlobalVariable.costName = costName;
+    }
+
+    public static String getCostAmount() {
+        return costAmount;
+    }
+
+    public static void setCostAmount(String costAmount) {
+        GlobalVariable.costAmount = costAmount;
+    }
+
+    public static String arr_datetime;
+    public static String arr_name;
+    public static String arr_post;
+    public static String arr__tkid;
+    public static String arr_qty;
+
+    public static String getArr_datetime() {
+        return arr_datetime;
+    }
+
+    public static void setArr_datetime(String arr_datetime) {
+        GlobalVariable.arr_datetime = arr_datetime;
+    }
+
+    public static String getArr_name() {
+        return arr_name;
+    }
+
+    public static void setArr_name(String arr_name) {
+        GlobalVariable.arr_name = arr_name;
+    }
+
+    public static String getArr_post() {
+        return arr_post;
+    }
+
+    public static void setArr_post(String arr_post) {
+        GlobalVariable.arr_post = arr_post;
+    }
+
+    public static String getArr__tkid() {
+        return arr__tkid;
+    }
+
+    public static void setArr__tkid(String arr__tkid) {
+        GlobalVariable.arr__tkid = arr__tkid;
+    }
+
+    public static String getArr_qty() {
+        return arr_qty;
+    }
+
+    public static void setArr_qty(String arr_qty) {
+        GlobalVariable.arr_qty = arr_qty;
+    }
+
+    public static String dt_datetime;
+    public static String dt_name;
+    public static String dt_kmpost;
+    public static String dt_tkid;
+    public static String dt_qty;
+
+
+    public static String getDt_datetime() {
+        return dt_datetime;
+    }
+
+    public static void setDt_datetime(String dt_datetime) {
+        GlobalVariable.dt_datetime = dt_datetime;
+    }
+
+    public static String getDt_name() {
+        return dt_name;
+    }
+
+    public static void setDt_name(String dt_name) {
+        GlobalVariable.dt_name = dt_name;
+    }
+
+    public static String getDt_kmpost() {
+        return dt_kmpost;
+    }
+
+    public static void setDt_kmpost(String dt_kmpost) {
+        GlobalVariable.dt_kmpost = dt_kmpost;
+    }
+
+    public static String getDt_tkid() {
+        return dt_tkid;
+    }
+
+    public static void setDt_tkid(String dt_tkid) {
+        GlobalVariable.dt_tkid = dt_tkid;
+    }
+
+    public static String getDt_qty() {
+        return dt_qty;
+    }
+
+    public static void setDt_qty(String dt_qty) {
+        GlobalVariable.dt_qty = dt_qty;
+    }
+
+    public static String i_datetime;
+    public static String i_name;
+    public static String i_kmpost;
+    public static String i_tkid;
+    public static String i_qty;
+
+    public static String getI_datetime() {
+        return i_datetime;
+    }
+
+    public static void setI_datetime(String i_datetime) {
+        GlobalVariable.i_datetime = i_datetime;
+    }
+
+    public static String getI_name() {
+        return i_name;
+    }
+
+    public static void setI_name(String i_name) {
+        GlobalVariable.i_name = i_name;
+    }
+
+    public static String getI_kmpost() {
+        return i_kmpost;
+    }
+
+    public static void setI_kmpost(String i_kmpost) {
+        GlobalVariable.i_kmpost = i_kmpost;
+    }
+
+    public static String getI_tkid() {
+        return i_tkid;
+    }
+
+    public static void setI_tkid(String i_tkid) {
+        GlobalVariable.i_tkid = i_tkid;
+    }
+
+    public static String getI_qty() {
+        return i_qty;
+    }
+
+    public static void setI_qty(String i_qty) {
+        GlobalVariable.i_qty = i_qty;
+    }
+
+
+    public static String c_datetime;
+    public static String c_name;
+    public static String c_kmpost;
+    public static String c_tkid;
+    public static String c_qty;
+
+    public static String getC_datetime() {
+        return c_datetime;
+    }
+
+    public static void setC_datetime(String c_datetime) {
+        GlobalVariable.c_datetime = c_datetime;
+    }
+
+    public static String getC_name() {
+        return c_name;
+    }
+
+    public static void setC_name(String c_name) {
+        GlobalVariable.c_name = c_name;
+    }
+
+    public static String getC_kmpost() {
+        return c_kmpost;
+    }
+
+    public static void setC_kmpost(String c_kmpost) {
+        GlobalVariable.c_kmpost = c_kmpost;
+    }
+
+    public static String getC_tkid() {
+        return c_tkid;
+    }
+
+    public static void setC_tkid(String c_tkid) {
+        GlobalVariable.c_tkid = c_tkid;
+    }
+
+    public static String getC_qty() {
+        return c_qty;
+    }
+
+    public static void setC_qty(String c_qty) {
+        GlobalVariable.c_qty = c_qty;
+    }
 }

@@ -1193,18 +1193,61 @@ public class frmIngress extends AppCompatActivity {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         dtstartTime = formatter.format(dtTemp);
 
+        dbQuery.dispatchIngresso(tripId);
+        dbQuery.tripcostIngress(tripId);
+        dbQuery.arrivalIngress(tripId);
+        dbQuery.dispatchTerminalIngress(tripId);
+        dbQuery.controlledIngress(tripId);
+
         String title = "Ingresso"+ "\n";
         String device = GlobalVariable.getPhoneName()+ "-" + dbQuery.getLastTicket();
 
         String date = "Date: " + dtstartTime + "\n";
-        String transdate = "TransDate: " + "\n";
-        String transtime = "TransTime: " + "\n";
+        String transdatetime = "TransDateTime: " + "\n";
+        //String transtime = "TransTime: " + "\n";
         String vehicle = "Vehicle:" + "\n";
         String dri = "Driver: " + dbQuery.nameDriver(dbQuery.getLastTrip(), "1");
         String cond= "Conductor: " + dbQuery.nameDriver(dbQuery.getLastTrip(), "2");
         String cashier = "Cashier" + "\n";
         String line = "Line: " + "\n";
         String mode = "Mode: " + "\n";
+        String pax = "Passengers: " + "\n";
+        String cash = "Cash Sales: " + "\n";
+        String gross = "Gross Income: " + "\n \n";
+
+        String ddatetime = "Dispatch: " + GlobalVariable.getD_ingDate()  +"\n";
+        String dname = "Dispatcher Name: " + GlobalVariable.getD_ingName()  +"\n";
+        String dterminal = "Terminal: " + GlobalVariable.getD_ingRemarks() + "\n";
+        String dopening = "Opening: " + GlobalVariable.getD_ingMintk() + "\n";
+
+        Log.wtf("1 ingress", title + device + date + transdatetime + vehicle + dri + cond + cashier + line + mode + pax + cash + gross + ddatetime + dname + dterminal + dopening);
+
+        callBluetooth(title + device + date + transdatetime + vehicle + dri + cond + cashier + line + mode + pax + cash + gross + ddatetime + dname + dterminal + dopening);
+
+        String cost = "Cost: " + String.valueOf(expense) + "\n";
+
+        //print tripcost
+
+
+        Double netsales = totalgross - expense;
+        String net = "Net Sales: " + netsales + "\n \n" ;
+        String with = "Withholding: " + String.valueOf(withholding) + "\n";
+
+        // cond and dri bond
+
+        String arr = "Arrival: " + GlobalVariable.getArr_datetime() + " "+  GlobalVariable.getArr_name()+ ""+ GlobalVariable.getArr_post() + ""  + GlobalVariable.getArr__tkid() + "" + GlobalVariable.getArr_qty()  + "px" + " \n";
+        String dft = "Dispatch from Terminal: " + GlobalVariable.getDt_datetime() + " "+  GlobalVariable.getDt_name()+ "" + GlobalVariable.getDt_kmpost() + ""  + GlobalVariable.getDt_tkid() + "" + GlobalVariable.getDt_qty()  + "px" + " \n";
+        String inspection = "Inspection: " + GlobalVariable.getI_datetime() + " "+  GlobalVariable.getI_name()+ "" + GlobalVariable.getI_kmpost() + ""  + GlobalVariable.getI_tkid() + "" + GlobalVariable.getI_qty()  + "px" + " \n";
+        String controlled = "Controlled: " +  GlobalVariable.getC_datetime() + " "+  GlobalVariable.getC_name()+ "" + GlobalVariable.getC_kmpost() + ""  + GlobalVariable.getC_tkid() + "" + GlobalVariable.getC_qty()  + "px" + " \n";
+        String cvm = "Controlled (mPAD vs Controller)";
+
+
+
+
+
+
+
+
 
 
 
