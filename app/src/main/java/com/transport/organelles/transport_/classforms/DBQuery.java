@@ -1831,6 +1831,45 @@ public class DBQuery extends DBObject {
 
     }
 
+    public void getInspection(String tripid){
+
+        String sql = "select distinct TAG as TRIPNUM, LINEID, (case when FROMREFPOINT<TOREFPOINT then 1 else -1 end) as DIR from TICKET where TRIPID='"+ tripid +"'";
+        Cursor c = this.getDbConnection().rawQuery(sql, null);
+        c.moveToFirst();
+        String tripnum = c.getString(c.getColumnIndex("TRIPNUM"));
+        String lineid = c.getString(c.getColumnIndex("LINEID"));
+        String dir = c.getString(c.getColumnIndex("DIR"));
+        c.close();
+
+
+
+
+
+
+    }
+
+    public void printInspection(String tripnum, String lineid, String mode, String dir, String kmpost) {
+
+        String sql = "select distinct m.FROMKM as KMPOST,i.PCOUNT,coalesce(i.QTY,0) as QTY,i.DATETIMESTAMP,m.DIRECTION,i.LINESEGMENT " +
+                "                                from TRIPINSPECTION i left join TRIP t on t.ID=i.TRIPID  and i.TRIPID=1 and i.ATTRIBUTEID=2 " +
+                "                                left join CONTROLMATRIX m on m.LINEID=t.LINE and m.DIRECTION=i.DIRECTION and m.FROMKM=i.KMPOST and m.TOKM=t.MODEID " +
+                "                                where m.LINEID ='"+ lineid +"' And m.DIRECTION = '"+dir+"' And m.TOKM ='"+ kmpost+"'";
+
+        Cursor c = this.getDbConnection().rawQuery(sql,null);
+        c.moveToFirst();
+        String km = c.getString(c.getColumnIndex("KMPOST"));
+        String pcount = c.getString(c.getColumnIndex("PCOUNT"));
+        String qty = c.getString(c.getColumnIndex("QTY"));
+        String datetime = c.getString(c.getColumnIndex("DATETIMESTAMP"));
+        String direction = c.getString(c.getColumnIndex("DIRECTION"));
+        String lsegment = c.getString(c.getColumnIndex("LINESEGMENT"));
+
+        c.close();
+
+    }
+
+
+
 
 
 //    public JSONArray converttojsonArray(String trip, String datetime){

@@ -1198,6 +1198,8 @@ public class frmIngress extends AppCompatActivity {
         dbQuery.arrivalIngress(tripId);
         dbQuery.dispatchTerminalIngress(tripId);
         dbQuery.controlledIngress(tripId);
+        dbQuery.getInspection(tripId);
+
 
         String title = "Ingresso"+ "\n";
         String device = GlobalVariable.getPhoneName()+ "-" + dbQuery.getLastTicket();
@@ -1240,8 +1242,6 @@ public class frmIngress extends AppCompatActivity {
         String inspection = "Inspection: " + GlobalVariable.getI_datetime() + " "+  GlobalVariable.getI_name()+ "" + GlobalVariable.getI_kmpost() + ""  + GlobalVariable.getI_tkid() + "" + GlobalVariable.getI_qty()  + "px" + " \n";
         String controlled = "Controlled: " +  GlobalVariable.getC_datetime() + " "+  GlobalVariable.getC_name()+ "" + GlobalVariable.getC_kmpost() + ""  + GlobalVariable.getC_tkid() + "" + GlobalVariable.getC_qty()  + "px" + " \n";
         String cvm = "Controlled (mPAD vs Controller)";
-
-
 
 
 
