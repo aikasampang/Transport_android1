@@ -1691,6 +1691,8 @@ public class DBQuery extends DBObject {
 
         Cursor cursor = this.getDbConnection().rawQuery(sql, null);
         cursor.moveToFirst();
+        String startdate = cursor.getString(cursor.getColumnIndex("STARTDATETIMESTAMP"));
+        String enddate = cursor.getString(cursor.getColumnIndex("ENDDATETIMESTAMP"));
         String  linename = cursor.getString(cursor.getColumnIndex("LINENAME"));
         String  vehicle = cursor.getString(cursor.getColumnIndex("VEHICLE"));
         String  dri = cursor.getString(cursor.getColumnIndex("DRIVER"));
@@ -1699,12 +1701,16 @@ public class DBQuery extends DBObject {
         String  vmode = cursor.getString(cursor.getColumnIndex("VEHICLEMODE"));
         cursor.close();
 
+        GlobalVariable.setTripstartdate(startdate);
+        GlobalVariable.setTripenddate(enddate);
         GlobalVariable.setTripline(linename);
         GlobalVariable.setTripvehicle(vehicle);
         GlobalVariable.setTripdri(dri);
         GlobalVariable.setTripcond(cond);
         GlobalVariable.setTripcashier(cashier);
         GlobalVariable.setTripvmode(vmode);
+
+
 
         return linename;
 
@@ -1764,8 +1770,6 @@ public class DBQuery extends DBObject {
         GlobalVariable.setArr_qty(qty);
         GlobalVariable.setArr_post(post);
     }
-
-
 
     public void dispatchTerminalIngress( String tripid){
 
@@ -1840,6 +1844,7 @@ public class DBQuery extends DBObject {
         String lineid = c.getString(c.getColumnIndex("LINEID"));
         String dir = c.getString(c.getColumnIndex("DIR"));
         c.close();
+        printInspection("0", lineid, "0", dir, GlobalVariable.getModeid() );
 
 
 
@@ -1851,7 +1856,7 @@ public class DBQuery extends DBObject {
     public void printInspection(String tripnum, String lineid, String mode, String dir, String kmpost) {
 
         String sql = "select distinct m.FROMKM as KMPOST,i.PCOUNT,coalesce(i.QTY,0) as QTY,i.DATETIMESTAMP,m.DIRECTION,i.LINESEGMENT " +
-                "                                from TRIPINSPECTION i left join TRIP t on t.ID=i.TRIPID  and i.TRIPID=1 and i.ATTRIBUTEID=2 " +
+                "                                from TRIPINSPECTION i left join TRIP t on t.ID=i.TRIPID  and i.TRIPID="+ lineid + "' and i.ATTRIBUTEID=2 " +
                 "                                left join CONTROLMATRIX m on m.LINEID=t.LINE and m.DIRECTION=i.DIRECTION and m.FROMKM=i.KMPOST and m.TOKM=t.MODEID " +
                 "                                where m.LINEID ='"+ lineid +"' And m.DIRECTION = '"+dir+"' And m.TOKM ='"+ kmpost+"'";
 
@@ -1866,6 +1871,84 @@ public class DBQuery extends DBObject {
 
         c.close();
 
+        Log.wtf("mpadvscontrolled", km + pcount + qty + datetime + direction + direction + lsegment);
+    }
+
+
+    public String getReceipt(String tripid){
+
+        String sql = "select sum(amount)as AMOUNT from TRIPRECEIPT where TRIPID='"+ tripid+"'";
+        Cursor c = this.getDbConnection().rawQuery(sql, null);
+        c.moveToFirst();
+        String amount = c.getString(c.getColumnIndex("AMOUNT"));
+        c.close();
+        return amount;
+    }
+
+    public void getPartial(String tripid) {
+
+        String sql = "select e.NAME, r.AMOUNT from TRIPRECEIPT r left join EMPLOYEE e on e.ID=r.EMPLOYEEID where r.CUSTOMERID=1 and r.TRIPID='"+ tripid +"'";
+        Cursor c = this.getDbConnection().rawQuery(sql, null);
+        c.moveToFirst();
+        String name = c.getString(c.getColumnIndex("NAME"));
+        String amount = c.getString(c.getColumnIndex("AMOUNT"));
+        GlobalVariable.setPartial_name(name);
+        GlobalVariable.setPartial_amount(amount);
+        c.close();
+    }
+
+    public List<String> getDripayslip(String tripid){
+
+
+        String sql = "select w.NAME, coalesce(tw.AMOUNT,0)as Amount from WITHHOLDING w " +
+                "                            left join TRIPWITHHOLDING tw on tw.ATTRIBUTEID=w.ID and tw.TRIPID='"+tripid+"'" +
+                "                            where w.ID in (2,4)";
+        Cursor c = this.getDbConnection().rawQuery(sql, null);
+        List<String> list = new ArrayList<>();
+        if(c.moveToFirst()){
+            list.add(c.getString(c.getColumnIndex("NAME")));
+            list.add(c.getString(c.getColumnIndex("AMOUNT")));
+        }else if (c.moveToNext()){
+            list.add( c.getString(c.getColumnIndex("NAME")));
+            list.add( c.getString(c.getColumnIndex("AMOUNT")));
+        }else{
+
+        }
+
+        return list;
+
+    }
+
+
+    public List<String> getCondpayslip(String tripid){
+
+        String sql = "\n" +
+                "select w.NAME, coalesce(tw.AMOUNT,0) as amount from WITHHOLDING w " +
+                "                            left join TRIPWITHHOLDING tw on tw.ATTRIBUTEID=w.ID and tw.TRIPID='"+ tripid+"'" +
+                "                            where w.ID in (3,5)";
+        Cursor c = this.getDbConnection().rawQuery(sql, null);
+        List<String> list = new ArrayList<>();
+        if(c.moveToFirst()){
+            list.add(c.getString(c.getColumnIndex("NAME")));
+            list.add(c.getString(c.getColumnIndex("amount")));
+        }else if(c.moveToNext()){
+            list.add(c.getString(c.getColumnIndex("NAME")));
+            list.add(c.getString(c.getColumnIndex("amount")));
+        }else{
+
+        }
+
+        return list;
+    }
+
+
+    public String getPassengerCount(String tripid){
+        String sql = "select count(ID) as Count from TICKET where TRIPID='"+ tripid +"'";
+        Cursor c = this.getDbConnection().rawQuery(sql, null);
+        c.moveToFirst();
+        String count = c.getString(c.getColumnIndex("Count"));
+        c.close();
+        return count;
     }
 
 

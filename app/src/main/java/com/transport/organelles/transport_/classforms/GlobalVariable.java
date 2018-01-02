@@ -612,6 +612,24 @@ public class GlobalVariable {
     public static String tripcond;
     public static String tripcashier;
     public static String tripvmode;
+    public static String tripenddate;
+    public static String tripstartdate;
+
+    public static String getTripenddate() {
+        return tripenddate;
+    }
+
+    public static void setTripenddate(String tripenddate) {
+        GlobalVariable.tripenddate = tripenddate;
+    }
+
+    public static String getTripstartdate() {
+        return tripstartdate;
+    }
+
+    public static void setTripstartdate(String tripstartdate) {
+        GlobalVariable.tripstartdate = tripstartdate;
+    }
 
     public static String getTripline() {
         return tripline;
@@ -902,5 +920,24 @@ public class GlobalVariable {
 
     public static void setC_qty(String c_qty) {
         GlobalVariable.c_qty = c_qty;
+    }
+
+    public static String partial_name;
+    public static String partial_amount;
+
+    public static String getPartial_name() {
+        return partial_name;
+    }
+
+    public static void setPartial_name(String partial_name) {
+        GlobalVariable.partial_name = partial_name;
+    }
+
+    public static String getPartial_amount() {
+        return partial_amount;
+    }
+
+    public static void setPartial_amount(String partial_amount) {
+        GlobalVariable.partial_amount = partial_amount;
     }
 }

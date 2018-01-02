@@ -74,6 +74,7 @@ public class frmIngress extends AppCompatActivity {
     private static final int REQUEST_CONNECT_DEVICE = 1;
     private static final int REQUEST_ENABLE_BT = 2;
     BluetoothAdapter mBluetoothAdapter;
+    private List<String> list_drislip, list_condslip;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -449,8 +450,8 @@ public class frmIngress extends AppCompatActivity {
 
 
 
-        //cancel = Integer.parseInt(dbQuery.getTotalAmount(tripid));
-        cancel = 0;
+        cancel = Integer.parseInt(dbQuery.getOtherAmt(tripid));
+        //cancel = 0;
         //remitfinal = 0;
 
         totalgross = totalgross + manual - cancel;
@@ -478,8 +479,8 @@ public class frmIngress extends AppCompatActivity {
 
         partial_text.setText(partialremit+ "");
 
-        double so = totalgross - partialremit - lastremit - expense + withholding;
-        shortover_text.setText(-so + "");
+        shortamt = totalgross - partialremit - lastremit - expense + withholding;
+        shortover_text.setText(-shortamt + "");
 
         specialTrip.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
@@ -1192,7 +1193,7 @@ public class frmIngress extends AppCompatActivity {
         Date dtTemp = new Date(DateFormat.getDateTimeInstance().format(new Date()));
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         dtstartTime = formatter.format(dtTemp);
-
+        dbQuery.tripData(tripId);
         dbQuery.dispatchIngresso(tripId);
         dbQuery.tripcostIngress(tripId);
         dbQuery.arrivalIngress(tripId);
@@ -1200,22 +1201,21 @@ public class frmIngress extends AppCompatActivity {
         dbQuery.controlledIngress(tripId);
         dbQuery.getInspection(tripId);
 
-
         String title = "Ingresso"+ "\n";
         String device = GlobalVariable.getPhoneName()+ "-" + dbQuery.getLastTicket();
 
-        String date = "Date: " + dtstartTime + "\n";
-        String transdatetime = "TransDateTime: " + "\n";
+        String date = "Date: " + GlobalVariable.getTripenddate() + "\n";
+        String transdatetime = "TransDateTime: " + GlobalVariable.getTripenddate()+   "\n";
         //String transtime = "TransTime: " + "\n";
-        String vehicle = "Vehicle:" + "\n";
-        String dri = "Driver: " + dbQuery.nameDriver(dbQuery.getLastTrip(), "1");
-        String cond= "Conductor: " + dbQuery.nameDriver(dbQuery.getLastTrip(), "2");
-        String cashier = "Cashier" + "\n";
-        String line = "Line: " + "\n";
-        String mode = "Mode: " + "\n";
-        String pax = "Passengers: " + "\n";
-        String cash = "Cash Sales: " + "\n";
-        String gross = "Gross Income: " + "\n \n";
+        String vehicle = "Vehicle:" + GlobalVariable.getTripvehicle()  + "\n";
+        String dri = "Driver: " + dbQuery.nameDriver(dbQuery.getLastTrip(), "1")+ "\n";
+        String cond= "Conductor: " + dbQuery.nameDriver(dbQuery.getLastTrip(), "2") + "\n";
+        String cashier = "Cashier" + GlobalVariable.getTripcashier() +"\n";
+        String line = "Line: " + GlobalVariable.getTripline() +"\n";
+        String mode = "Mode: " + GlobalVariable.getTripvmode() +"\n";
+        String pax = "Passengers: " + dbQuery.getPassengerCount(tripId) +"\n";
+        String cash = "Cash Sales: " + String.format("%.2f", gross) + "\n";
+        String gross = "Gross Income: " +  String.format("%.2f", totalgross) +"\n \n";
 
         String ddatetime = "Dispatch: " + GlobalVariable.getD_ingDate()  +"\n";
         String dname = "Dispatcher Name: " + GlobalVariable.getD_ingName()  +"\n";
@@ -1224,7 +1224,7 @@ public class frmIngress extends AppCompatActivity {
 
         Log.wtf("1 ingress", title + device + date + transdatetime + vehicle + dri + cond + cashier + line + mode + pax + cash + gross + ddatetime + dname + dterminal + dopening);
 
-        callBluetooth(title + device + date + transdatetime + vehicle + dri + cond + cashier + line + mode + pax + cash + gross + ddatetime + dname + dterminal + dopening);
+        //callBluetooth(title + device + date + transdatetime + vehicle + dri + cond + cashier + line + mode + pax + cash + gross + ddatetime + dname + dterminal + dopening);
 
         String cost = "Cost: " + String.valueOf(expense) + "\n";
 
@@ -1243,8 +1243,35 @@ public class frmIngress extends AppCompatActivity {
         String controlled = "Controlled: " +  GlobalVariable.getC_datetime() + " "+  GlobalVariable.getC_name()+ "" + GlobalVariable.getC_kmpost() + ""  + GlobalVariable.getC_tkid() + "" + GlobalVariable.getC_qty()  + "px" + " \n";
         String cvm = "Controlled (mPAD vs Controller)";
 
+        Log.wtf("2 ingress", cost + "" + net + " " + with + " " + arr + " " + dft + " " + inspection + " " + controlled + "" + cvm);
+
+        //callBluetooth(cost + "" + net + " " + with + " " + arr + " " + dft + " " + inspection + " " + controlled + "" + cvm);
+
+        String rec = dbQuery.getReceipt(tripId);
+        cancel = Integer.parseInt(dbQuery.getOtherAmt(tripId));
 
 
+        String receive = "Received:" + String.format("%.2f", rec) + "\n \n";
+        String partial = GlobalVariable.getPartial_name() + "  " + GlobalVariable.getPartial_amount() + "\n";
+        String so = "ShortAmount: " + shortamt;
+        String c = "Cancelled: " + String.format("%.2f",cancel) + "\n";
+        String e = "Thank you." + "\n" + "powered by mPAD" + "\n";
+
+        String fline = "-----------------------------" + "\n \n \n";
+
+        String driName = dbQuery.nameDriver(dbQuery.getLastTrip(), "1") + "\n";
+        String driDate = GlobalVariable.getTripenddate()+ "\n";
+        list_drislip  = dbQuery.getDripayslip(tripId);
+        String dslip = list_drislip.toString() + "\n";
+
+        String condName = dbQuery.nameDriver(dbQuery.getLastTrip(), "2") + "\n";
+        String condDate = GlobalVariable.getTripenddate()+ "\n";
+        list_condslip = dbQuery.getCondpayslip(tripId);
+        String cslip = list_condslip.toString() + "\n";
+
+        Log.wtf("3 ingress", receive + " " + partial + " " + so + " " + c + " " + e + " " + fline+ " " + driName + " " + driDate + " " +  dslip + " " + condName + " " + condDate + " " + cslip);
+
+        //callBluetooth(receive + " " + partial + " " + so + " " + c + " " + e + " " + fline+ " " + driName + " " + driDate + " " +  dslip + " " + condName + " " + condDate + " "+ cslip);
 
 
 
