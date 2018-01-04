@@ -1120,12 +1120,34 @@ public class frmIngress extends AppCompatActivity {
         Date dtTemp = new Date(DateFormat.getDateTimeInstance().format(new Date()));
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         dtstartTime = formatter.format(dtTemp);
+        String deviceName = GlobalVariable.getPhoneName();
+        String r = dbQuery.getLineName(trip);
+        String m = dbQuery.getModeNameTrip(trip);
+        String batteryLevel = String.format("%6.0f", GlobalClass.getBatteryLevel(frmIngress.this));
+
 
         String companyname = dbQuery.getCompanyName() + "\n";
         String tripreportname = "Trip Report" + "\n";
         String devicename = GlobalVariable.getPhoneName()  + " - " + GlobalVariable.getLasttrip() + "\n";
         String date = "Date: " + dtstartTime + "\n";
         String vehicle = "Vehicle: " + dbQuery.getBusNamefromTrip(trip)  +"\n";
+        String dri = "Driver: " + dbQuery.nameDriver(dbQuery.getLastTrip(), "1")+ "\n";
+        String cond= "Conductor: " + dbQuery.nameDriver(dbQuery.getLastTrip(), "2") + "\n";
+        String route = "Route: " + r  +  "\n";
+        String mode = "Mode: " +  m + "\n";
+        String cpoint = "Checkpoint: " + checkpoint  + "\n";
+        String tcount = "Trip count: " + tripcount +"trip/s"+ "\n";
+        String gross = "Gross" + totalgross.toString() + "\n";
+        String bat = "Battery Level: " + batteryLevel + "\n";
+
+        Log.wtf("1 tripreport", companyname + " " + tripreportname + " " + devicename + " " + date + " " + vehicle + " " + dri + " " + cond + " " + route + " " + mode + " " + cpoint + " " + tcount + " " + gross + " " + bat );
+
+        //callBluetooth(companyname + " " + tripreportname + " " + devicename + " " + date + " " + vehicle + " " + dri + " " + cond + " " + route + " " + mode + " " + cpoint + " " + tcount + " " + gross + " " + bat );
+
+       // String pd = "Partial Details: " + + "\n";
+
+
+
 
 
 
