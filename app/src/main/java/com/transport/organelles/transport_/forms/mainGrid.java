@@ -53,8 +53,8 @@ public class mainGrid extends BaseAdapter {
 
             grid = new View(mContext);
             grid = inflater.inflate(R.layout.main_menu_grid, null);
-            TextView textView = (TextView) grid.findViewById(R.id.grid_text);
-            ImageView imageView = (ImageView)grid.findViewById(R.id.grid_image);
+            TextView textView = (TextView) grid.findViewById(R.id.myImageViewText);
+            ImageView imageView = (ImageView)grid.findViewById(R.id.myImageView);
             textView.setText(web[position]);
             imageView.setImageResource(Imageid[position]);
         } else {

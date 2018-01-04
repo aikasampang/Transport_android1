@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Transport</string>
+    <string name="app_name">Dela Rosa</string>
 
     <!--Device List-->
     <string name="scanning">scanning…</string>

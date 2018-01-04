@@ -44,9 +44,11 @@ public class frmPartial extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.frmpartial);
-        getSupportActionBar().hide();
+        getSupportActionBar().show();
+        String currentDateTimeString = DateFormat.getTimeInstance().format(new Date());
+        getSupportActionBar().setSubtitle(currentDateTimeString);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        setTitleBar();
+       // setTitleBar();
         employeeLogin();
         setObjects();
         objectListeners();

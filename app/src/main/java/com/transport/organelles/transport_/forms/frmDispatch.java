@@ -1,5 +1,6 @@
 package com.transport.organelles.transport_.forms;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
@@ -7,13 +8,18 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.app.*;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
@@ -42,12 +48,13 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import android.support.v7.app.ActionBar;
 
 /**
  * Created by Organelles on 6/13/2017.
  */
 
-public class frmDispatch extends ActionBarActivity {
+public class frmDispatch extends AppCompatActivity  {
 
     Button save;
     ListView list_dispatcher;
@@ -79,16 +86,19 @@ public class frmDispatch extends ActionBarActivity {
     private static String bluetooth_name = "Qsprinter";
     View include;
     ImageView bluetooth;
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.frmdispatch);
-        getSupportActionBar().hide();
+        getSupportActionBar().show();
+        String currentDateTimeString = DateFormat.getTimeInstance().format(new Date());
+        getSupportActionBar().setSubtitle(currentDateTimeString);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//
         setObject();
         objectListener();
-        setTitleBar();
+        //setTitleBar();
+        // get action bar
 
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
@@ -120,8 +130,8 @@ public class frmDispatch extends ActionBarActivity {
         line = (Spinner) findViewById(R.id.spin_line);
         direction = (Spinner) findViewById(R.id.spin_direction);
         mode = (Spinner) findViewById(R.id.spin_mode);
-        include = findViewById(R.id.actionbar);
-        bluetooth = (ImageView) include.findViewById(R.id.bluetooth);
+//        include = findViewById(R.id.actionbar);
+//        bluetooth = (ImageView) include.findViewById(R.id.bluetooth);
         final DBQuery db = new DBQuery(frmDispatch.this);
 
         String[] spinnerNames = db.getName(4);
@@ -195,42 +205,45 @@ public class frmDispatch extends ActionBarActivity {
 
             }
         });
+
+
     }
 
+
     private void objectListener() {
-
-        bluetooth.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                LayoutInflater inflater = getLayoutInflater();
-                View alertLayout = inflater.inflate(R.layout.modal_bluetooth, null);
-                final Button connect = (Button) alertLayout.findViewById(R.id.connect);
-                final Button disconnect = (Button) alertLayout.findViewById(R.id.disconnect);
-                AlertDialog.Builder alert = new AlertDialog.Builder(frmDispatch.this);
-
-                connect.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent serverIntent = new Intent(frmDispatch.this, DeviceListActivity.class);
-                        startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE);
-
-                    }
-                });
-
-                disconnect.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        mService.stop();
-                    }
-                });
-                alert.setTitle("Bluetooth");
-                alert.setView(alertLayout);
-                alert.show();
-
-
-
-            }
-        });
+//
+//        bluetooth.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                LayoutInflater inflater = getLayoutInflater();
+//                View alertLayout = inflater.inflate(R.layout.modal_bluetooth, null);
+//                final Button connect = (Button) alertLayout.findViewById(R.id.connect);
+//                final Button disconnect = (Button) alertLayout.findViewById(R.id.disconnect);
+//                AlertDialog.Builder alert = new AlertDialog.Builder(frmDispatch.this);
+//
+//                connect.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        Intent serverIntent = new Intent(frmDispatch.this, DeviceListActivity.class);
+//                        startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE);
+//
+//                    }
+//                });
+//
+//                disconnect.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        mService.stop();
+//                    }
+//                });
+//                alert.setTitle("Bluetooth");
+//                alert.setView(alertLayout);
+//                alert.show();
+//
+//
+//
+//            }
+//        });
 
         save.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -302,49 +315,49 @@ public class frmDispatch extends ActionBarActivity {
 
     }
 
-    private void setTitleBar() {
-        //Display login user
-        TextView txtUser = (TextView) findViewById(R.id.txtUser);
-        final TextView txtBattery = (TextView) findViewById(R.id.txtBattery);
-        txtDateTime = (TextView) findViewById(R.id.txtDateTime);
-        DBQuery dbQuery = new DBQuery(frmDispatch.this);
-
-        final String percent = "%";
-        final String batteryLevel = "";
-
-        assert txtUser != null;
-        String company = dbQuery.getCompanyName();
-        txtUser.setText(company);
-
-
-        //Thread use for time in mapa main
-        Thread t = new Thread() {
-
-            @Override
-            public void run() {
-                try {
-                    while (!isInterrupted()) {
-                        Thread.sleep(1000);
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-
-                                String currentDateTimeString = DateFormat.getTimeInstance().format(new Date());
-                                assert txtDateTime != null;
-                                txtDateTime.setText(currentDateTimeString);
-                                assert txtBattery != null;
-                                String batteryLevel = String.format("%6.0f", GlobalClass.getBatteryLevel(frmDispatch.this));
-                                txtBattery.setText(batteryLevel + "%          ");
-                            }
-                        });
-                    }
-                } catch (InterruptedException ignored) {
-                }
-            }
-        };
-        t.start();
-
-    }
+//    private void setTitleBar() {
+//        //Display login user
+//        TextView txtUser = (TextView) findViewById(R.id.txtUser);
+//        final TextView txtBattery = (TextView) findViewById(R.id.txtBattery);
+//        txtDateTime = (TextView) findViewById(R.id.txtDateTime);
+//        DBQuery dbQuery = new DBQuery(frmDispatch.this);
+//
+//        final String percent = "%";
+//        final String batteryLevel = "";
+//
+//        assert txtUser != null;
+//        String company = dbQuery.getCompanyName();
+//        txtUser.setText(company);
+//
+//
+//        //Thread use for time in mapa main
+//        Thread t = new Thread() {
+//
+//            @Override
+//            public void run() {
+//                try {
+//                    while (!isInterrupted()) {
+//                        Thread.sleep(1000);
+//                        runOnUiThread(new Runnable() {
+//                            @Override
+//                            public void run() {
+//
+//                                String currentDateTimeString = DateFormat.getTimeInstance().format(new Date());
+//                                assert txtDateTime != null;
+//                                txtDateTime.setText(currentDateTimeString);
+//                                assert txtBattery != null;
+//                                String batteryLevel = String.format("%6.0f", GlobalClass.getBatteryLevel(frmDispatch.this));
+//                                txtBattery.setText(batteryLevel + "%          ");
+//                            }
+//                        });
+//                    }
+//                } catch (InterruptedException ignored) {
+//                }
+//            }
+//        };
+//        t.start();
+//
+//    }
 
     private String password(String pass, String name) {
         DBQuery dbQuery = new DBQuery(frmDispatch.this);
@@ -633,7 +646,7 @@ public class frmDispatch extends ActionBarActivity {
         Date dtTemp = new Date(DateFormat.getDateTimeInstance().format(new Date()));
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         dtstartTime = formatter.format(dtTemp);
-
+        GlobalVariable.setName_bus(bus.getText().toString());
         DBQuery dbQuery = new DBQuery(frmDispatch.this);
         String batteryLevel = String.format("%6.0f", GlobalClass.getBatteryLevel(frmDispatch.this));
         int l = Integer.parseInt(GlobalVariable.d_lastticketid);
@@ -836,5 +849,31 @@ public class frmDispatch extends ActionBarActivity {
         }
     };
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.toolbar, menu);
 
+        return super.onCreateOptionsMenu(menu);
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+
+            case R.id.action_bluetoothOn:
+                Intent serverIntent = new Intent(frmDispatch.this, DeviceListActivity.class);
+                startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE);
+                return true;
+            case R.id.action_bluetoothOff:
+                mService.stop();
+                return true;
+
+
+        }
+
+
+        return super.onOptionsItemSelected(item);
+    }
 }

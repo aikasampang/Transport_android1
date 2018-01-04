@@ -16,6 +16,9 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
@@ -84,9 +87,11 @@ public class frmInspector extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.frminspector);
-        getSupportActionBar().hide();
+        getSupportActionBar().show();
+        String currentDateTimeString = DateFormat.getTimeInstance().format(new Date());
+        getSupportActionBar().setSubtitle(currentDateTimeString);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        setTitleBar();
+      //  setTitleBar();
         setObject();
         objectListener();
 
@@ -119,42 +124,42 @@ public class frmInspector extends AppCompatActivity {
         pax_acount = (EditText) findViewById(R.id.i_acount);
         kmpost = (EditText)findViewById(R.id.i_km);
         save = (Button) findViewById(R.id.i_save);
-        bluetooth = (ImageView)findViewById(R.id.bluetooth);
+//        bluetooth = (ImageView)findViewById(R.id.bluetooth);
 
     }
     private void objectListener(){
 
 
-        bluetooth.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                LayoutInflater inflater = getLayoutInflater();
-                View alertLayout = inflater.inflate(R.layout.modal_bluetooth, null);
-                final Button connect = (Button) alertLayout.findViewById(R.id.connect);
-                final Button disconnect = (Button) alertLayout.findViewById(R.id.disconnect);
-                AlertDialog.Builder alert = new AlertDialog.Builder(frmInspector.this);
-
-                connect.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent serverIntent = new Intent(frmInspector.this, DeviceListActivity.class);
-                        startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE);
-                    }
-                });
-
-                disconnect.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        mService.stop();
-                    }
-                });
-                alert.setTitle("Bluetooth");
-                alert.setView(alertLayout);
-                alert.show();
-
-
-            }
-        });
+//        bluetooth.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                LayoutInflater inflater = getLayoutInflater();
+//                View alertLayout = inflater.inflate(R.layout.modal_bluetooth, null);
+//                final Button connect = (Button) alertLayout.findViewById(R.id.connect);
+//                final Button disconnect = (Button) alertLayout.findViewById(R.id.disconnect);
+//                AlertDialog.Builder alert = new AlertDialog.Builder(frmInspector.this);
+//
+//                connect.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        Intent serverIntent = new Intent(frmInspector.this, DeviceListActivity.class);
+//                        startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE);
+//                    }
+//                });
+//
+//                disconnect.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        mService.stop();
+//                    }
+//                });
+//                alert.setTitle("Bluetooth");
+//                alert.setView(alertLayout);
+//                alert.show();
+//
+//
+//            }
+//        });
 
 
 
@@ -640,7 +645,33 @@ public class frmInspector extends AppCompatActivity {
         }
     };
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.toolbar, menu);
 
+        return super.onCreateOptionsMenu(menu);
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+
+            case R.id.action_bluetoothOn:
+                Intent serverIntent = new Intent(frmInspector.this, DeviceListActivity.class);
+                startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE);
+                return true;
+            case R.id.action_bluetoothOff:
+                mService.stop();
+                return true;
+
+
+        }
+
+
+        return super.onOptionsItemSelected(item);
+    }
 
 
 }

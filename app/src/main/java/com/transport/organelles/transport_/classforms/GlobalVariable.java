@@ -940,4 +940,69 @@ public class GlobalVariable {
     public static void setPartial_amount(String partial_amount) {
         GlobalVariable.partial_amount = partial_amount;
     }
+
+    public static String gross_trip;
+    public static String gross_datetime;
+    public static String gross_id;
+    public static String gross_fromrefpoint;
+    public static String gross_torefpoint;
+    public static String gross_line;
+    public static String gross_remarks;
+
+
+    public static String getGross_trip() {
+        return gross_trip;
+    }
+
+    public static void setGross_trip(String gross_trip) {
+        GlobalVariable.gross_trip = gross_trip;
+    }
+
+    public static String getGross_datetime() {
+        return gross_datetime;
+    }
+
+    public static void setGross_datetime(String gross_datetime) {
+        GlobalVariable.gross_datetime = gross_datetime;
+    }
+
+    public static String getGross_id() {
+        return gross_id;
+    }
+
+    public static void setGross_id(String gross_id) {
+        GlobalVariable.gross_id = gross_id;
+    }
+
+    public static String getGross_fromrefpoint() {
+        return gross_fromrefpoint;
+    }
+
+    public static void setGross_fromrefpoint(String gross_fromrefpoint) {
+        GlobalVariable.gross_fromrefpoint = gross_fromrefpoint;
+    }
+
+    public static String getGross_torefpoint() {
+        return gross_torefpoint;
+    }
+
+    public static void setGross_torefpoint(String gross_torefpoint) {
+        GlobalVariable.gross_torefpoint = gross_torefpoint;
+    }
+
+    public static String getGross_line() {
+        return gross_line;
+    }
+
+    public static void setGross_line(String gross_line) {
+        GlobalVariable.gross_line = gross_line;
+    }
+
+    public static String getGross_remarks() {
+        return gross_remarks;
+    }
+
+    public static void setGross_remarks(String gross_remarks) {
+        GlobalVariable.gross_remarks = gross_remarks;
+    }
 }

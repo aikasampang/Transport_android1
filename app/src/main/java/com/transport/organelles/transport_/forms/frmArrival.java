@@ -12,6 +12,9 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
@@ -69,7 +72,9 @@ public class frmArrival extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.frmarrival);
-        getSupportActionBar().hide();
+        getSupportActionBar().show();
+        String currentDateTimeString = DateFormat.getTimeInstance().format(new Date());
+        getSupportActionBar().setSubtitle(currentDateTimeString);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setObject();
         objectListener();
@@ -93,7 +98,7 @@ public class frmArrival extends AppCompatActivity {
         name = (AutoCompleteTextView)findViewById(R.id.a_name);
         password = (EditText)findViewById(R.id.a_password);
         save = (Button)findViewById(R.id.a_save); //print
-        bluetooth = (ImageView)findViewById(R.id.bluetooth);
+        //bluetooth = (ImageView)findViewById(R.id.bluetooth);
     }
 
     private void objectListener(){
@@ -111,38 +116,38 @@ public class frmArrival extends AppCompatActivity {
         });
 
 
-        bluetooth.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                LayoutInflater inflater = getLayoutInflater();
-                View alertLayout = inflater.inflate(R.layout.modal_bluetooth, null);
-                final Button connect = (Button) alertLayout.findViewById(R.id.connect);
-                final Button disconnect = (Button) alertLayout.findViewById(R.id.disconnect);
-                AlertDialog.Builder alert = new AlertDialog.Builder(frmArrival.this);
-
-                connect.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent serverIntent = new Intent(frmArrival.this, DeviceListActivity.class);
-                        startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE);
-
-                    }
-                });
-
-                disconnect.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        mService.stop();
-                    }
-                });
-                alert.setTitle("Bluetooth");
-                alert.setView(alertLayout);
-                alert.show();
-
-
-
-            }
-        });
+//        bluetooth.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                LayoutInflater inflater = getLayoutInflater();
+//                View alertLayout = inflater.inflate(R.layout.modal_bluetooth, null);
+//                final Button connect = (Button) alertLayout.findViewById(R.id.connect);
+//                final Button disconnect = (Button) alertLayout.findViewById(R.id.disconnect);
+//                AlertDialog.Builder alert = new AlertDialog.Builder(frmArrival.this);
+//
+//                connect.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        Intent serverIntent = new Intent(frmArrival.this, DeviceListActivity.class);
+//                        startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE);
+//
+//                    }
+//                });
+//
+//                disconnect.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        mService.stop();
+//                    }
+//                });
+//                alert.setTitle("Bluetooth");
+//                alert.setView(alertLayout);
+//                alert.show();
+//
+//
+//
+//            }
+//        });
     }
     private void saveTripInspection(){
         String n = name.getText().toString();
@@ -164,7 +169,7 @@ public class frmArrival extends AppCompatActivity {
             }
 
 
-            String trip = GlobalVariable.d_lasttripid;
+            String trip = dbQuery.getLastTrip();
             String devicename = GlobalVariable.getPhoneName();
             String datetime = dtstartTime;
             String dispatcher = dbQuery.getEmployeeID(name.getText().toString());
@@ -391,5 +396,34 @@ public class frmArrival extends AppCompatActivity {
             }
         }
     };
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.toolbar, menu);
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+
+            case R.id.action_bluetoothOn:
+                Intent serverIntent = new Intent(frmArrival.this, DeviceListActivity.class);
+                startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE);
+                return true;
+            case R.id.action_bluetoothOff:
+                mService.stop();
+                return true;
+
+
+        }
+
+
+        return super.onOptionsItemSelected(item);
+    }
 
 }

@@ -11,6 +11,9 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -24,6 +27,7 @@ import com.transport.organelles.transport_.classforms.BluetoothService;
 import com.transport.organelles.transport_.classforms.Costtype;
 import com.transport.organelles.transport_.classforms.DBAccess;
 import com.transport.organelles.transport_.classforms.DBQuery;
+import com.transport.organelles.transport_.classforms.DeviceListActivity;
 import com.transport.organelles.transport_.classforms.GlobalClass;
 import com.transport.organelles.transport_.classforms.GlobalVariable;
 import com.transport.organelles.transport_.classforms.Withholding;
@@ -47,9 +51,9 @@ public class frmIngress extends AppCompatActivity {
     EditText specialTrip, cancelled, finalremit;
     Button b_finalremit, b_ingress, b_tripreport, b_expense, b_withholding;
     String  tripId, sqlQuery = "", dtstartTime, vehicle, busmode,linesegment = "" , checkpoint ="", refDate = "" ;
-    int gCurrentKM= 0, mpadcount, penalty, cancel,  manual, partialremit, expense, withholding, lastremit,
-            tripcount, gross_tr, curdir,tripcount_tr, remitfinal;
-    Double driamt, condamt, condrate, drirate, gross, totalgross, shortamt, basisgross, dribonus, condbonus;
+    int gCurrentKM= 0, mpadcount, penalty,  manual, partialremit, expense, withholding, lastremit,
+            tripcount, gross_tr,tripcount_tr, remitfinal, segment;
+    Double driamt, condamt, condrate, drirate, gross, totalgross, shortamt, basisgross, dribonus, condbonus, cancel;
     DBAccess dba;
     Spinner terminal;
 
@@ -74,14 +78,17 @@ public class frmIngress extends AppCompatActivity {
     private static final int REQUEST_CONNECT_DEVICE = 1;
     private static final int REQUEST_ENABLE_BT = 2;
     BluetoothAdapter mBluetoothAdapter;
-    private List<String> list_drislip, list_condslip;
+    private List<String> list_drislip, list_condslip, list_inspectionlog, list_dispatchIngress, list_arrival;
+    int curdir = 0;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.frmingress);
-        getSupportActionBar().hide();
+        getSupportActionBar().show();
+        String currentDateTimeString = DateFormat.getTimeInstance().format(new Date());
+        getSupportActionBar().setSubtitle(currentDateTimeString);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        setTitleBar();
+        //setTitleBar();
         setObjects();
         objectListeners();
         formLoad();
@@ -172,7 +179,7 @@ public class frmIngress extends AppCompatActivity {
 
 
         final DBQuery dbQuery = new DBQuery(frmIngress.this);
-        tripId = dbQuery.getLastTicket();
+        tripId = dbQuery.getLastTrip();
         gross = Double.parseDouble(dbQuery.getGross(tripId));
 
 
@@ -194,7 +201,8 @@ public class frmIngress extends AppCompatActivity {
         b_ingress.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String tripid = GlobalVariable.getLasttrip();
+
+                String tripid = dbQuery.getLastTrip();
                 String devicename = GlobalVariable.getPhoneName();
 
                 ingress(tripid, devicename);
@@ -263,7 +271,7 @@ public class frmIngress extends AppCompatActivity {
                 builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        int c = Integer.parseInt(c_cancel.getText().toString());
+                        Double c = Double.parseDouble(c_cancel.getText().toString());
                         cancel = c;
                         updateAmounts();
                         dialog.dismiss();
@@ -442,15 +450,15 @@ public class frmIngress extends AppCompatActivity {
     }
 
     private void formLoad(){
-        DBQuery dbQuery = new DBQuery(frmIngress.this);
-        String tripid = GlobalVariable.getLasttrip();
+        final DBQuery dbQuery = new DBQuery(frmIngress.this);
+        String tripid = dbQuery.getLastTrip();
 
         computeGrossAddons();
         computeExpense();
 
 
 
-        cancel = Integer.parseInt(dbQuery.getOtherAmt(tripid));
+        cancel = Double.parseDouble(dbQuery.getOtherAmt(tripid));
         //cancel = 0;
         //remitfinal = 0;
 
@@ -489,7 +497,7 @@ public class frmIngress extends AppCompatActivity {
                     specialTrip.setText(0 + "");
                 }else{
                     dba = DBAccess.getInstance(frmIngress.this);
-                    String trip = GlobalVariable.getLasttrip();
+                    String trip = dbQuery.getLastTrip();
                     String d = GlobalVariable.getPhoneName();
                     String c = cancelled.getText().toString();
                     String query = "Insert into TRIPCOST values ('" + trip + "', '" + d + "', '26', '"+c+"', 'null', 'User Generated')";
@@ -508,7 +516,7 @@ public class frmIngress extends AppCompatActivity {
                     specialTrip.setText(0 + "");
                 }else{
                     dba = DBAccess.getInstance(frmIngress.this);
-                    String trip = GlobalVariable.getLasttrip();
+                    String trip = dbQuery.getLastTrip();
                     String d = GlobalVariable.getPhoneName();
                     String c = cancelled.getText().toString();
                     String query = "Insert into TRIPCOST values ('" + trip + "', '" + d + "', '24', '"+c+"', 'null', 'User Generated')";
@@ -569,7 +577,7 @@ public class frmIngress extends AppCompatActivity {
         basisgross = totalgross;
 
         DBQuery dbQuery = new DBQuery(frmIngress.this);
-        String trip = GlobalVariable.getLasttrip();
+        String trip = dbQuery.getLastTrip();
         String device = GlobalVariable.getPhoneName();
         dbQuery.getCondDri(trip);
         String cond = GlobalVariable.getCurrent_cond();
@@ -1020,8 +1028,8 @@ public class frmIngress extends AppCompatActivity {
                 Toast.makeText(frmIngress.this, "Can't insert data to database! insert tripcost ingress", Toast.LENGTH_SHORT).show();
             } else {
                 Log.wtf("success", "printingress tripcost");
-                printIngresso();
-
+                //printIngresso();
+                printTripIngress();
             }
 
             }
@@ -1032,17 +1040,17 @@ public class frmIngress extends AppCompatActivity {
         DBQuery dbQuery = new DBQuery(frmIngress.this);
         vehicle = GlobalVariable.getName_bus();
         busmode = GlobalVariable.getModeid();
-        String trip = GlobalVariable.getLasttrip();
+        String trip = dbQuery.getLastTrip();
         dbQuery.getDispatch(trip);
         gCurrentKM = -1;
-        String line = GlobalVariable.getLineid();
+        String line = dbQuery.getLineDb();
         if(Segment == 0){
 
             if(gCurrentKM != -1){
                 int c = dbQuery.getCurrentKMone(trip, gCurrentKM);
             }else{
-                int cc = dbQuery.getCurrentKMtwo(trip);
-                if(cc == 0){
+                segment = dbQuery.getCurrentKMtwo(trip);
+                if(segment == 0){
                     String d = GlobalVariable.getDirection();
                     if(d.toString().equals("1")){
                         linesegment = dbQuery.getCurrentKMthree(line);
@@ -1050,7 +1058,7 @@ public class frmIngress extends AppCompatActivity {
                         linesegment = dbQuery.getCurrentKMfour(line);
                     }
                 }else{
-                    checkpoint = dbQuery.getCurrentKMfive(line, linesegment);
+                    checkpoint = dbQuery.getCurrentKMfive(line, segment);
                 }
             }
         }else {
@@ -1094,11 +1102,52 @@ public class frmIngress extends AppCompatActivity {
         String str = convertStringArrayToString(test2, ",");
         Log.wtf("shit", str);
 
-        List<Object> list = new ArrayList<Object>(Arrays.asList(test2));
-        for(int i = 0 ; i < test2.length; i ++){
-           Object o =  list.get(i).equals("netAmount");
-          String g = String.valueOf(o);
+        gross = gross + Double.parseDouble(GlobalVariable.getGross_trip());
+
+
+       // Double fromref = Integer.parseInt(GlobalVariable.getGross_fromrefpoint());
+       // Double toref = Double.parseDouble(GlobalVariable.getGross_torefpoint());
+        int fref = Integer.parseInt(GlobalVariable.getGross_fromrefpoint());
+        int tref = Integer.parseInt(GlobalVariable.getGross_torefpoint());
+        if(curdir > ((fref - tref) / (fref - tref))) {
+            tripcount = tripcount + 1;
         }
+        curdir = (fref - tref) / (fref - tref);
+
+
+        /*printing of trip report*/
+
+        Date dtTemp = new Date(DateFormat.getDateTimeInstance().format(new Date()));
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        dtstartTime = formatter.format(dtTemp);
+
+        String companyname = dbQuery.getCompanyName() + "\n";
+        String tripreportname = "Trip Report" + "\n";
+        String devicename = GlobalVariable.getPhoneName()  + " - " + GlobalVariable.getLasttrip() + "\n";
+        String date = "Date: " + dtstartTime + "\n";
+        String vehicle = "Vehicle: " + dbQuery.getBusNamefromTrip(trip)  +"\n";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//        List<Object> list = new ArrayList<Object>(Arrays.asList(test2));
+//        for(int i = 0 ; i < test2.length; i ++){
+//           Object o =  list.get(i).equals("netAmount");
+//          String g = String.valueOf(o);
+//        }
 
 
 
@@ -1171,7 +1220,7 @@ public class frmIngress extends AppCompatActivity {
         builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                printIngresso();
+                printTripIngress();
                 dialog.dismiss();
             }
         });
@@ -1183,22 +1232,26 @@ public class frmIngress extends AppCompatActivity {
                 Toast.makeText(frmIngress.this, "Trip Ended.", Toast.LENGTH_LONG).show();
             }
         });
+        builder.show();
 
     }
 
-    private void printTripReport(){
+    private void printTripIngress(){
 
         DBQuery dbQuery = new DBQuery(frmIngress.this);
         Calendar today = Calendar.getInstance();
         Date dtTemp = new Date(DateFormat.getDateTimeInstance().format(new Date()));
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         dtstartTime = formatter.format(dtTemp);
+        tripId = dbQuery.getLastTrip();
         dbQuery.tripData(tripId);
         dbQuery.dispatchIngresso(tripId);
         dbQuery.tripcostIngress(tripId);
-        dbQuery.arrivalIngress(tripId);
-        dbQuery.dispatchTerminalIngress(tripId);
+        list_inspectionlog = dbQuery.inspectionIngress(tripId);
+        list_arrival = dbQuery.arrivalIngress(tripId);
+        list_dispatchIngress = dbQuery.dispatchTerminalIngress(tripId);
         dbQuery.controlledIngress(tripId);
+        dbQuery.getPartial(tripId);
         dbQuery.getInspection(tripId);
 
         String title = "Ingresso"+ "\n";
@@ -1236,10 +1289,12 @@ public class frmIngress extends AppCompatActivity {
         String with = "Withholding: " + String.valueOf(withholding) + "\n";
 
         // cond and dri bond
-
-        String arr = "Arrival: " + GlobalVariable.getArr_datetime() + " "+  GlobalVariable.getArr_name()+ ""+ GlobalVariable.getArr_post() + ""  + GlobalVariable.getArr__tkid() + "" + GlobalVariable.getArr_qty()  + "px" + " \n";
-        String dft = "Dispatch from Terminal: " + GlobalVariable.getDt_datetime() + " "+  GlobalVariable.getDt_name()+ "" + GlobalVariable.getDt_kmpost() + ""  + GlobalVariable.getDt_tkid() + "" + GlobalVariable.getDt_qty()  + "px" + " \n";
-        String inspection = "Inspection: " + GlobalVariable.getI_datetime() + " "+  GlobalVariable.getI_name()+ "" + GlobalVariable.getI_kmpost() + ""  + GlobalVariable.getI_tkid() + "" + GlobalVariable.getI_qty()  + "px" + " \n";
+        String arr = "Arrival: " + list_arrival.toString() + "px" + " \n";
+        //String arr = "Arrival: " + GlobalVariable.getArr_datetime() + " "+  GlobalVariable.getArr_name()+ ""+ GlobalVariable.getArr_post() + ""  + GlobalVariable.getArr__tkid() + "" + GlobalVariable.getArr_qty()  + "px" + " \n";
+        //String dft = "Dispatch from Terminal: " + GlobalVariable.getDt_datetime() + " "+  GlobalVariable.getDt_name()+ "" + GlobalVariable.getDt_kmpost() + ""  + GlobalVariable.getDt_tkid() + "" + GlobalVariable.getDt_qty()  + "px" + " \n";
+        String dft = "Dispatch from Terminal: " + list_dispatchIngress.toString()  + "px" + " \n";
+        //String inspection = "Inspection: " + GlobalVariable.getI_datetime() + " "+  GlobalVariable.getI_name()+ "" + GlobalVariable.getI_kmpost() + ""  + GlobalVariable.getI_tkid() + "" + GlobalVariable.getI_qty()  + "px" + " \n";
+        String inspection = "Inspection: " +list_inspectionlog.toString() + "px" + " \n";
         String controlled = "Controlled: " +  GlobalVariable.getC_datetime() + " "+  GlobalVariable.getC_name()+ "" + GlobalVariable.getC_kmpost() + ""  + GlobalVariable.getC_tkid() + "" + GlobalVariable.getC_qty()  + "px" + " \n";
         String cvm = "Controlled (mPAD vs Controller)";
 
@@ -1247,13 +1302,14 @@ public class frmIngress extends AppCompatActivity {
 
         //callBluetooth(cost + "" + net + " " + with + " " + arr + " " + dft + " " + inspection + " " + controlled + "" + cvm);
 
-        String rec = dbQuery.getReceipt(tripId);
-        cancel = Integer.parseInt(dbQuery.getOtherAmt(tripId));
+        Double rec = Double.parseDouble (dbQuery.getReceipt(tripId));
+        cancel = Double.parseDouble(dbQuery.getOtherAmt(tripId));
+//        String camt = String.valueOf(cancel);
 
 
         String receive = "Received:" + String.format("%.2f", rec) + "\n \n";
         String partial = GlobalVariable.getPartial_name() + "  " + GlobalVariable.getPartial_amount() + "\n";
-        String so = "ShortAmount: " + shortamt;
+        String so = "ShortAmount: " + shortamt.toString();
         String c = "Cancelled: " + String.format("%.2f",cancel) + "\n";
         String e = "Thank you." + "\n" + "powered by mPAD" + "\n";
 
@@ -1274,7 +1330,7 @@ public class frmIngress extends AppCompatActivity {
         //callBluetooth(receive + " " + partial + " " + so + " " + c + " " + e + " " + fline+ " " + driName + " " + driDate + " " +  dslip + " " + condName + " " + condDate + " "+ cslip);
 
 
-
+        printIngresso();
 
 
 
@@ -1426,7 +1482,33 @@ public class frmIngress extends AppCompatActivity {
         }
     };
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.toolbar, menu);
 
+        return super.onCreateOptionsMenu(menu);
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+
+            case R.id.action_bluetoothOn:
+                Intent serverIntent = new Intent(frmIngress.this, DeviceListActivity.class);
+                startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE);
+                return true;
+            case R.id.action_bluetoothOff:
+                mService.stop();
+                return true;
+
+
+        }
+
+
+        return super.onOptionsItemSelected(item);
+    }
 
 
 }

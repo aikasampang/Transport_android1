@@ -718,14 +718,22 @@ public class DBQuery extends DBObject {
     }
 
     public String getGross(String tripid){
-
+        String gross;
         String query = "select sum(NETAMOUNT) as AMOUNT from TICKET where TRIPID= '"+tripid+"'";
         Cursor cursor = this.getDbConnection().rawQuery(query, null);
         cursor.moveToFirst();
-        String gross = cursor.getString(cursor.getColumnIndexOrThrow("AMOUNT"));
-        cursor.close();
+        gross = cursor.getString(cursor.getColumnIndexOrThrow("AMOUNT"));
+        if(gross.equals("") || gross.equals(null) || gross == null){
+            gross = "0";
+            return gross;
+        }else{
+            gross = cursor.getString(cursor.getColumnIndexOrThrow("AMOUNT"));
+            return gross;
+        }
 
-        return gross;
+
+
+
     }
 
     public String getSpecialTrip(String tripid){
@@ -830,14 +838,18 @@ public class DBQuery extends DBObject {
     }
 
     public String getOtherAmt(String tripid){
-
+        String amt;
         String query = "select coalesce(AMOUNT,0)as AMOUNT from TRIPCOST where COSTTYPEID=24 and TRIPID='"+ tripid +"'";
         Cursor cursor = this.getDbConnection().rawQuery(query,null);
-        cursor.moveToFirst();
-        String amt = cursor.getString(cursor.getColumnIndexOrThrow("AMOUNT"));
-        cursor.close();
-        return amt;
-
+        if(cursor.getCount() > 0){
+            cursor.moveToFirst();
+            amt = cursor.getString(cursor.getColumnIndexOrThrow("AMOUNT"));
+            cursor.close();
+            return amt;
+        }else{
+            amt = "0";
+            return amt;
+        }
     }
 
     public void getPercentCond(String id, String mode, String line){
@@ -1053,7 +1065,7 @@ public class DBQuery extends DBObject {
         return r;
     }
 
-    public String getCurrentKMfive(String line, String linesegment){
+    public String getCurrentKMfive(String line, int linesegment){
         String query = "select NAME from LINESEGMENT where LINEID='"+ line +"' and REFPOINT='"+ linesegment +"'";
         Cursor cursor = this.getDbConnection().rawQuery(query, null);
         cursor.moveToFirst();
@@ -1214,9 +1226,12 @@ public class DBQuery extends DBObject {
                 ptype.add(netamount);
                 ptype.add(line);
                 ptype.add(remarks);
-
-
-
+                GlobalVariable.setGross_trip(netamount);
+                GlobalVariable.setGross_datetime(datetimestamp);
+                GlobalVariable.setGross_fromrefpoint(fromrefpoint);
+                GlobalVariable.setGross_torefpoint(torefpoint);
+                GlobalVariable.setGross_line(line);
+                GlobalVariable.setGross_remarks(remarks);
             }while(cursor.moveToNext());
 
         }
@@ -1676,17 +1691,17 @@ public class DBQuery extends DBObject {
     public String tripData(String tripid) {
 
         String sql = "select t.*, l.NAME as LINENAME, r.DESCRIPTION as VEHICLE," +
-                "d.NAME as DRIVER, c.NAME as CONDUCTOR, cs.NAME as CASHIER, m.NAME as VEHICLEMODE" +
+                "d.NAME as DRIVER, c.NAME as CONDUCTOR, cs.NAME as CASHIER, m.NAME as VEHICLEMODE " +
                 "from TRIP t " +
                 "left join RESOURCE r on r.ID=t.RESOURCEID " +
                 "left join MODE m on m.ID=t.MODEID " +
                 "left join LINE l on l.ID=t.LINE " +
-                "left join TRIPCREW tcd on tcd.TRIPID=t.ID and tcd.EMPLOYEEROLEID=1" +
-                "left join EMPLOYEE d on d.ID=tcd.EMPLOYEEID" +
-                "left join TRIPCREW tcc on tcc.TRIPID=t.ID and tcd.EMPLOYEEROLEID=2" +
-                "left join EMPLOYEE c on c.ID=tcc.EMPLOYEEID" +
-                "left join TRIPCREW tcs on tcs.TRIPID=t.ID and tcs.EMPLOYEEROLEID=5" +
-                "left join EMPLOYEE cs on cs.ID=tcs.EMPLOYEEID" +
+                "left join TRIPCREW tcd on tcd.TRIPID=t.ID and tcd.EMPLOYEEROLEID=1 " +
+                "left join EMPLOYEE d on d.ID=tcd.EMPLOYEEID " +
+                "left join TRIPCREW tcc on tcc.TRIPID=t.ID and tcd.EMPLOYEEROLEID=2 " +
+                "left join EMPLOYEE c on c.ID=tcc.EMPLOYEEID " +
+                "left join TRIPCREW tcs on tcs.TRIPID=t.ID and tcs.EMPLOYEEROLEID=5 " +
+                "left join EMPLOYEE cs on cs.ID=tcs.EMPLOYEEID " +
                 "where t.ID = '"+tripid+"'";
 
         Cursor cursor = this.getDbConnection().rawQuery(sql, null);
@@ -1750,128 +1765,228 @@ public class DBQuery extends DBObject {
         cursor.close();
     }
 
-    public void arrivalIngress(String tripid){
+    public List<String> arrivalIngress(String tripid){
 
         String sql = "select DATETIMESTAMP, e.NAME, KMPOST, TICKETID, QTY  from TRIPINSPECTION ti left join EMPLOYEE e on e.ID=ti.EMPLOYEEID \n" +
                 " where ATTRIBUTEID=11 and TRIPID='"+ tripid+"'";
 
         Cursor c = this.getDbConnection().rawQuery(sql, null);
-        c.moveToFirst();
-        String datetime = c.getString(c.getColumnIndex("DATETIMESTAMP"));
-        String name = c.getString(c.getColumnIndex("NAME"));
-        String post = c.getString(c.getColumnIndex("KMPOST"));
-        String tkid = c.getString(c.getColumnIndex("TICKETID"));
-        String qty = c.getString(c.getColumnIndex("QTY"));
-        c.close();
+        List<String> list = new ArrayList<>();
+        if(c.getCount()>0){
+            if(c.moveToFirst()){
+                list.add(c.getString(c.getColumnIndex("DATETIMESTAMP")));
+                list.add(c.getString(c.getColumnIndex("NAME")));
+                list.add(c.getString(c.getColumnIndex("KMPOST")));
+                list.add(c.getString(c.getColumnIndex("TICKETID")));
+                list.add(c.getString(c.getColumnIndex("QTY")));
+                return list;
+            }else if(c.moveToNext()){
+                list.add(c.getString(c.getColumnIndex("DATETIMESTAMP")));
+                list.add(c.getString(c.getColumnIndex("NAME")));
+                list.add(c.getString(c.getColumnIndex("KMPOST")));
+                list.add(c.getString(c.getColumnIndex("TICKETID")));
+                list.add(c.getString(c.getColumnIndex("QTY")));
+                return list;
+            }else{
+                c.close();
+                return list;
+            }
+//            GlobalVariable.setArr_datetime(datetime);
+//            GlobalVariable.setArr_name(name);
+//            GlobalVariable.setArr__tkid(tkid);
+//            GlobalVariable.setArr_qty(qty);
+//            GlobalVariable.setArr_post(post);
+        }else{
+            GlobalVariable.setArr_datetime("");
+            GlobalVariable.setArr_name("");
+            GlobalVariable.setArr__tkid("");
+            GlobalVariable.setArr_qty("");
+            GlobalVariable.setArr_post("");
+            c.close();
+            return list;
 
-        GlobalVariable.setArr_datetime(datetime);
-        GlobalVariable.setArr_name(name);
-        GlobalVariable.setArr__tkid(tkid);
-        GlobalVariable.setArr_qty(qty);
-        GlobalVariable.setArr_post(post);
+        }
+
     }
 
-    public void dispatchTerminalIngress( String tripid){
+    public List<String>  dispatchTerminalIngress( String tripid){
 
-        String sql = " select DATETIMESTAMP, e.NAME, KMPOST, TICKETID, QTY  from TRIPINSPECTION ti left join EMPLOYEE e on e.ID=ti.EMPLOYEEID\n" +
+        String sql = " select DATETIMESTAMP, e.NAME, KMPOST, TICKETID, QTY  from TRIPINSPECTION ti left join EMPLOYEE e on e.ID=ti.EMPLOYEEID " +
                 "    where ATTRIBUTEID=10 and TRIPID='"+ tripid +"'";
         Cursor c = this.getDbConnection().rawQuery(sql, null);
-        c.moveToFirst();
-        String datetime = c.getString(c.getColumnIndex("DATETIMESTAMP"));
-        String name = c.getString(c.getColumnIndex("NAME"));
-        String post = c.getString(c.getColumnIndex("KMPOST"));
-        String tkid = c.getString(c.getColumnIndex("TICKETID"));
-        String qty = c.getString(c.getColumnIndex("QTY"));
-        c.close();
-        GlobalVariable.setDt_datetime(datetime);
-        GlobalVariable.setDt_name(name);
-        GlobalVariable.setDt_tkid(tkid);
-        GlobalVariable.setDt_qty(qty);
-        GlobalVariable.setDt_kmpost(post);
+        List<String> list = new ArrayList<>();
+        if(c.getCount()>0){
+            if(c.moveToFirst()){
+                list.add(c.getString(c.getColumnIndex("DATETIMESTAMP")));
+                list.add(c.getString(c.getColumnIndex("NAME")));
+                list.add(c.getString(c.getColumnIndex("KMPOST")));
+                list.add(c.getString(c.getColumnIndex("TICKETID")));
+                list.add(c.getString(c.getColumnIndex("QTY")));
+
+//                GlobalVariable.setDt_datetime(datetime);
+//                GlobalVariable.setDt_name(name);
+//                GlobalVariable.setDt_tkid(tkid);
+//                GlobalVariable.setDt_qty(qty);
+//                GlobalVariable.setDt_kmpost(post);
+                return list;
+            }else if(c.moveToNext()){
+                list.add(c.getString(c.getColumnIndex("DATETIMESTAMP")));
+                list.add(c.getString(c.getColumnIndex("NAME")));
+                list.add(c.getString(c.getColumnIndex("KMPOST")));
+                list.add(c.getString(c.getColumnIndex("TICKETID")));
+                list.add(c.getString(c.getColumnIndex("QTY")));
+                return list;
+            }else{
+                c.close();
+                return list;
+            }
+
+        }else{
+            GlobalVariable.setDt_datetime("");
+            GlobalVariable.setDt_name("");
+            GlobalVariable.setDt_tkid("");
+            GlobalVariable.setDt_qty("");
+            GlobalVariable.setDt_kmpost("");
+            c.close();
+            return list;
+        }
+
+
     }
 
-    public void inspectionIngress(String tripid){
+    public List<String> inspectionIngress(String tripid){
 
         String sql = " select DATETIMESTAMP, e.NAME, KMPOST, TICKETID, QTY  from TRIPINSPECTION ti left join EMPLOYEE e on e.ID=ti.EMPLOYEEID\n" +
                 "  where ATTRIBUTEID=1 and TRIPID='"+tripid+"'";
         Cursor c = this.getDbConnection().rawQuery(sql, null);
-        c.moveToFirst();
+        List<String> list = new ArrayList<>();
+        if(c.getCount()>0) {
+            if (c.moveToFirst()){
+                list.add(c.getString(c.getColumnIndex("DATETIMESTAMP")));
+                list.add(c.getString(c.getColumnIndex("NAME")));
+                list.add(c.getString(c.getColumnIndex("KMPOST")));
+                list.add(c.getString(c.getColumnIndex("TICKETID")));
+                list.add(c.getString(c.getColumnIndex("QTY")));
+                return list;
+//            GlobalVariable.setI_datetime(datetime);
+//            GlobalVariable.setI_name(name);
+//            GlobalVariable.setI_tkid(tkid);
+//            GlobalVariable.setI_qty(qty);
+//            GlobalVariable.setI_kmpost(post);
 
-        String datetime = c.getString(c.getColumnIndex("DATETIMESTAMP"));
-        String name = c.getString(c.getColumnIndex("NAME"));
-        String post = c.getString(c.getColumnIndex("KMPOST"));
-        String tkid = c.getString(c.getColumnIndex("TICKETID"));
-        String qty = c.getString(c.getColumnIndex("QTY"));
-
-        GlobalVariable.setI_datetime(datetime);
-        GlobalVariable.setI_name(name);
-        GlobalVariable.setI_tkid(tkid);
-        GlobalVariable.setI_qty(qty);
-        GlobalVariable.setI_kmpost(post);
-        c.close();
-
+              }else if(c.moveToNext()){
+                list.add(c.getString(c.getColumnIndex("DATETIMESTAMP")));
+                list.add(c.getString(c.getColumnIndex("NAME")));
+                list.add(c.getString(c.getColumnIndex("KMPOST")));
+                list.add(c.getString(c.getColumnIndex("TICKETID")));
+                list.add(c.getString(c.getColumnIndex("QTY")));
+                return list;
+            }else{
+                c.close();
+                return list;
+            }
+        }else{
+            c.close();
+            return list;
+        }
     }
 
 
-    public void controlledIngress( String tripid){
+    public List<String> controlledIngress( String tripid){
         String sql = "select DATETIMESTAMP, e.NAME, KMPOST, TICKETID, QTY  from TRIPINSPECTION ti left join EMPLOYEE e on e.ID=ti.EMPLOYEEID\n" +
                 "  where ATTRIBUTEID=2 and TRIPID='" + tripid +"'";
 
         Cursor c = this.getDbConnection().rawQuery(sql, null);
-        c.moveToFirst();
-        String datetime = c.getString(c.getColumnIndex("DATETIMESTAMP"));
-        String name = c.getString(c.getColumnIndex("NAME"));
-        String post = c.getString(c.getColumnIndex("KMPOST"));
-        String tkid = c.getString(c.getColumnIndex("TICKETID"));
-        String qty = c.getString(c.getColumnIndex("QTY"));
+        List<String> list = new ArrayList<>();
+        if(c.getCount()>0){
+            if(c.moveToFirst()){
+                list.add(c.getString(c.getColumnIndex("DATETIMESTAMP")));
+                list.add(c.getString(c.getColumnIndex("NAME")));
+                list.add(c.getString(c.getColumnIndex("KMPOST")));
+                list.add(c.getString(c.getColumnIndex("TICKETID")));
+                list.add(c.getString(c.getColumnIndex("QTY")));
+                return list;
 
-        GlobalVariable.setC_datetime(datetime);
-        GlobalVariable.setC_name(name);
-        GlobalVariable.setC_tkid(tkid);
-        GlobalVariable.setC_qty(qty);
-        GlobalVariable.setC_kmpost(post);
-        c.close();
+            }else if(c.moveToNext()){
+                list.add(c.getString(c.getColumnIndex("DATETIMESTAMP")));
+                list.add(c.getString(c.getColumnIndex("NAME")));
+                list.add(c.getString(c.getColumnIndex("KMPOST")));
+                list.add(c.getString(c.getColumnIndex("TICKETID")));
+                list.add(c.getString(c.getColumnIndex("QTY")));
+                return list;
+
+            }else{
+                c.close();
+                return list;
+            }
+
+//            GlobalVariable.setC_datetime(datetime);
+//            GlobalVariable.setC_name(name);
+//            GlobalVariable.setC_tkid(tkid);
+//            GlobalVariable.setC_qty(qty);
+//            GlobalVariable.setC_kmpost(post);
 
 
+        }else{
+//            GlobalVariable.setC_datetime("");
+//            GlobalVariable.setC_name("");
+//            GlobalVariable.setC_tkid("");
+//            GlobalVariable.setC_qty("");
+//            GlobalVariable.setC_kmpost("");
+            c.close();
+            return list;
+        }
     }
 
     public void getInspection(String tripid){
 
         String sql = "select distinct TAG as TRIPNUM, LINEID, (case when FROMREFPOINT<TOREFPOINT then 1 else -1 end) as DIR from TICKET where TRIPID='"+ tripid +"'";
         Cursor c = this.getDbConnection().rawQuery(sql, null);
-        c.moveToFirst();
-        String tripnum = c.getString(c.getColumnIndex("TRIPNUM"));
-        String lineid = c.getString(c.getColumnIndex("LINEID"));
-        String dir = c.getString(c.getColumnIndex("DIR"));
-        c.close();
-        printInspection("0", lineid, "0", dir, GlobalVariable.getModeid() );
-
-
-
-
-
+        if(c.getCount()>0){
+            c.moveToFirst();
+            String tripnum = c.getString(c.getColumnIndex("TRIPNUM"));
+            String lineid = c.getString(c.getColumnIndex("LINEID"));
+            String dir = c.getString(c.getColumnIndex("DIR"));
+            c.close();
+            String device = GlobalVariable.getPhoneName();
+            printInspection(lineid, getLastTrip() , dir, getMode(device) );
+        }
 
     }
 
-    public void printInspection(String tripnum, String lineid, String mode, String dir, String kmpost) {
+    public List<String> printInspection(String lineid, String tripid,  String dir, String gbusmode) {
 
         String sql = "select distinct m.FROMKM as KMPOST,i.PCOUNT,coalesce(i.QTY,0) as QTY,i.DATETIMESTAMP,m.DIRECTION,i.LINESEGMENT " +
-                "                                from TRIPINSPECTION i left join TRIP t on t.ID=i.TRIPID  and i.TRIPID="+ lineid + "' and i.ATTRIBUTEID=2 " +
+                "                                from TRIPINSPECTION i left join TRIP t on t.ID=i.TRIPID  and i.TRIPID='"+ tripid + "' and i.ATTRIBUTEID=2 " +
                 "                                left join CONTROLMATRIX m on m.LINEID=t.LINE and m.DIRECTION=i.DIRECTION and m.FROMKM=i.KMPOST and m.TOKM=t.MODEID " +
-                "                                where m.LINEID ='"+ lineid +"' And m.DIRECTION = '"+dir+"' And m.TOKM ='"+ kmpost+"'";
+                "                                where m.LINEID ='"+ lineid +"' And m.DIRECTION = '"+dir+"' And m.TOKM ='"+ gbusmode+"'";
 
         Cursor c = this.getDbConnection().rawQuery(sql,null);
-        c.moveToFirst();
-        String km = c.getString(c.getColumnIndex("KMPOST"));
-        String pcount = c.getString(c.getColumnIndex("PCOUNT"));
-        String qty = c.getString(c.getColumnIndex("QTY"));
-        String datetime = c.getString(c.getColumnIndex("DATETIMESTAMP"));
-        String direction = c.getString(c.getColumnIndex("DIRECTION"));
-        String lsegment = c.getString(c.getColumnIndex("LINESEGMENT"));
-
-        c.close();
-
-        Log.wtf("mpadvscontrolled", km + pcount + qty + datetime + direction + direction + lsegment);
+        List<String> list = new ArrayList<>();
+        if(c.getCount()>0){
+            if(c.moveToFirst()){
+                list.add(c.getString(c.getColumnIndex("KMPOST")));
+                list.add(c.getString(c.getColumnIndex("PCOUNT")));
+                list.add(c.getString(c.getColumnIndex("QTY")));
+                list.add(c.getString(c.getColumnIndex("DATETIMESTAMP")));
+                list.add(c.getString(c.getColumnIndex("DIRECTION")));
+                list.add(c.getString(c.getColumnIndex("LINESEGMENT")));
+            }else if(c.moveToNext()){
+                list.add(c.getString(c.getColumnIndex("KMPOST")));
+                list.add(c.getString(c.getColumnIndex("PCOUNT")));
+                list.add(c.getString(c.getColumnIndex("QTY")));
+                list.add(c.getString(c.getColumnIndex("DATETIMESTAMP")));
+                list.add(c.getString(c.getColumnIndex("DIRECTION")));
+                list.add(c.getString(c.getColumnIndex("LINESEGMENT")));
+            }else{
+                c.close();
+            }
+        }else {
+            c.close();
+            return list;
+        }
+        //Log.wtf("mpadvscontrolled", km + pcount + qty + datetime + direction + direction + lsegment);
+        return list;
     }
 
 
@@ -1889,12 +2004,18 @@ public class DBQuery extends DBObject {
 
         String sql = "select e.NAME, r.AMOUNT from TRIPRECEIPT r left join EMPLOYEE e on e.ID=r.EMPLOYEEID where r.CUSTOMERID=1 and r.TRIPID='"+ tripid +"'";
         Cursor c = this.getDbConnection().rawQuery(sql, null);
-        c.moveToFirst();
-        String name = c.getString(c.getColumnIndex("NAME"));
-        String amount = c.getString(c.getColumnIndex("AMOUNT"));
-        GlobalVariable.setPartial_name(name);
-        GlobalVariable.setPartial_amount(amount);
-        c.close();
+        if(c.getCount()>0){
+            c.moveToFirst();
+            String name = c.getString(c.getColumnIndex("NAME"));
+            String amount = c.getString(c.getColumnIndex("AMOUNT"));
+            GlobalVariable.setPartial_name(name);
+            GlobalVariable.setPartial_amount(amount);
+            c.close();
+        }else{
+            GlobalVariable.setPartial_name("");
+            GlobalVariable.setPartial_amount("");
+        }
+
     }
 
     public List<String> getDripayslip(String tripid){
@@ -1907,15 +2028,16 @@ public class DBQuery extends DBObject {
         List<String> list = new ArrayList<>();
         if(c.moveToFirst()){
             list.add(c.getString(c.getColumnIndex("NAME")));
-            list.add(c.getString(c.getColumnIndex("AMOUNT")));
+            list.add(c.getString(c.getColumnIndex("Amount")));
+            return list;
         }else if (c.moveToNext()){
             list.add( c.getString(c.getColumnIndex("NAME")));
-            list.add( c.getString(c.getColumnIndex("AMOUNT")));
+            list.add( c.getString(c.getColumnIndex("Amount")));
+            return list;
         }else{
-
+            c.close();
+            return list;
         }
-
-        return list;
 
     }
 
@@ -1952,7 +2074,22 @@ public class DBQuery extends DBObject {
     }
 
 
+    public String getBusNamefromTrip(String trip){
 
+        String sql = "Select RESOURCEID from TRIP where ID ='"+trip+"'";
+        Cursor c = this.getDbConnection().rawQuery(sql, null);
+        c.moveToFirst();
+        String busid = c.getString(c.getColumnIndex("RESOURCEID"));
+        c.close();
+
+        String sql1 = "Select DESCRIPTION from RESOURCE where ID ='"+ busid +"'";
+        Cursor cc = this.getDbConnection().rawQuery(sql1, null);
+        cc.moveToFirst();
+        String busname = cc.getString(cc.getColumnIndex("DESCRIPTION"));
+        cc.close();
+
+        return busname;
+    }
 
 
 //    public JSONArray converttojsonArray(String trip, String datetime){

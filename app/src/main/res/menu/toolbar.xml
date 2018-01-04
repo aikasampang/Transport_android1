@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+
+    <item
+        android:id="@+id/action_bluetoothOn"
+        android:title="Bluetooth On"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_bluetoothOff"
+        android:title="Bluetooth Off"
+        app:showAsAction="never"/>
+
+    <!--<item-->
+        <!--android:id="@+id/label_time"-->
+        <!--android:orderInCategory="300"-->
+        <!--android:title="Time"-->
+        <!--android:actionLayout="@layout/menu_time"-->
+        <!--app:showAsAction="always"-->
+        <!--/>-->
+
+
+
+
+
+</menu>
