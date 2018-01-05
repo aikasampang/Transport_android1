@@ -2091,6 +2091,46 @@ public class DBQuery extends DBObject {
         return busname;
     }
 
+    public List<String> getPartialDetails(String tripid){
+        String sql = "select tr.DATETIMESTAMP, e.NAME, tr.AMOUNT from \n" +
+                "                            TRIPRECEIPT tr left join employee e on e.ID=tr.EMPLOYEEID \n" +
+                "                            where CUSTOMERID=1 and TRIPID='"+ tripid  +"'";
+        Cursor c = this.getDbConnection().rawQuery(sql, null);
+        List<String> list = new ArrayList<>();
+        if(c.getCount()>0){
+            if(c.moveToFirst()){
+                list.add(c.getString(c.getColumnIndex("DATETIMESTAMP")));
+                list.add(c.getString(c.getColumnIndex("NAME")));
+                list.add(c.getString(c.getColumnIndex("AMOUNT")));
+                return list;
+            }else if (c.moveToNext()){
+                list.add(c.getString(c.getColumnIndex("DATETIMESTAMP")));
+                list.add(c.getString(c.getColumnIndex("NAME")));
+                list.add(c.getString(c.getColumnIndex("AMOUNT")));
+                c.close();
+                return list;
+            }else{
+                c.close();
+                return list;
+            }
+        }else{
+            c.close();
+            return list;
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+    }
+
 
 //    public JSONArray converttojsonArray(String trip, String datetime){
 //

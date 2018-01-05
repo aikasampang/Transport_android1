@@ -224,7 +224,7 @@ public class frmReverse extends AppCompatActivity {
 
 
         String device = GlobalVariable.getPhoneName();
-        String trip = dbQuery.getTripId(device);
+        String trip = dbQuery.getLastTrip();
         String datetime = dtstartTime;
         String direction = lDirection;
         String dispatcher = dbQuery.getEmployeeID(i_name);
@@ -285,16 +285,8 @@ public class frmReverse extends AppCompatActivity {
                             Log.wtf("fuck again","update linedevicedata");
                         }
                     }
-
             }
-
-
-
         }
-
-
-
-
     }
 
 }

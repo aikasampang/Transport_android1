@@ -198,7 +198,7 @@ public class frmPartial extends AppCompatActivity {
         Date dtTemp = new Date(DateFormat.getDateTimeInstance().format(new Date()));
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         dtstartTime = formatter.format(dtTemp);
-        String trip = GlobalVariable.getLasttrip();
+        String trip = dbQuery.getLastTrip();
         String devicename = GlobalVariable.getPhoneName();
         String cashierID = dbQuery.getEmployeeID(p_name);
         String date = dtstartTime;

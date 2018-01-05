@@ -78,7 +78,7 @@ public class frmIngress extends AppCompatActivity {
     private static final int REQUEST_CONNECT_DEVICE = 1;
     private static final int REQUEST_ENABLE_BT = 2;
     BluetoothAdapter mBluetoothAdapter;
-    private List<String> list_drislip, list_condslip, list_inspectionlog, list_dispatchIngress, list_arrival;
+    private List<String> list_drislip, list_condslip, list_inspectionlog, list_dispatchIngress, list_arrival, list_partialdetails;
     int curdir = 0;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -1044,6 +1044,10 @@ public class frmIngress extends AppCompatActivity {
         dbQuery.getDispatch(trip);
         gCurrentKM = -1;
         String line = dbQuery.getLineDb();
+
+        list_partialdetails = dbQuery.getPartialDetails(trip);
+
+
         if(Segment == 0){
 
             if(gCurrentKM != -1){
@@ -1144,7 +1148,9 @@ public class frmIngress extends AppCompatActivity {
 
         //callBluetooth(companyname + " " + tripreportname + " " + devicename + " " + date + " " + vehicle + " " + dri + " " + cond + " " + route + " " + mode + " " + cpoint + " " + tcount + " " + gross + " " + bat );
 
-       // String pd = "Partial Details: " + + "\n";
+        String pd = "Partial Details: " + list_partialdetails.toString()  + "\n";
+
+
 
 
 
