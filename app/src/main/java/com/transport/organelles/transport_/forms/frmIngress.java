@@ -50,7 +50,7 @@ public class frmIngress extends AppCompatActivity {
     TextView txtDateTime, totalCollection_text, totalGross_text, expenses_text, withholding_text, totalCommission_text, netsales_text, partial_text, shortover_text;
     EditText specialTrip, cancelled, finalremit;
     Button b_finalremit, b_ingress, b_tripreport, b_expense, b_withholding;
-    String  tripId, sqlQuery = "", dtstartTime, vehicle, busmode,linesegment = "" , checkpoint ="", refDate = "" ;
+    String  tripId, sqlQuery = "", dtstartTime, vehicle, busmode,linesegment = "" , checkpoint ="", refDate = "" , tripnum;
     int gCurrentKM= 0, mpadcount, penalty,  manual, partialremit, expense, withholding, lastremit,
             tripcount, gross_tr,tripcount_tr, remitfinal, segment;
     Double driamt, condamt, condrate, drirate, gross, totalgross, shortamt, basisgross, dribonus, condbonus, cancel;
@@ -78,7 +78,9 @@ public class frmIngress extends AppCompatActivity {
     private static final int REQUEST_CONNECT_DEVICE = 1;
     private static final int REQUEST_ENABLE_BT = 2;
     BluetoothAdapter mBluetoothAdapter;
-    private List<String> list_drislip, list_condslip, list_inspectionlog, list_dispatchIngress, list_arrival, list_partialdetails;
+
+    private List<String> list_drislip, list_condslip, list_inspectionlog, list_dispatchIngress, list_arrival, list_partialdetails, list_reverselog, list_inspectionTripReport,
+    list_controlledTripReport, list_aoc;
     int curdir = 0;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -1046,6 +1048,12 @@ public class frmIngress extends AppCompatActivity {
         String line = dbQuery.getLineDb();
 
         list_partialdetails = dbQuery.getPartialDetails(trip);
+        list_reverselog = dbQuery.getReverseLog(trip);
+        list_inspectionTripReport = dbQuery.getInspectionTripReport(trip);
+        list_controlledTripReport = dbQuery.getControlledTripReport(trip);
+        dbQuery.getInspection(trip);
+        list_aoc = dbQuery.getAreaOfClosing(trip);
+
 
 
         if(Segment == 0){
@@ -1149,6 +1157,45 @@ public class frmIngress extends AppCompatActivity {
         //callBluetooth(companyname + " " + tripreportname + " " + devicename + " " + date + " " + vehicle + " " + dri + " " + cond + " " + route + " " + mode + " " + cpoint + " " + tcount + " " + gross + " " + bat );
 
         String pd = "Partial Details: " + list_partialdetails.toString()  + "\n";
+        String rl = "Reverse Log: " + list_reverselog.toString() + "\n";
+        String in = "Inspection: " + list_inspectionTripReport.toString()  + "\n";
+        String c = "Controlled: " + list_controlledTripReport.toString() + "\n";
+        String cvm = "Controlled (mPAD vs Controller)"; //arrange return
+
+        String aoc = "Area of Closing: " +list_aoc.toString()+ "\n";
+
+        String ts = ptype.toString() + "\n";
+
+        String tline = GlobalVariable.getGross_line();
+        String tnum = "1";
+        String tdir = "0";
+        String ttcount = "0";
+        String tttotal = "0";
+
+        if(tnum.equals("1")){
+            tripnum = "1st";
+        }else if(tnum.equals("2")){
+            tripnum = "2nd";
+        }else if (tnum.equals("3")){
+            tripnum = "3rd";
+        }else{
+            tripnum = tnum + "th";
+        }
+
+        String ttpax = " Pax:" + ttcount + "Total: " + tttotal + "\n";
+
+        String th = "--------------- TEAR HERE ------------------";
+
+        Log.wtf("2 tripreport", pd + " " + rl + " " + in + " " + c + " " + cvm + " " + aoc + " " + ts + " " +
+         ttpax);
+
+        callBluetooth(pd + " " + rl + " " + in + " " + c + " " + cvm + " " + aoc + " " + ts + " " +
+                ttpax);
+
+
+
+
+
 
 
 

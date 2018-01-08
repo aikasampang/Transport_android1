@@ -1157,9 +1157,15 @@ public class DBQuery extends DBObject {
                 ptype.add(id);
                 ptype.add(fromrefpoint);
                 ptype.add(torefpoint);
-                ptype.add(netamount + "/netAmount");
+                ptype.add(netamount);
                 ptype.add(line);
                 ptype.add(remarks);
+                GlobalVariable.setGross_trip(netamount);
+                GlobalVariable.setGross_datetime(datetimestamp);
+                GlobalVariable.setGross_fromrefpoint(fromrefpoint);
+                GlobalVariable.setGross_torefpoint(torefpoint);
+                GlobalVariable.setGross_line(line);
+                GlobalVariable.setGross_remarks(remarks);
 
 
             }while(cursor.moveToNext());
@@ -2118,19 +2124,138 @@ public class DBQuery extends DBObject {
             return list;
         }
 
+    }
 
+    public List<String>  getReverseLog(String trip){
 
+        String sql = "select DATETIMESTAMP, e.NAME, KMPOST, tr.REMARKS from TRIPREVERSE tr " +
+                "                         left join EMPLOYEE e on e.ID=tr.EMPLOYEEID " +
+                "                         where tr.TRIPID='"+ trip+"' order by DATETIMESTAMP";
 
+        Cursor c = this.getDbConnection().rawQuery(sql, null);
+        List<String> list = new ArrayList<>();
+        if(c.getCount()>0){
+            if(c.moveToFirst()){
+                    list.add(c.getString(c.getColumnIndex("DATESTIMESTAMP")));
+                    list.add(c.getString(c.getColumnIndex("NAME")));
+                    list.add(c.getString(c.getColumnIndex("REMARKS")));
+                    return list;
 
+            }else if(c.moveToNext()){
+                list.add(c.getString(c.getColumnIndex("DATESTIMESTAMP")));
+                list.add(c.getString(c.getColumnIndex("NAME")));
+                list.add(c.getString(c.getColumnIndex("REMARKS")));
+                c.close();
+                return list;
 
+            }else{
+                c.close();
+                return list;
+            }
+        }else {
+            c.close();
+            return list;
+        }
+    }
 
+    public List<String> getInspectionTripReport(String tripid){
 
+        String sql = "select DATETIMESTAMP, e.NAME, KMPOST, TICKETID, QTY " +
+                "                           from TRIPINSPECTION ti left join EMPLOYEE e on e.ID=ti.EMPLOYEEID " +
+                "                             where ATTRIBUTEID=1 and TRIPID='"+tripid+"' ";
+        Cursor c = this.getDbConnection().rawQuery(sql, null);
+        List<String> list = new ArrayList<>();
+        if(c.getCount()>0){
+            if(c.moveToFirst()){
+                list.add(c.getString(c.getColumnIndex("DATETIMESTAMP")));
+                list.add(c.getString(c.getColumnIndex("NAME")));
+                list.add(c.getString(c.getColumnIndex("KMPOST")));
+                list.add(c.getString(c.getColumnIndex("TICKETID")));
+                list.add(c.getString(c.getColumnIndex("QTY")));
+                return list;
+            }else if(c.moveToNext()){
+                list.add(c.getString(c.getColumnIndex("DATETIMESTAMP")));
+                list.add(c.getString(c.getColumnIndex("NAME")));
+                list.add(c.getString(c.getColumnIndex("KMPOST")));
+                list.add(c.getString(c.getColumnIndex("TICKETID")));
+                list.add(c.getString(c.getColumnIndex("QTY")));
+                c.close();
+                return list;
+            }else {
+                c.close();
+                return list;
+            }
+        }else{
+            c.close();
+            return list;
+        }
+    }
 
+    public List<String> getControlledTripReport(String tripid){
 
-
+        String sql = "select DATETIMESTAMP, e.NAME, KMPOST, TICKETID, QTY " +
+                "                           from TRIPINSPECTION ti left join EMPLOYEE e on e.ID=ti.EMPLOYEEID \" & _\n" +
+                "                           where ATTRIBUTEID=2 and TRIPID='"+ tripid +"'";
+        Cursor c = this.getDbConnection().rawQuery(sql, null);
+        List<String> list = new ArrayList<>();
+        if(c.getCount()>0){
+            if(c.moveToFirst()){
+                list.add(c.getString(c.getColumnIndex("DATETIMESTAMP")));
+                list.add(c.getString(c.getColumnIndex("NAME")));
+                list.add(c.getString(c.getColumnIndex("KMPOST")));
+                list.add(c.getString(c.getColumnIndex("TICKETID")));
+                list.add(c.getString(c.getColumnIndex("QTY")));
+                return list;
+            }else if(c.moveToNext()){
+                list.add(c.getString(c.getColumnIndex("DATETIMESTAMP")));
+                list.add(c.getString(c.getColumnIndex("NAME")));
+                list.add(c.getString(c.getColumnIndex("KMPOST")));
+                list.add(c.getString(c.getColumnIndex("TICKETID")));
+                list.add(c.getString(c.getColumnIndex("QTY")));
+                return list;
+            }else{
+                c.close();
+                return list;
+            }
+        }else {
+            c.close();
+            return list;
+        }
 
     }
 
+    public List<String> getAreaOfClosing(String trip){
+
+        String sql = "select DATETIMESTAMP,QTY,KMPOST,PCOUNT,BCOUNT,TICKETID from TRIPINSPECTION where ATTRIBUTEID=3 and TRIPID='"+ trip+"'";
+        Cursor c = this.getDbConnection().rawQuery(sql, null);
+        List<String> list = new ArrayList<>();
+        if(c.getCount()>0){
+            if(c.moveToFirst()){
+                list.add(c.getString(c.getColumnIndex("DATETIMESTAMP")));
+                list.add(c.getString(c.getColumnIndex("QTY")));
+                list.add(c.getString(c.getColumnIndex("KMPOST")));
+                list.add(c.getString(c.getColumnIndex("PCOUNT")));
+                list.add(c.getString(c.getColumnIndex("BCOUNT")));
+                list.add(c.getString(c.getColumnIndex("TICKETID")));
+                return list;
+            }else if(c.moveToNext()){
+                list.add(c.getString(c.getColumnIndex("DATETIMESTAMP")));
+                list.add(c.getString(c.getColumnIndex("QTY")));
+                list.add(c.getString(c.getColumnIndex("KMPOST")));
+                list.add(c.getString(c.getColumnIndex("PCOUNT")));
+                list.add(c.getString(c.getColumnIndex("BCOUNT")));
+                list.add(c.getString(c.getColumnIndex("TICKETID")));
+                return list;
+            }else{
+                c.close();
+                return list;
+            }
+        }else {
+            c.close();
+            return list;
+        }
+
+    }
 
 //    public JSONArray converttojsonArray(String trip, String datetime){
 //
