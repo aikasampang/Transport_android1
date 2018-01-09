@@ -219,6 +219,7 @@ public class frmPartial extends AppCompatActivity {
             Toast.makeText(frmPartial.this, "Can't insert data to database!.", Toast.LENGTH_SHORT).show();
         }else{
             Log.wtf("frmPartial","save tripreceipt");
+            Toast.makeText(frmPartial.this, "Partial Saved!", Toast.LENGTH_LONG).show();
         }
     }
 

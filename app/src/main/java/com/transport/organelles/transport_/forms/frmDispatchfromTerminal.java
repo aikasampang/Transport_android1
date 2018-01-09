@@ -118,6 +118,14 @@ public class frmDispatchfromTerminal extends AppCompatActivity {
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+
+                if (mService.getState() != BluetoothService.STATE_CONNECTED) {
+                    Toast.makeText(frmDispatchfromTerminal.this, R.string.not_connected, Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+
                 saveTripInspection();
             }
         });
@@ -280,7 +288,7 @@ public class frmDispatchfromTerminal extends AppCompatActivity {
         //String Conductor = "Conductor : " +   + "\n";
         String lastticket ="Passenger: "+count.getText().toString() ;
         Log.wtf("dispath from arrival",title + date + Bus + line + inspector+ Driver + Conductor +lastticket);
-       // callBluetooth(title + date + Bus + line + inspector+ Driver + Conductor +lastticket);
+       callBluetooth(title + date + Bus + line + inspector+ Driver + Conductor +lastticket);
 
 
     }

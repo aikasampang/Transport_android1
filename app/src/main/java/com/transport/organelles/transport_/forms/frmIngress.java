@@ -1,7 +1,9 @@
 package com.transport.organelles.transport_.forms;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -204,16 +206,35 @@ public class frmIngress extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                String tripid = dbQuery.getLastTrip();
-                String devicename = GlobalVariable.getPhoneName();
+                if (mService.getState() != BluetoothService.STATE_CONNECTED) {
+                    Toast.makeText(frmIngress.this, R.string.not_connected, Toast.LENGTH_LONG).show();
+                    return;
+                }
+                Date dtTemp = new Date(DateFormat.getDateTimeInstance().format(new Date()));
+                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                dtstartTime = formatter.format(dtTemp);
+                sqlQuery = "update TRIP set ENDDATETIMESTAMP='"+dtstartTime +"' where ID='"+tripId+"'";
 
-                ingress(tripid, devicename);
+                if (!dba.executeQuery(sqlQuery)) {
+                    Toast.makeText(frmIngress.this, "Can't insert data to database!.", Toast.LENGTH_SHORT).show();
+                } else {
+                    Log.wtf("update direction", "update direction");
+                    String tripid = dbQuery.getLastTrip();
+                    String devicename = GlobalVariable.getPhoneName();
+                    ingress(tripid, devicename);
+                }
             }
         });
 
         b_tripreport.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if (mService.getState() != BluetoothService.STATE_CONNECTED) {
+                    Toast.makeText(frmIngress.this, R.string.not_connected, Toast.LENGTH_LONG).show();
+                    return;
+                }
+
                 tripreport(0);
             }
         });
@@ -988,7 +1009,7 @@ public class frmIngress extends AppCompatActivity {
         DBQuery dbQuery = new DBQuery(frmIngress.this);
 
 
-        String tripid = GlobalVariable.getLasttrip();
+        String tripid = dbQuery.getLastTrip();
         String devicename = GlobalVariable.getPhoneName();
         String cashier = GlobalVariable.getCashierID();
         String date = dtstartTime;
@@ -1063,7 +1084,8 @@ public class frmIngress extends AppCompatActivity {
             }else{
                 segment = dbQuery.getCurrentKMtwo(trip);
                 if(segment == 0){
-                    String d = GlobalVariable.getDirection();
+                    String device = GlobalVariable.getPhoneName();
+                    String d = dbQuery.getDirectionValue(device);
                     if(d.toString().equals("1")){
                         linesegment = dbQuery.getCurrentKMthree(line);
                     }else{
@@ -1104,17 +1126,18 @@ public class frmIngress extends AppCompatActivity {
 
         }
 
-        String one = ptype.toString();
-        String two = "" +ptype.equals(1);
-        String three= "" +ptype.equals(2);
-        String four = "" +ptype.equals(3);
+//        String one = ptype.toString();
+//        String two = "" +ptype.equals(1);
+//        String three= "" +ptype.equals(2);
+//        String four = "" +ptype.equals(3);
+//
+//        String[] test = ptype;
+//        String[] test2 = ptype2;
+//        String str = convertStringArrayToString(test2, ",");
+//        Log.wtf("shit", str);
 
-        String[] test = ptype;
-        String[] test2 = ptype2;
-        String str = convertStringArrayToString(test2, ",");
-        Log.wtf("shit", str);
-
-        gross = gross + Double.parseDouble(GlobalVariable.getGross_trip());
+        ptype2 = dbQuery.getTicketsCountTwo(trip);
+//        gross = gross + Double.parseDouble(GlobalVariable.getGross_trip());
 
 
        // Double fromref = Integer.parseInt(GlobalVariable.getGross_fromrefpoint());
@@ -1192,32 +1215,6 @@ public class frmIngress extends AppCompatActivity {
         callBluetooth(pd + " " + rl + " " + in + " " + c + " " + cvm + " " + aoc + " " + ts + " " +
                 ttpax);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 //        List<Object> list = new ArrayList<Object>(Arrays.asList(test2));
 //        for(int i = 0 ; i < test2.length; i ++){
 //           Object o =  list.get(i).equals("netAmount");
@@ -1289,6 +1286,11 @@ public class frmIngress extends AppCompatActivity {
     private void printIngresso(){
 
 
+
+
+
+
+
         AlertDialog.Builder builder = new AlertDialog.Builder(frmIngress.this);
         builder.setTitle("Ingress");
         builder.setMessage("Print another copy of Ingresso?");
@@ -1305,6 +1307,9 @@ public class frmIngress extends AppCompatActivity {
                 b_ingress.setVisibility(View.GONE);
                 dialog.dismiss();
                 Toast.makeText(frmIngress.this, "Trip Ended.", Toast.LENGTH_LONG).show();
+                Intent intent = new Intent (frmIngress.this, frmMain.class);
+                startActivity(intent);
+                finish();
             }
         });
         builder.show();
@@ -1352,7 +1357,7 @@ public class frmIngress extends AppCompatActivity {
 
         Log.wtf("1 ingress", title + device + date + transdatetime + vehicle + dri + cond + cashier + line + mode + pax + cash + gross + ddatetime + dname + dterminal + dopening);
 
-        //callBluetooth(title + device + date + transdatetime + vehicle + dri + cond + cashier + line + mode + pax + cash + gross + ddatetime + dname + dterminal + dopening);
+        callBluetooth(title + device + date + transdatetime + vehicle + dri + cond + cashier + line + mode + pax + cash + gross + ddatetime + dname + dterminal + dopening);
 
         String cost = "Cost: " + String.valueOf(expense) + "\n";
 
@@ -1375,7 +1380,7 @@ public class frmIngress extends AppCompatActivity {
 
         Log.wtf("2 ingress", cost + "" + net + " " + with + " " + arr + " " + dft + " " + inspection + " " + controlled + "" + cvm);
 
-        //callBluetooth(cost + "" + net + " " + with + " " + arr + " " + dft + " " + inspection + " " + controlled + "" + cvm);
+        callBluetooth(cost + "" + net + " " + with + " " + arr + " " + dft + " " + inspection + " " + controlled + "" + cvm);
 
         Double rec = Double.parseDouble (dbQuery.getReceipt(tripId));
         cancel = Double.parseDouble(dbQuery.getOtherAmt(tripId));
@@ -1402,7 +1407,7 @@ public class frmIngress extends AppCompatActivity {
 
         Log.wtf("3 ingress", receive + " " + partial + " " + so + " " + c + " " + e + " " + fline+ " " + driName + " " + driDate + " " +  dslip + " " + condName + " " + condDate + " " + cslip);
 
-        //callBluetooth(receive + " " + partial + " " + so + " " + c + " " + e + " " + fline+ " " + driName + " " + driDate + " " +  dslip + " " + condName + " " + condDate + " "+ cslip);
+        callBluetooth(receive + " " + partial + " " + so + " " + c + " " + e + " " + fline+ " " + driName + " " + driDate + " " +  dslip + " " + condName + " " + condDate + " "+ cslip);
 
 
         printIngresso();
@@ -1506,6 +1511,41 @@ public class frmIngress extends AppCompatActivity {
         super.onBackPressed();
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (D)
+            Log.d(TAG, "onActivityResult " + resultCode);
+        switch (requestCode) {
+            case REQUEST_CONNECT_DEVICE:
+                // When DeviceListActivity returns with a device to connect
+                if (resultCode == Activity.RESULT_OK) {
+                    // Get the device MAC address
+                    String address = data.getExtras().getString(
+                            DeviceListActivity.EXTRA_DEVICE_ADDRESS);
+                    // Get the BLuetoothDevice object
+                    if (BluetoothAdapter.checkBluetoothAddress(address)) {
+                        BluetoothDevice device = mBluetoothAdapter
+                                .getRemoteDevice(address);
+                        // Attempt to connect to the device
+                        mService.connect(device);
+                    }
+                }
+                break;
+            case REQUEST_ENABLE_BT:
+                // When the request to enable Bluetooth returns
+                if (resultCode == Activity.RESULT_OK) {
+                    // Bluetooth is now enabled, so set up a session
+
+                } else {
+                    // User did not enable Bluetooth or an error occured
+                    Log.d(TAG, "BT not enabled");
+                    Toast.makeText(this, R.string.bt_not_enabled_leaving,
+                            Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+        }
+    }
+
     private final Handler bluetoothHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -1584,6 +1624,5 @@ public class frmIngress extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
-
 
 }

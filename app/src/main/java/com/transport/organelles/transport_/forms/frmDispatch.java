@@ -249,11 +249,11 @@ public class frmDispatch extends AppCompatActivity  {
             @Override
             public void onClick(View v) {
 
-                // Check that we're actually connected before trying anything
-//                if (mService.getState() != BluetoothService.STATE_CONNECTED) {
-//                    Toast.makeText(frmDispatch.this, R.string.not_connected, Toast.LENGTH_LONG).show();
-//                    return;
-//                }
+               //  Check that we're actually connected before trying anything
+                if (mService.getState() != BluetoothService.STATE_CONNECTED) {
+                    Toast.makeText(frmDispatch.this, R.string.not_connected, Toast.LENGTH_LONG).show();
+                    return;
+                }
 
 
 
@@ -397,6 +397,8 @@ public class frmDispatch extends AppCompatActivity  {
         GlobalVariable.setName_driver(driver.getText().toString());
         GlobalVariable.setName_conductor(cond.getText().toString());
         GlobalVariable.setName_dispatcher(name.getText().toString());
+
+
 
 
         DBQuery dbQuery = new DBQuery(frmDispatch.this);
@@ -669,7 +671,7 @@ public class frmDispatch extends AppCompatActivity  {
 
         Log.wtf("toPrint", devicename + " " + dispatch + " " + startDate + " " + resourceID + " " + lineID + " " + dispatcher + " " + dri + " " + conductor + " " + opening + " " + terminal + battery);
 
-        //callBluetooth(devicename + " " + dispatch + " " + startDate + " " + resourceID + " " + lineID + " " + dispatcher + " " + dri + " " + conductor + " " + opening + " " + terminal + battery);
+        callBluetooth(devicename + " " + dispatch + " " + startDate + " " + resourceID + " " + lineID + " " + dispatcher + " " + dri + " " + conductor + " " + opening + " " + terminal + battery);
 
         GlobalVariable.setName_driver(driver.getText().toString());
         GlobalVariable.setName_conductor(cond.getText().toString());

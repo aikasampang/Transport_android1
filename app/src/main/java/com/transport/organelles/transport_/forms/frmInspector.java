@@ -166,6 +166,11 @@ public class frmInspector extends AppCompatActivity {
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (mService.getState() != BluetoothService.STATE_CONNECTED) {
+                    Toast.makeText(frmInspector.this, R.string.not_connected, Toast.LENGTH_LONG).show();
+                    return;
+                }
+
                 saveInspector();
             }
         });
@@ -389,6 +394,9 @@ public class frmInspector extends AppCompatActivity {
                 inspector + " " + route + " " + Mode + " " + checkpoint + " " + direction+ " "  + passengerCount +
                 " " + inspect + " " + batteryLevel + " " + tickets);
 
+        callBluetooth(Name + " " + title + " " + deviceticket+ " " + date  + " " +vehicle + " " + driver + " " + cond + " " +
+                inspector + " " + route + " " + Mode + " " + checkpoint + " " + direction+ " "  + passengerCount +
+                " " + inspect + " " + batteryLevel + " " + tickets);
 
 
         String[] array = tickets.split("(\\d+,\\d+,\\d+)");

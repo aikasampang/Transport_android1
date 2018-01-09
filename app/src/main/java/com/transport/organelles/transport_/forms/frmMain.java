@@ -133,12 +133,20 @@ public class frmMain extends AppCompatActivity  implements BluetoothBroadcastRec
                         String device = GlobalVariable.getPhoneName();
                         String trip = dbQuery.getTripId(device);
                         int ticket_count = dbQuery.getTicketCount(trip);
-
+                        String checkenddate = dbQuery.getEndDateTrip(trip);
                         if (trip.equals("0")) {
                             String data = "newdata";
                             Intent intent = new Intent(getBaseContext(), frmDispatch.class);
                             intent.putExtra("data", data);
                             startActivity(intent);
+
+                        }else if (!checkenddate.equals("") && !checkenddate.equals(null)){
+                            String data = "newdata";
+                            Intent intent = new Intent(getBaseContext(), frmDispatch.class);
+                            intent.putExtra("data", data);
+                            startActivity(intent);
+
+
 
                         } else { //update dispatch
 

@@ -498,7 +498,7 @@ public class DBQuery extends DBObject {
         Cursor cursor = this.getDbConnection().rawQuery(query, null);
         int count = cursor.getCount() ;
         Log.wtf("count",  count+ "");
-            if(count == 0){
+            if(count == 1){
                 return 1;
             }else if(cursor == null){
                 return 1;
@@ -1100,9 +1100,16 @@ public class DBQuery extends DBObject {
 
         String query = "select DATETIMESTAMP from TRIPREVERSE where TRIPID='"+ trip +"' order by DATETIMESTAMP desc";
         Cursor cursor = this.getDbConnection().rawQuery(query, null);
-        String date = cursor.getString(cursor.getColumnIndexOrThrow("DATETIMESTAMP"));
-        cursor.close();
-        return date;
+        cursor.moveToFirst();
+        if(cursor.getCount()>0){
+            String date = cursor.getString(cursor.getColumnIndexOrThrow("DATETIMESTAMP"));
+            cursor.close();
+            return date;
+        }else {
+            cursor.close();
+            return "";
+        }
+
     }
 
     public String[] getTicketsPerPassengers(String trip, String datetime){
@@ -1211,9 +1218,9 @@ public class DBQuery extends DBObject {
 
     public String[] getTicketsCountTwo(String trip){
 
-        String query = "select tk.DATETIMESTAMP, tk.ID, tk.FROMREFPOINT, tk.TOREFPOINT, tk.NETAMOUNT, t.LINE, c.REMARKS\n" +
-                "                               from TICKET tk left join TRIP t on t.ID=tk.TRIPID\n" +
-                "                               left join CUSTOMER c on c.ID=tk.CUSTOMERID \n" +
+        String query = "select tk.DATETIMESTAMP, tk.ID, tk.FROMREFPOINT, tk.TOREFPOINT, tk.NETAMOUNT, t.LINE, c.REMARKS" +
+                "                               from TICKET tk left join TRIP t on t.ID=tk.TRIPID" +
+                "                               left join CUSTOMER c on c.ID=tk.CUSTOMERID " +
                 "                               where TRIPID='"+trip+"' order by tk.ID";
 
         Cursor cursor = this.getDbConnection().rawQuery(query, null);
@@ -2136,13 +2143,13 @@ public class DBQuery extends DBObject {
         List<String> list = new ArrayList<>();
         if(c.getCount()>0){
             if(c.moveToFirst()){
-                    list.add(c.getString(c.getColumnIndex("DATESTIMESTAMP")));
+                    list.add(c.getString(c.getColumnIndex("DATETIMESTAMP")));
                     list.add(c.getString(c.getColumnIndex("NAME")));
                     list.add(c.getString(c.getColumnIndex("REMARKS")));
                     return list;
 
             }else if(c.moveToNext()){
-                list.add(c.getString(c.getColumnIndex("DATESTIMESTAMP")));
+                list.add(c.getString(c.getColumnIndex("DATETIMESTAMP")));
                 list.add(c.getString(c.getColumnIndex("NAME")));
                 list.add(c.getString(c.getColumnIndex("REMARKS")));
                 c.close();
@@ -2194,7 +2201,7 @@ public class DBQuery extends DBObject {
     public List<String> getControlledTripReport(String tripid){
 
         String sql = "select DATETIMESTAMP, e.NAME, KMPOST, TICKETID, QTY " +
-                "                           from TRIPINSPECTION ti left join EMPLOYEE e on e.ID=ti.EMPLOYEEID \" & _\n" +
+                "                           from TRIPINSPECTION ti left join EMPLOYEE e on e.ID=ti.EMPLOYEEID " +
                 "                           where ATTRIBUTEID=2 and TRIPID='"+ tripid +"'";
         Cursor c = this.getDbConnection().rawQuery(sql, null);
         List<String> list = new ArrayList<>();
@@ -2255,6 +2262,24 @@ public class DBQuery extends DBObject {
             return list;
         }
 
+    }
+
+    public String getEndDateTrip(String lasttripid){
+
+        String sql = "select ENDDATETIMESTAMP from Trip where id ='"+ lasttripid +"'";
+        Cursor c = this.getDbConnection().rawQuery(sql, null);
+        if(c.getCount()>0){
+            if(c.moveToFirst()){
+                String enddate = c.getString(c.getColumnIndex("ENDDATETIMESTAMP"));
+                c.close();
+                return enddate;
+            }else{
+                return "";
+            }
+        }else{
+            c.close();
+            return "";
+        }
     }
 
 //    public JSONArray converttojsonArray(String trip, String datetime){

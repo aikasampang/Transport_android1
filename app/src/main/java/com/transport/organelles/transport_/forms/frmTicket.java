@@ -267,11 +267,11 @@ public class frmTicket extends AppCompatActivity {
             public void onClick(View v) {
 
                 // Check that we're actually connected before trying anything
-//                if (mService.getState() != BluetoothService.STATE_CONNECTED) {
-//                    Toast.makeText(frmTicket.this, R.string.not_connected, Toast.LENGTH_SHORT)
-//                            .show();
-//                    return;
-//                }
+                if (mService.getState() != BluetoothService.STATE_CONNECTED) {
+                    Toast.makeText(frmTicket.this, R.string.not_connected, Toast.LENGTH_SHORT)
+                            .show();
+                    return;
+                }
 
 
                 String type = GlobalVariable.getPaxtype();
@@ -925,8 +925,8 @@ public class frmTicket extends AppCompatActivity {
         o + d + type + driver + conductor);
 
 
-        //callBluetooth(companyName + tin + mn + accdtn + p + device + date + vehicle + price +
-          //      o + d + type + driver + conductor);
+        callBluetooth(companyName + tin + mn + accdtn + p + device + date + vehicle + price +
+                o + d + type + driver + conductor);
 
 
     }
@@ -934,7 +934,7 @@ public class frmTicket extends AppCompatActivity {
     public void areaOfClosing(){
         DBQuery dbQuery = new DBQuery(frmTicket.this);
 
-        String tripid = GlobalVariable.getLasttrip();
+        String tripid = dbQuery.getLastTrip();
         String p = String.valueOf(dbQuery.getRemainingPax(tripid));
         double pax = Double.parseDouble(p);
         if(pax > 0){
@@ -960,20 +960,27 @@ public class frmTicket extends AppCompatActivity {
     }
 
     public void printaoc(int count){
+
+        if (mService.getState() != BluetoothService.STATE_CONNECTED) {
+            Toast.makeText(frmTicket.this, R.string.not_connected, Toast.LENGTH_LONG).show();
+            return;
+        }
+
         Date dtTemp = new Date(DateFormat.getDateTimeInstance().format(new Date()));
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         dtstartTime = formatter.format(dtTemp);
         DBQuery dbQuery = new DBQuery(frmTicket.this);
 
 
-        String trip = GlobalVariable.getLasttrip();
+        String trip = dbQuery.getLastTrip();
         String devicename = GlobalVariable.getPhoneName();
         String datetime = dtstartTime;
-        String dispatcher = dbQuery.getEmployeeID(GlobalVariable.getName_dispatcher());
+        String dri = dbQuery.nameDriver(dbQuery.getLastTrip(), "1");
+        String dispatcher = dbQuery.getEmployeeID(dri);
         String origin = GlobalVariable.getOrigin();
         String lastticket = GlobalVariable.getLastticket();
         String d = dbQuery.getDirectionValue(devicename);
-
+        dba = DBAccess.getInstance(frmTicket.this);
 
         sqlQuery = "INSERT INTO `TRIPINSPECTION` (TRIPID, DEVICENAME, DATETIMESTAMP, EMPLOYEEID, ATTRIBUTEID, QTY, KMPOST, PCOUNT, LINESEGMENT,DIRECTION, BCOUNT, TICKETID) " +
                 " VALUES ( '"+ trip +"', '" +
@@ -1006,6 +1013,8 @@ public class frmTicket extends AppCompatActivity {
 
             Log.wtf("AOC", title + date + km + ser + p + remain + ad + vehicle);
 
+            callBluetooth(title + date + km + ser + p + remain + ad + vehicle);
+
 
         }
     }
@@ -1013,7 +1022,7 @@ public class frmTicket extends AppCompatActivity {
     public void grossCollect(){
 
         DBQuery dbQuery = new DBQuery(frmTicket.this);
-        dbQuery.getGrossCollection(GlobalVariable.getLasttrip());
+        dbQuery.getGrossCollection(dbQuery.getLastTrip());
         String sum = GlobalVariable.getGross_sum();
         String tag = GlobalVariable.getGross_tag();
 
