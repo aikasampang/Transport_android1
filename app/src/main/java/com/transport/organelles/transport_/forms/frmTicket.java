@@ -58,7 +58,7 @@ public class frmTicket extends AppCompatActivity {
     RadioGroup radiogroup;
     RadioButton regular, senior, student, baggage, rb;
     Button print, gc, aoc, hotspot;
-    String totalkm, paxtype, dtstartTime = "", hotspot_km, fare;
+    String totalkm, paxtype, dtstartTime = "", hotspot_km, fare, baggage_amount;
     int origin_v, des_v, o_refpoint, d_refpoint;
     String service_a, amount_a, minrange_a, minamount_a;
     double ticketprice, km, totalkm2;
@@ -492,12 +492,12 @@ public class frmTicket extends AppCompatActivity {
                     student.setEnabled(false);
                     regular.setEnabled(false);
                 }else if(isChecked && student.isChecked()){
-                    Toast.makeText(frmTicket.this, "sustain senior", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(frmTicket.this, "sustain student", Toast.LENGTH_SHORT).show();
                     baggage.setEnabled(false);
                     senior.setEnabled(false);
                     regular.setEnabled(false);
                 }else if(isChecked && baggage.isChecked()){
-                    Toast.makeText(frmTicket.this, "sustain senior", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(frmTicket.this, "sustain baggage", Toast.LENGTH_SHORT).show();
                     student.setEnabled(false);
                     senior.setEnabled(false);
                     regular.setEnabled(false);
@@ -509,6 +509,22 @@ public class frmTicket extends AppCompatActivity {
                 }
             }
         });
+
+    }
+
+    private void updateRefRemaining(){
+        DBQuery dbQuery = new DBQuery(frmTicket.this);
+
+        String de = GlobalVariable.getPhoneName();
+        dbQuery.getlastTicket(de);
+        int l = Integer.parseInt(dbQuery.getLastTicket());
+        int t = 1;
+        int nextticket = l + t;
+        String format = String.format("%1$05d ", nextticket);//String.format("%07d", "0");
+        ticketno.setText(format);
+
+        int remain = dbQuery.getRemainingPax(dbQuery.getLastTrip());
+        tremaining.setText(remain + "");
 
     }
 
@@ -788,6 +804,29 @@ public class frmTicket extends AppCompatActivity {
         }else if(baggage.isChecked()){
             String type ="5";
             GlobalVariable.setPaxtype(type);
+            LayoutInflater inflater = getLayoutInflater();
+            View alertLayout = inflater.inflate(R.layout.input_amount, null);
+            final EditText amount = (EditText) alertLayout.findViewById(R.id.baggage_amount);
+            AlertDialog.Builder builder = new AlertDialog.Builder(frmTicket.this);
+            builder.setTitle("Baggage")
+                    .setMessage("Please input amount:")
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            amount_a = amount.getText().toString();
+
+                            dialog.dismiss();
+                        }
+                    })
+                    .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    })
+                    .show();
+
+
             Log.wtf("discount", "baggage");
         }
 
@@ -893,6 +932,7 @@ public class frmTicket extends AppCompatActivity {
     }
 
     public void printTicket(String typename){
+        updateRefRemaining();
         DBQuery dbQuery = new DBQuery(frmTicket.this);
         String devicename = GlobalVariable.getPhoneName();
         String c = dbQuery.getCompanyName(devicename);

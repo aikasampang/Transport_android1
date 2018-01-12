@@ -527,8 +527,8 @@ public class DBQuery extends DBObject {
 
     public int getRemainingPax(String id){
         try{
-            String query = "select tk.*, t.LINE, (case when torefpoint>fromrefpoint then 1 else -1 end) as direction, coalesce(ct.TAG,0) as TAG2 from TICKET \n" +
-                    "tk left join TRIP t on t.ID=tk.TRIPID left join CUSTOMER c on c.ID=tk.CUSTOMERID left join CUSTOMERTYPE ct on ct.ID=c.ID where \n" +
+            String query = "select tk.*, t.LINE, (case when torefpoint>fromrefpoint then 1 else -1 end) as direction, coalesce(ct.TAG,0) as TAG2 from TICKET " +
+                    "tk left join TRIP t on t.ID=tk.TRIPID left join CUSTOMER c on c.ID=tk.CUSTOMERID left join CUSTOMERTYPE ct on ct.ID=c.ID where " +
                     "TRIPID ='"+id+"' order by ID ";
             Cursor cursor = this.getDbConnection().rawQuery(query,null);
             if(cursor.getCount() > 0){

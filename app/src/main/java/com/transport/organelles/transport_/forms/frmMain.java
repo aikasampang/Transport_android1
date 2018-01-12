@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
@@ -193,8 +194,33 @@ public class frmMain extends AppCompatActivity  implements BluetoothBroadcastRec
                         if (data.equals("0")) {
                             Toast.makeText(frmMain.this, "Please dispatch first.. ", Toast.LENGTH_SHORT).show();
                         } else {
-                            Intent intent = new Intent(getBaseContext(), frmTicket.class);
-                            startActivity(intent);
+                            LayoutInflater inflater = getLayoutInflater();
+                            View alertLayout = inflater.inflate(R.layout.input_password, null);
+                            final EditText password = (EditText) alertLayout.findViewById(R.id.password);
+                            AlertDialog.Builder builder = new AlertDialog.Builder(frmMain.this);
+                            builder.setTitle("Password")
+                                    .setMessage("Please input the password")
+                                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            String pass = "1234";
+                                            String input = password.getText().toString();
+                                            if(pass.equals(input)){
+                                                Intent intent = new Intent(getBaseContext(), frmTicket.class);
+                                                startActivity(intent);
+                                            }else{
+                                                Toast.makeText(frmMain.this, "Wrong Password!", Toast.LENGTH_LONG).show();
+                                                dialog.dismiss();
+                                            }
+                                        }
+                                    })
+                                    .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            dialog.dismiss();
+                                        }
+                                    })
+                                    .show();
                         }
 
                     } else if ((Objects.equals(GlobalVariable.moduleTXT[position], "Inspector"))) {
@@ -462,5 +488,19 @@ public class frmMain extends AppCompatActivity  implements BluetoothBroadcastRec
             results = new HashSet<BluetoothDevice>();
         }
         return results;
+    }
+
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if(keyCode == KeyEvent.KEYCODE_HOME)
+        {
+            Log.i("Home Button","Clicked");
+        }
+        if(keyCode==KeyEvent.KEYCODE_BACK)
+        {
+            Log.i("back Button","Clicked");
+        }
+        return false;
     }
 }

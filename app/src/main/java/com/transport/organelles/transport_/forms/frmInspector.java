@@ -481,6 +481,11 @@ public class frmInspector extends AppCompatActivity {
         callBluetooth(Name + " " + title + " " + deviceticket+ " " + date  + " " +vehicle + " " + driver + " " + cond + " " +
                 inspector + " " + route + " " + Mode + " " + checkpoint + " " + direction + " " + segmentnum + " " + cash + " " + lastticket +
                 " "  + passengerCount + " " + inspect + " " + batteryLevel);
+
+        Intent intent = new Intent (frmInspector.this, frmMain.class);
+        startActivity(intent);
+        finish();
+
     }
 
 
