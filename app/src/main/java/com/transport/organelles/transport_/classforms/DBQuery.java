@@ -701,6 +701,32 @@ public class DBQuery extends DBObject {
 
     }
 
+    public String getReverseMin(String line){
+
+        String sql = "select min(refpoint) as minimum from line l" +
+                "                           left join linesegment ls on l.ID = ls.lineid \n" +
+                "                           where l.id ='"+line+"'";
+        Cursor c = this.getDbConnection().rawQuery(sql, null);
+        c.moveToFirst();
+        String min = c.getString(c.getColumnIndex("minimum"));
+        c.close();
+        return min;
+    }
+
+    public String getReverseMax(String line){
+
+        String sql = "select max(refpoint) as maximum from line l" +
+                "                           left join linesegment ls on l.ID = ls.lineid \n" +
+                "                           where l.id ='"+line+"'";
+        Cursor c = this.getDbConnection().rawQuery(sql, null);
+        c.moveToFirst();
+        String max = c.getString(c.getColumnIndex("maximum"));
+        c.close();
+        return max;
+    }
+
+
+
     public String getLineSegmentReverse(String lineid){
         String min = GlobalVariable.getMin_reverse();
         String max = GlobalVariable.getMax_reverse();
@@ -715,6 +741,20 @@ public class DBQuery extends DBObject {
         return min_name;
 
 
+    }
+
+    public String getReverseSegmentName(String lineid, String min, String max){
+
+        String query = "select name from linesegment where lineid = '"+ lineid +"' and refpoint = '"+ min+"' union all select name from linesegment where lineid = '"+ lineid +"' and refpoint = '"+ max+"' ";
+        Cursor cursor = this.getDbConnection().rawQuery(query, null);
+        cursor.moveToFirst();
+        String min_name = cursor.getString(cursor.getColumnIndexOrThrow("NAME"));
+        cursor.moveToNext();
+        String max_name = cursor.getString(cursor.getColumnIndexOrThrow("NAME"));
+        cursor.close();
+        GlobalVariable.setMin_linesegment(min_name);
+        GlobalVariable.setMax_linesegment(max_name);
+        return min_name;
     }
 
     public String getGross(String tripid){
@@ -2280,6 +2320,15 @@ public class DBQuery extends DBObject {
             c.close();
             return "";
         }
+    }
+
+    public String getLastLine(){
+        String sql = "select VALUE from DEVICEDATA where KEY = 'LINE'";
+        Cursor cursor = this.getDbConnection().rawQuery(sql, null);
+        cursor.moveToFirst();
+        String line = cursor.getString(cursor.getColumnIndex("VALUE"));
+        cursor.close();
+        return  line;
     }
 
 //    public JSONArray converttojsonArray(String trip, String datetime){

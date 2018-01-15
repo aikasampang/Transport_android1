@@ -220,6 +220,7 @@ public class frmMain extends AppCompatActivity  implements BluetoothBroadcastRec
                                             dialog.dismiss();
                                         }
                                     })
+                                    .setView(alertLayout)
                                     .show();
                         }
 
@@ -496,11 +497,21 @@ public class frmMain extends AppCompatActivity  implements BluetoothBroadcastRec
         if(keyCode == KeyEvent.KEYCODE_HOME)
         {
             Log.i("Home Button","Clicked");
+            return true;
+
         }
         if(keyCode==KeyEvent.KEYCODE_BACK)
         {
             Log.i("back Button","Clicked");
+            return true;
         }
         return false;
     }
+
+    @Override
+    public void onAttachedToWindow() {
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
+    }
+
 }

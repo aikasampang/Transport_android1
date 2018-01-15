@@ -38,7 +38,7 @@ public class frmReverse extends AppCompatActivity {
     Spinner line;
     Button save;
     String line_, line_name, i_name, i_password;
-    String lDirection, min, max, dtstartTime, kmpost, remarks;
+    String lDirection, min, max, dtstartTime, kmpost, remarks, trip ;
     DBAccess dba;
 
     @Override
@@ -53,6 +53,8 @@ public class frmReverse extends AppCompatActivity {
         objectListener();
         //setTitleBar();
         login();
+        reverse_formload();
+
 
 
     }
@@ -145,6 +147,16 @@ public class frmReverse extends AppCompatActivity {
 
     private void objectListener(){
         final DBQuery db = new DBQuery(frmReverse.this);
+        line_ = db.getLastLine();
+
+        min = db.getReverseMin(line_);
+        max = db.getReverseMax(line_);
+        db.getReverseSegmentName(line_,min, max );
+        line_direction.setText(min + "-" + max);
+
+
+
+
         String[] spinnerLists = db.getLine();
         ArrayAdapter<String> spinnerAdapterDis = new ArrayAdapter<String>(frmReverse.this,android.R.layout.simple_spinner_item, spinnerLists);
         spinnerAdapterDis.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -175,6 +187,18 @@ public class frmReverse extends AppCompatActivity {
                 saveReverse();
             }
         });
+
+
+    }
+
+    private void reverse_formload(){
+        DBQuery dbQuery = new DBQuery(frmReverse.this);
+        line_ = dbQuery.getLastLine();
+
+
+
+
+
 
 
     }

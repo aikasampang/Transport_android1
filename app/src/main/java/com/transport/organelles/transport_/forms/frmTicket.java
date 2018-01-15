@@ -58,7 +58,7 @@ public class frmTicket extends AppCompatActivity {
     RadioGroup radiogroup;
     RadioButton regular, senior, student, baggage, rb;
     Button print, gc, aoc, hotspot;
-    String totalkm, paxtype, dtstartTime = "", hotspot_km, fare, baggage_amount;
+    String totalkm, paxtype, dtstartTime = "", hotspot_km, fare, baggage_amount = "";
     int origin_v, des_v, o_refpoint, d_refpoint;
     String service_a, amount_a, minrange_a, minamount_a;
     double ticketprice, km, totalkm2;
@@ -695,10 +695,32 @@ public class frmTicket extends AppCompatActivity {
                         GlobalVariable.setPaxtype(type);
                         computeTicketPrice(type);
                     }else if(rb.getText().equals("Baggage")){
-                        String type = "5";
+                        final String type = "5";
 //                       paxtype = dbQuery.getdiscountrate(type, line, mode);
-                        GlobalVariable.setPaxtype(type);
-                        computeTicketPrice(type);
+                        LayoutInflater inflater = getLayoutInflater();
+                        View alertLayout = inflater.inflate(R.layout.input_amount, null);
+                        final EditText amount = (EditText) alertLayout.findViewById(R.id.baggage_amount);
+                        AlertDialog.Builder builder = new AlertDialog.Builder(frmTicket.this);
+                        builder.setTitle("Baggage")
+                                .setMessage("Please input amount:")
+                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        baggage_amount = amount.getText().toString();
+                                        GlobalVariable.setPaxtype(type);
+                                        computeTicketPrice(type);
+                                        dialog.dismiss();
+                                    }
+                                })
+                                .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                })
+                                .setView(alertLayout)
+                                .show();
+
                     }else {
                         Toast.makeText(frmTicket.this, "Please select a Passenger Type.", Toast.LENGTH_LONG).show();
                     }
@@ -727,6 +749,8 @@ public class frmTicket extends AppCompatActivity {
         String totalkm1 = Integer.toString(Math.abs(km)) ;
         Log.wtf("COMPUTE TICKET", type + lineid + mode);
         String test = dbQuery.getdiscountrate(type, lineid, mode);
+
+
 
         dbQuery.getTicketAmount(mode, lineid, d_refpoint+ "", o_refpoint + "");
         service_a = GlobalVariable.a_serviceid;
@@ -758,19 +782,31 @@ public class frmTicket extends AppCompatActivity {
             kmpost.setText(String.valueOf(totalkm2)+ "KM");
 
         }else {
-            if (totalkm2 <= minrange) {
-                ticketprice = roundCase(minamount - (minamount * typee));
-            } else {
-                if (typee == 0.2) {
-                    double price = totalkm2 * amount;
-                    ticketprice = roundCase(price - (price * typee));
+
+            if(baggage_amount.equals(null) || baggage_amount.equals("")) {
+                Log.wtf("bag amount", baggage_amount + "wala");
+                if (totalkm2 <= minrange) {
+                    ticketprice = roundCase(minamount - (minamount * typee));
                 } else {
-                    ticketprice = roundCase(totalkm2 * amount);
+                    if (typee == 0.2) {
+                        double price = totalkm2 * amount;
+                        ticketprice = roundCase(price - (price * typee));
+                    } else {
+                        ticketprice = roundCase(totalkm2 * amount);
+                    }
                 }
+                price.setText("Php" + ticketprice );
+                kmpost.setText(String.valueOf(totalkm2)+ "KM");
+
+            }else{
+                Log.wtf("bag amount", baggage_amount + "meron");
+                Toast.makeText(frmTicket.this, baggage_amount + " ", Toast.LENGTH_LONG).show();
+                ticketprice = Double.parseDouble(baggage_amount);
+                price.setText("Php" + ticketprice);
+                kmpost.setText("00"+ "KM");
+                baggage_amount = "";
             }
         }
-        price.setText("Php" + ticketprice );
-        kmpost.setText(String.valueOf(totalkm2)+ "KM");
 
         //saveTicket(type);
 
@@ -824,6 +860,7 @@ public class frmTicket extends AppCompatActivity {
                             dialog.dismiss();
                         }
                     })
+                    .setView(alertLayout)
                     .show();
 
 
