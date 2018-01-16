@@ -14,6 +14,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
@@ -29,6 +32,7 @@ import com.transport.organelles.transport_.classforms.BluetoothA2DPRequester;
 import com.transport.organelles.transport_.classforms.BluetoothBroadcastReceiver;
 import com.transport.organelles.transport_.classforms.DBObject;
 import com.transport.organelles.transport_.classforms.DBQuery;
+import com.transport.organelles.transport_.classforms.DeviceListActivity;
 import com.transport.organelles.transport_.classforms.GlobalClass;
 import com.transport.organelles.transport_.classforms.GlobalVariable;
 import com.transport.organelles.transport_.R;
@@ -513,5 +517,30 @@ public class frmMain extends AppCompatActivity  implements BluetoothBroadcastRec
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
     }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.toolbar_main, menu);
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+
+            case R.id.action_sync:
+                Intent serverIntent = new Intent(frmMain.this, frmSync.class);
+                startActivity(serverIntent);
+                return true;
+
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+
 
 }

@@ -982,8 +982,10 @@ public class frmTicket extends AppCompatActivity {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         dtstartTime = formatter.format(dtTemp);
 
+
         String companyName = c + "\n";
-        String tin = "" + "\n";
+        String comAdd = "Brgy. Sto. Domingo Binan Laguna" + "\n";
+        String tin = getString(R.string.delarosa_liner) + "\n"; //string xml
         String mn = GlobalVariable.d_machinenum + "\n";
         String accdtn = "Accdtn# 000-00000000 " + "\n \n";
         String p = "Passenger - Ticket" + "\n \n";
@@ -993,17 +995,39 @@ public class frmTicket extends AppCompatActivity {
         String price = "Amount Due:" + ticketprice + "pesos" + "\n";
         String o = "From:" + o_refpoint ;
         String d = " - " + d_refpoint + "\n";
-        String type = "Type:" + typename + "\n";
+        String type = "Type:" + typename + "\n\n";
         String driver = "Driver:" + dri + "\n";
         String conductor = "Conductor:" + cond + "\n";
 
+        String vat = "VATable:" + "\n";
+        String vatt = "VAT(12%): " + "\n";
+        String vattt = "Zero-Rate" + "\n" + "Vat Exempted" + "\n" ;
+        String vatttt = "Sold to:" + "    " + "TIN:" + "\n";
+        String vattttt = "Name: " + "     " +  "Address:" + "\n\n" ;
 
-        Log.wtf("Print Ticket", companyName + tin + mn + accdtn + p + device + date + vehicle + price +
-        o + d + type + driver + conductor);
+        String org_name= getString(R.string.org_name) + "\n";
+        String org_tin = "TIN:" + getString(R.string.org_tin) + "\n";
+        String org_accre = "Accreditation No:" + getString(R.string.org_accreditation) + "\n";
+        String org_permit = "Permit No: " + "\n";
+        String org_dateissued = "Date Issued:" + "\n";
+        String org_validtil = "Valid Until: " + "\n";
+        String org_reciept = getString(R.string.org_receipt) + "\n";
+        String org_no = getString(R.string.org_powered)+ "\n";
 
 
-        callBluetooth(companyName + tin + mn + accdtn + p + device + date + vehicle + price +
-                o + d + type + driver + conductor);
+
+
+        Log.wtf("ticket", companyName + comAdd + tin + mn + p + device + date + vehicle + o + d + driver + conductor + type + price +
+        vat + vatt + vattt  + vatttt + vattttt +  org_name + org_tin + org_accre + org_permit + org_dateissued + org_validtil +
+        org_reciept + org_no);
+
+//        Log.wtf("Print Ticket", companyName + tin + mn + accdtn + p + device + date + vehicle + price +
+//        o + d + type + driver + conductor);
+
+
+        callBluetooth(companyName + comAdd + tin + mn + p + device + date + vehicle + o + d + driver + conductor + type + price +
+                vat + vatt + vattt + vatttt + vattttt +  org_name + org_tin + org_accre + org_permit + org_dateissued + org_validtil +
+                org_reciept + org_no);
 
 
     }

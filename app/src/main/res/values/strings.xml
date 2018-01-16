@@ -21,4 +21,13 @@
         <item>MENDEZ</item>
     </string-array>
 
+    <string name ="delarosa_transit">001-860-508-000</string>
+    <string name ="delarosa_liner">004-148-706-000</string>
+    <string name ="delarosa_express">221-079-769-000</string>
+
+    <string name = "org_tin">233-391-058</string>
+    <string name = "org_accreditation">53B2333910582015070363</string>
+    <string name = "org_name">Organelles Holdings and Mgmt.Company Inc.</string>
+    <string name = "org_receipt">THIS RECEIPT SHALL BE VALID FOR FIVE(5) YEARS FROM THE DATE OF THE PERMIT TO USE</string>
+    <string name = "org_powered">Powered by mPad |807 6243| organelles.net</string>
 </resources>

@@ -141,7 +141,7 @@ public class frmSync extends AppCompatActivity {
         url_insertTripusage = "http://" + GlobalVariable.serverIP + "/transport/insertTripusage.php";
         url_insertTripwithholding = "http://" + GlobalVariable.serverIP + "/transport/insertTripwithholding.php";
         url_insertTicket = "http://" + GlobalVariable.serverIP + "/transport/insertTicket.php";
-
+        url_insertTrip = "http://" + GlobalVariable.serverIP + "/transport/insertTrip.php";
         requestQueue = Volley.newRequestQueue(frmSync.this);
 
     }
@@ -200,10 +200,10 @@ public class frmSync extends AppCompatActivity {
                insert_Tripcost();
                insert_Tripcrew();
                insert_Tripinspection();
-               insert_Triplog();
+               //insert_Triplog();
                insert_Tripreceipt();
                insert_Tripreverse();
-               insert_Tripusage();
+             //  insert_Tripusage();
                insert_Tripwithholding();
                insert_Ticket();
                insert_trip();
@@ -1300,7 +1300,7 @@ public class frmSync extends AppCompatActivity {
                             c.getString(c.getColumnIndex("CUSTOMERID")),
                             c.getString(c.getColumnIndex("SERVICEID")),
                             c.getString(c.getColumnIndex("QTY")),
-                            c.getString(c.getColumnIndex("UOMIN")),
+                            c.getString(c.getColumnIndex("UOMID")),
                             c.getString(c.getColumnIndex("UNITPRICE")),
                             c.getString(c.getColumnIndex("DISCOUNTID")),
                             c.getString(c.getColumnIndex("DISCOUNTAMOUNT")),
@@ -1317,7 +1317,7 @@ public class frmSync extends AppCompatActivity {
                             c.getString(c.getColumnIndex("LINEID")),
                             c.getString(c.getColumnIndex("FROMREFPOINT")),
                             c.getString(c.getColumnIndex("TOREFPOINT")),
-                            c.getString(c.getColumnIndex("RESOURCEMODELID")),
+                            c.getString(c.getColumnIndex("RESOURCEMODEID")),
                             c.getString(c.getColumnIndex("PASSENGER"))
                     );
                 } while (c.moveToNext());
@@ -1471,10 +1471,10 @@ public class frmSync extends AppCompatActivity {
             c.moveToFirst();
             try {
                 do {
-                    syncTrip_Data(c.getString(c.getColumnIndex("TRIPID")),
+                    syncTrip_Data(c.getString(c.getColumnIndex("ID")),
                             c.getString(c.getColumnIndex("DEVICENAME")),
-                            c.getString(c.getColumnIndex("LINEID")),
-                            c.getString(c.getColumnIndex("RECOURCEID")),
+                            c.getString(c.getColumnIndex("LINE")),
+                            c.getString(c.getColumnIndex("RESOURCEID")),
                             c.getString(c.getColumnIndex("MODEID")),
                             c.getString(c.getColumnIndex("STARTDATETIMESTAMP")),
                             c.getString(c.getColumnIndex("ENDDATETIMESTAMP")),
