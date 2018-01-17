@@ -290,6 +290,11 @@ public class frmDispatchfromTerminal extends AppCompatActivity {
         Log.wtf("dispath from arrival",title + date + Bus + line + inspector+ Driver + Conductor +lastticket);
        callBluetooth(title + date + Bus + line + inspector+ Driver + Conductor +lastticket);
 
+        Intent back = new Intent (frmDispatchfromTerminal.this, frmMain.class);
+        startActivity(back);
+        finish();
+
+
 
     }
 

@@ -231,6 +231,10 @@ public class frmArrival extends AppCompatActivity {
 
         callBluetooth(title + date + Bus + line + inspector+ Driver + Conductor + lastticket);
 
+        Intent back = new Intent (frmArrival.this, frmMain.class);
+        startActivity(back);
+        finish();
+
 
     }
 

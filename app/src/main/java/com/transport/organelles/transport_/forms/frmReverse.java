@@ -38,7 +38,7 @@ public class frmReverse extends AppCompatActivity {
     Spinner line;
     Button save;
     String line_, line_name, i_name, i_password;
-    String lDirection, min, max, dtstartTime, kmpost, remarks, trip ;
+    String lDirection, min, max, dtstartTime, kmpost, remarks, trip, min_name, max_name ;
     DBAccess dba;
 
     @Override
@@ -152,7 +152,13 @@ public class frmReverse extends AppCompatActivity {
         min = db.getReverseMin(line_);
         max = db.getReverseMax(line_);
         db.getReverseSegmentName(line_,min, max );
-        line_direction.setText(min + "-" + max);
+        min_name= GlobalVariable.getMin_linesegment();
+        max_name= GlobalVariable.getMax_linesegment();
+        String device = GlobalVariable.getPhoneName();
+        lDirection = db.getDirectionValue(device);
+        line_direction.setText(min_name + "-" + max_name);
+
+
 
 
 
@@ -169,9 +175,9 @@ public class frmReverse extends AppCompatActivity {
                 line_name = parent.getItemAtPosition(position).toString();
                 String idfromName = db.getIDfromLine(line_);
                 line_ = idfromName;
-                Log.wtf("reverse line",idfromName);
-                line_direction.setText(line_name);
-                getLineSegment();
+                Log.wtf("reverse line",idfromName + line_name);
+               // line_direction.setText(line_name);
+               // getLineSegment();
 
 
             }
@@ -225,11 +231,11 @@ public class frmReverse extends AppCompatActivity {
         Toast.makeText(frmReverse.this, "clicked!! " + lDirection, Toast.LENGTH_LONG).show();
         if(!lDirection.toString().equals("-1"))
         {
-            line_direction.setText(min + "-" + max);
+            line_direction.setText(min_name + "-" + max_name);
             lDirection = "-1";
         }else{
 
-            line_direction.setText(max + "-" + min);
+            line_direction.setText(max_name + "-" + min_name);
             lDirection = "1";
 
         }

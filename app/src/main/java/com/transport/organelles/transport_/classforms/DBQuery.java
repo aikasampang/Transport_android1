@@ -129,7 +129,8 @@ public class DBQuery extends DBObject {
     }
 
     public String[] getLine() {
-        String query = "Select * from v_line";
+        String line = getLastLine();
+        String query = "Select * from v_line  ";
         Cursor cursor = this.getDbConnection().rawQuery(query, null);
         ArrayList<String> spinnerContent = new ArrayList<String>();
         if(cursor.moveToFirst()){
@@ -143,6 +144,7 @@ public class DBQuery extends DBObject {
 
         String[] allSpinner = new String[spinnerContent.size()];
         allSpinner = spinnerContent.toArray(allSpinner);
+
 
         return allSpinner;
     }

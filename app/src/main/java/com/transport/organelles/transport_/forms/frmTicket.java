@@ -223,7 +223,7 @@ public class frmTicket extends AppCompatActivity {
         Log.wtf("DIRECTION!!!!", lDirection);
 
         if (lDirection == null) {
-            if (directionDB.toString().contains("-1")) {
+            if (directionDB.toString().contains("1")) {
                 bound.setText("S BOUND");
 
                 String id = dbQuery.getLinefrmDB();
@@ -231,7 +231,7 @@ public class frmTicket extends AppCompatActivity {
                 ed_des.setText(dbQuery.getSegment(id, "last"));
                 //  ascending(id);
 
-            } else if (directionDB.toString().contains("1")) {
+            } else if (directionDB.toString().contains("-1")) {
                 bound.setText("N BOUND");
                 String id = dbQuery.getLinefrmDB();
                 ed_origin.setText(dbQuery.getSegment(id, "first"));
@@ -248,11 +248,13 @@ public class frmTicket extends AppCompatActivity {
 
             if (lDirection.toString().contains("SOUTH")) {
                 String id = dbQuery.getLinefrmDB();
-                ed_des.setText(dbQuery.getSegment(id, "first"));
+                ed_origin.setText(dbQuery.getSegment(id, "first"));
+                ed_des.setText(dbQuery.getSegment(id, "last"));
                 //ascending(id);
 
             } else if (lDirection.toString().contains("NORTH")) {
                 String id = dbQuery.getLinefrmDB();
+                ed_origin.setText(dbQuery.getSegment(id, "first"));
                 ed_des.setText(dbQuery.getSegment(id, "last"));
                 //descending(id);
             }
@@ -379,16 +381,29 @@ public class frmTicket extends AppCompatActivity {
             public void onClick(View v) {
                 if(cursor.isLast()){
                     cursor.moveToFirst();
-                    String first = cursor.getString(cursor.getColumnIndex("REFPOINT"));
-                    String name = cursor.getString(cursor.getColumnIndex("NAME"));
-                    ed_origin.setText(first);
-                    o_name.setText(name);
+                    String o_first = cursor.getString(cursor.getColumnIndex("REFPOINT"));
+                    String o_namee = cursor.getString(cursor.getColumnIndex("NAME"));
+                    ed_origin.setText(o_first);
+                    o_name.setText(o_namee);
+
+                    cursor.moveToNext();
+                    String d_first = cursor.getString(cursor.getColumnIndex("REFPOINT"));
+                    String d_namee = cursor.getString(cursor.getColumnIndex("NAME"));
+                    d_name.setText(d_namee);
+                    ed_des.setText(d_first);
                 }else{
                     cursor.moveToNext();
                     String next = cursor.getString(cursor.getColumnIndex("REFPOINT"));
                     String name = cursor.getString(cursor.getColumnIndex("NAME"));
                     o_name.setText(name);
                     ed_origin.setText(next);
+
+                    cursor.moveToNext();
+                    String d_first = cursor.getString(cursor.getColumnIndex("REFPOINT"));
+                    String d_namee = cursor.getString(cursor.getColumnIndex("NAME"));
+                    d_name.setText(d_namee);
+                    ed_des.setText(d_first);
+
                 }
                 getDiscount2();
                 String textkm = Double.toString(kmpost());
@@ -548,17 +563,37 @@ public class frmTicket extends AppCompatActivity {
         DBObject dbObject = new DBObject(frmTicket.this);
         String sql = "Select * from v_linesegment where LINEID ='"+id+"'";
         cursor = dbObject.getDbConnection().rawQuery(sql, null);
-        cursor.moveToFirst();
-        String first = cursor.getString(cursor.getColumnIndex("REFPOINT"));
-        String name = cursor.getString(cursor.getColumnIndex("NAME"));
-        ed_origin.setText(first);
-        o_name.setText(name);
-        cursor.moveToLast();
-        String last = cursor.getString(cursor.getColumnIndex("REFPOINT"));
-        String des = cursor.getString(cursor.getColumnIndex("NAME"));
-        ed_des.setText(last);
-        d_name.setText(des);
-        getDiscount2();
+        String devicename= GlobalVariable.getPhoneName();
+        String direction = dbQuery.getDirectionValue(devicename);
+
+        if (direction.equals("1")){
+            cursor.moveToFirst();
+            String first = cursor.getString(cursor.getColumnIndex("REFPOINT"));
+            String name = cursor.getString(cursor.getColumnIndex("NAME"));
+            ed_origin.setText(first);
+            o_name.setText(name);
+            cursor.moveToLast();
+            String last = cursor.getString(cursor.getColumnIndex("REFPOINT"));
+            String des = cursor.getString(cursor.getColumnIndex("NAME"));
+            ed_des.setText(last);
+            d_name.setText(des);
+            getDiscount2();
+        }else{
+            cursor.moveToLast();
+            String last = cursor.getString(cursor.getColumnIndex("REFPOINT"));
+            String des = cursor.getString(cursor.getColumnIndex("NAME"));
+            ed_des.setText(last);
+            d_name.setText(des);
+            String first = cursor.getString(cursor.getColumnIndex("REFPOINT"));
+            String name = cursor.getString(cursor.getColumnIndex("NAME"));
+            ed_origin.setText(first);
+            o_name.setText(name);
+            getDiscount2();
+
+        }
+
+
+
 
 
     }
@@ -988,14 +1023,14 @@ public class frmTicket extends AppCompatActivity {
         String tin = getString(R.string.delarosa_liner) + "\n"; //string xml
         String mn = GlobalVariable.d_machinenum + "\n";
         String accdtn = "Accdtn# 000-00000000 " + "\n \n";
-        String p = "Passenger - Ticket" + "\n \n";
+        String p = "Passenger - Ticket" + "\n";
         String device = GlobalVariable.getPhoneName() + "-" + l + "\n";
         String date = "Date:" + dtstartTime + "\n";
         String vehicle = "Vehicle:" + GlobalVariable.d_busname;
         String price = "Amount Due:" + ticketprice + "pesos" + "\n";
         String o = "From:" + o_refpoint ;
         String d = " - " + d_refpoint + "\n";
-        String type = "Type:" + typename + "\n\n";
+        String type = "Type:" + typename + "\n";
         String driver = "Driver:" + dri + "\n";
         String conductor = "Conductor:" + cond + "\n";
 
@@ -1003,7 +1038,7 @@ public class frmTicket extends AppCompatActivity {
         String vatt = "VAT(12%): " + "\n";
         String vattt = "Zero-Rate" + "\n" + "Vat Exempted" + "\n" ;
         String vatttt = "Sold to:" + "    " + "TIN:" + "\n";
-        String vattttt = "Name: " + "     " +  "Address:" + "\n\n" ;
+        String vattttt = "Name: " + "     " +  "Address:" + "\n" ;
 
         String org_name= getString(R.string.org_name) + "\n";
         String org_tin = "TIN:" + getString(R.string.org_tin) + "\n";
@@ -1012,7 +1047,7 @@ public class frmTicket extends AppCompatActivity {
         String org_dateissued = "Date Issued:" + "\n";
         String org_validtil = "Valid Until: " + "\n";
         String org_reciept = getString(R.string.org_receipt) + "\n";
-        String org_no = getString(R.string.org_powered)+ "\n";
+        String org_no = getString(R.string.org_powered)+ "\n\n\n";
 
 
 
