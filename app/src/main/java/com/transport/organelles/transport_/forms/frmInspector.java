@@ -388,15 +388,28 @@ public class frmInspector extends AppCompatActivity {
         String inspect = "Inspection: " + kmpost.getText().toString() +"\n";
         String batteryLevel = "Battery Level : " +String.format("%6.0f", GlobalClass.getBatteryLevel(frmInspector.this)) + "%" + "\n";
         String passengerCount = list.get(0)+": " + list.get(1) + "\n";
+
+        for (int start =0; start < listTicket.size(); start+= 5){
+            int end = Math.min(start + 5 , listTicket.size());
+            List<String> sublist = listTicket.subList(start, end);
+            Log.wtf("listticket", sublist + "");
+        }
+
+
+
+
         String tickets = Arrays.toString(listTicket.toArray()) + "\n";
+
+
+
 
         Log.wtf("To print", Name + " " + title + " " + deviceticket+ " " + date  + " " +vehicle + " " + driver + " " + cond + " " +
                 inspector + " " + route + " " + Mode + " " + checkpoint + " " + direction+ " "  + passengerCount +
                 " " + inspect + " " + batteryLevel + " " + tickets);
 
-        callBluetooth(Name + " " + title + " " + deviceticket+ " " + date  + " " +vehicle + " " + driver + " " + cond + " " +
-                inspector + " " + route + " " + Mode + " " + checkpoint + " " + direction+ " "  + passengerCount +
-                " " + inspect + " " + batteryLevel + " " + tickets);
+//        callBluetooth(Name + " " + title + " " + deviceticket+ " " + date  + " " +vehicle + " " + driver + " " + cond + " " +
+//                inspector + " " + route + " " + Mode + " " + checkpoint + " " + direction+ " "  + passengerCount +
+//                " " + inspect + " " + batteryLevel + " " + tickets);
 
 
         String[] array = tickets.split("(\\d+,\\d+,\\d+)");
