@@ -54,7 +54,9 @@ public class linesegmentAdapter extends BaseAdapter {
 
         final ViewHolder holder;
         if(convertView == null){
-            convertView = inflater.inflate(R.layout.linesegment_details, null);
+            LayoutInflater vi = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            convertView = vi.inflate(R.layout.linesegment_details, null);
+
             holder = new ViewHolder();
             holder.linesegment_name = (TextView)convertView.findViewById(R.id.linesegment_name);
             convertView.setTag(holder);
