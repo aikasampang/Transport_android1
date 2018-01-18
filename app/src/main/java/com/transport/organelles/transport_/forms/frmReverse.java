@@ -317,6 +317,10 @@ public class frmReverse extends AppCompatActivity {
                     }
             }
         }
+
+        Intent menu = new Intent (frmReverse.this, frmMain.class);
+        startActivity(menu);
+        finish();
     }
 
 }

@@ -1177,7 +1177,7 @@ public class frmIngress extends AppCompatActivity {
 
         Log.wtf("1 tripreport", companyname + " " + tripreportname + " " + devicename + " " + date + " " + vehicle + " " + dri + " " + cond + " " + route + " " + mode + " " + cpoint + " " + tcount + " " + gross + " " + bat );
 
-        //callBluetooth(companyname + " " + tripreportname + " " + devicename + " " + date + " " + vehicle + " " + dri + " " + cond + " " + route + " " + mode + " " + cpoint + " " + tcount + " " + gross + " " + bat );
+        callBluetooth(companyname + " " + tripreportname + " " + devicename + " " + date + " " + vehicle + " " + dri + " " + cond + " " + route + " " + mode + " " + cpoint + " " + tcount + " " + gross + " " + bat );
 
         String pd = "Partial Details: " + list_partialdetails.toString()  + "\n";
         String rl = "Reverse Log: " + list_reverselog.toString() + "\n";

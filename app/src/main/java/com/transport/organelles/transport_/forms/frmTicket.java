@@ -24,6 +24,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.NumberPicker;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -38,13 +39,16 @@ import com.transport.organelles.transport_.classforms.DeviceListActivity;
 import com.transport.organelles.transport_.classforms.GlobalClass;
 import com.transport.organelles.transport_.classforms.GlobalVariable;
 import com.transport.organelles.transport_.R;
+import com.transport.organelles.transport_.classforms.linesegmentAdapter;
+import com.transport.organelles.transport_.model.linesegment;
 
 import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-
+import java.util.List;
 
 
 /**
@@ -94,7 +98,9 @@ public class frmTicket extends AppCompatActivity {
     ImageView o_back, o_forward, d_back, d_forward;
     Cursor cursor;
     CheckBox sustain;
-
+    private ListView listsPickerView;
+    private linesegmentAdapter allListsAdapter;
+    private List<linesegment> segmentLists;
 
 
     @Override
@@ -522,6 +528,30 @@ public class frmTicket extends AppCompatActivity {
                     senior.setEnabled(true);
                     regular.setEnabled(true);
                 }
+            }
+        });
+
+        o_name.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent linesegment = new Intent(frmTicket.this, frmLineSegment.class);
+                startActivity(linesegment);
+
+
+
+//                LayoutInflater inflater = getLayoutInflater();
+//                LayoutInflater lineseg = LayoutInflater.from(frmTicket.this);
+//                final View alertLayout = inflater.inflate(R.layout.modal_linesegment, null);
+//                listsPickerView  = (ListView) alertLayout.findViewById(R.id.list_linesegment);
+//                segmentLists =  new ArrayList<linesegment>();
+//                allListsAdapter = new linesegmentAdapter(frmTicket.this, segmentLists);
+//                listsPickerView.setAdapter(allListsAdapter);
+//
+//                AlertDialog.Builder builder = new AlertDialog.Builder(frmTicket.this);
+//                builder.setTitle("LineSegment");
+//                builder.setView(alertLayout);
+//                builder.show();
+
             }
         });
 

@@ -62,6 +62,7 @@ public class frmMain extends AppCompatActivity  implements BluetoothBroadcastRec
     String dtstartTime = "";
     String data;
     private static String bluetooth_name = "Qsprinter";
+    boolean isLock=false;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -496,6 +497,7 @@ public class frmMain extends AppCompatActivity  implements BluetoothBroadcastRec
     }
 
 
+
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if(keyCode == KeyEvent.KEYCODE_HOME)
@@ -506,16 +508,39 @@ public class frmMain extends AppCompatActivity  implements BluetoothBroadcastRec
         }
         if(keyCode==KeyEvent.KEYCODE_BACK)
         {
+            LayoutInflater inflater = getLayoutInflater();
+            View alertLayout = inflater.inflate(R.layout.password, null);
+            final EditText pass = (EditText) alertLayout.findViewById(R.id.password);
+            AlertDialog.Builder builder = new AlertDialog.Builder(frmMain.this);
+            builder.setTitle("Code")
+                    .setMessage("Please enter the code to exit.")
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                             String exitpass = "1234";
+
+                            if(pass.equals(exitpass)){
+                                android.os.Process.killProcess(android.os.Process.myPid());
+                                System.exit(1);
+                            }else{
+                                Toast.makeText(frmMain.this, "Wrong password! Please input the correct one.", Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    })
+                    .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    })
+                    .setView(alertLayout)
+                    .show();
+
+
             Log.i("back Button","Clicked");
             return true;
         }
         return false;
-    }
-
-    @Override
-    public void onAttachedToWindow() {
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
     }
 
 

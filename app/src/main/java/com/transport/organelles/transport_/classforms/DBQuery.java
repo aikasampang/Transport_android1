@@ -5,6 +5,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import com.transport.organelles.transport_.model.linesegment;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -1308,6 +1310,23 @@ public class DBQuery extends DBObject {
         }else{
             return amount;
         }
+    }
+
+
+    public ArrayList<linesegment> linesegmentList(String line){
+
+        String sql = "select NAME from LINESEGMENT where LINEID = '"+ line+"'";
+        Cursor cursor = this.getDbConnection().rawQuery(sql, null);
+        ArrayList<linesegment> ls = new ArrayList<>();
+        if(cursor.moveToFirst()){
+            do{
+                ls.add(new linesegment(cursor.getString(cursor.getColumnIndex("NAME"))));
+            }while(cursor.moveToNext());
+        }
+        cursor.close();
+        return  ls;
+
+
     }
 
     public ArrayList<Costtype> expenseList(String trip){

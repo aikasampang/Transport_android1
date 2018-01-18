@@ -81,6 +81,7 @@ public class frmInspector extends AppCompatActivity {
     private BluetoothService mService = null;
     private List<String> list;
     private List<String> listTicket;
+    private List<String> tickets;
 
 
     @Override
@@ -389,17 +390,15 @@ public class frmInspector extends AppCompatActivity {
         String batteryLevel = "Battery Level : " +String.format("%6.0f", GlobalClass.getBatteryLevel(frmInspector.this)) + "%" + "\n";
         String passengerCount = list.get(0)+": " + list.get(1) + "\n";
 
-        for (int start =0; start < listTicket.size(); start+= 5){
-            int end = Math.min(start + 5 , listTicket.size());
-            List<String> sublist = listTicket.subList(start, end);
-            Log.wtf("listticket", sublist + "");
-        }
 
 
 
 
-        String tickets = Arrays.toString(listTicket.toArray()) + "\n";
-
+       // String tickets = Arrays.toString(listTicket.toArray()) + "\n";
+//        int chunk = 25; // chunk size to divide
+//        for(int i=0;i<listTicket.;i+=chunk){
+//            System.out.println(Arrays.toString(Arrays.copyOfRange(original, i, Math.min(original.length,i+chunk))));
+//        }
 
 
 
@@ -407,24 +406,36 @@ public class frmInspector extends AppCompatActivity {
                 inspector + " " + route + " " + Mode + " " + checkpoint + " " + direction+ " "  + passengerCount +
                 " " + inspect + " " + batteryLevel + " " + tickets);
 
-//        callBluetooth(Name + " " + title + " " + deviceticket+ " " + date  + " " +vehicle + " " + driver + " " + cond + " " +
-//                inspector + " " + route + " " + Mode + " " + checkpoint + " " + direction+ " "  + passengerCount +
-//                " " + inspect + " " + batteryLevel + " " + tickets);
+                callBluetooth(Name + " " + title + " " + deviceticket+ " " + date  + " " +vehicle + " " + driver + " " + cond + " " +
+                inspector + " " + route + " " + Mode + " " + checkpoint + " " + direction+ " "  + passengerCount +
+                " " + inspect + " " + batteryLevel );
 
-
-        String[] array = tickets.split("(\\d+,\\d+,\\d+)");
-        String[] items = tickets.split(",");
-        for (String item : array)
-        {
-            System.out.println("item = " + item);
+        for (int start =0; start < listTicket.size(); start+= 5){
+            int end = Math.min(start + 5 , listTicket.size());
+            tickets = listTicket.subList(start, end) ;
+            Log.wtf("listticket", tickets + "\n");
+            callBluetooth(tickets + "\n");
         }
 
 
-        String[] parts= tickets.split(",");
-        String[] fiveinput = Arrays.copyOf(parts, 5);
-        for(String entry:fiveinput){
-            System.out.println("tickets : "+entry);
-        }
+
+
+
+
+//        String[] array = tickets.split("(\\d+,\\d+,\\d+)");
+//        String[] items = tickets.split(",");
+//        for (String item : array)
+//        {
+//            System.out.println("item = " + item);
+//        }
+//
+//
+//        String[] parts= tickets.split(",");
+//        String[] fiveinput = Arrays.copyOf(parts, 5);
+//        for(String entry:fiveinput){
+//
+//            System.out.println("tickets : "+entry + "\n");
+//        }
 
 
         // callBluetooth(tickets);

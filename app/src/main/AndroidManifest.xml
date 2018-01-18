@@ -85,6 +85,12 @@
             android:screenOrientation="portrait" />
 
         <activity
+            android:name=".forms.frmLineSegment"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" />
+
+
+        <activity
             android:name="com.transport.organelles.transport_.classforms.DeviceListActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait">
