@@ -1541,6 +1541,7 @@ public class DBQuery extends DBObject {
             return "invalid";
         }else{
             String name = cursor.getString(cursor.getColumnIndex("NAME"));
+            GlobalVariable.setCashier_name(name);
             return name;
         }
 

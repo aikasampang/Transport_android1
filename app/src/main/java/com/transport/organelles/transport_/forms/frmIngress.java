@@ -1159,6 +1159,7 @@ public class frmIngress extends AppCompatActivity {
         String r = dbQuery.getLineName(trip);
         String m = dbQuery.getModeNameTrip(trip);
         String batteryLevel = String.format("%6.0f", GlobalClass.getBatteryLevel(frmIngress.this));
+        list_dispatchIngress = dbQuery.dispatchTerminalIngress(trip);
 
 
         String companyname = dbQuery.getCompanyName() + "\n";
@@ -1172,23 +1173,29 @@ public class frmIngress extends AppCompatActivity {
         String mode = "Mode: " +  m + "\n";
         String cpoint = "Checkpoint: " + checkpoint  + "\n";
         String tcount = "Trip count: " + tripcount +"trip/s"+ "\n";
-        String gross = "Gross" + totalgross.toString() + "\n";
+        String gross = "Gross: " + totalgross.toString() + "\n";
+        String cashier = "By: " + GlobalVariable.getCashier_name() + "\n";
+
+
+
+        Log.wtf("1 tripreport", companyname + " " + tripreportname + " " + devicename + " " + date + " " + vehicle + " " + dri + " " + cond + " " + route + " " + mode + " " + cpoint + " " + tcount + " " + gross + ""+ cashier );
+
+        callBluetooth(companyname + " " + tripreportname + " " + devicename + " " + date + " " + vehicle + " " + dri + " " + cond + " " + route + " " + mode + " " + cpoint + " " + tcount + " " + gross +""+ cashier );
+
+
+        String ddatetime = "Dispatch: " + GlobalVariable.getD_ingDate()  +"\n";
+        String dname = "Dispatcher Name: " + GlobalVariable.getD_ingName()  +"\n";
+        String dterminal = "Terminal: " + GlobalVariable.getD_ingRemarks() + "\n";
+        String dopening = "Opening: " + GlobalVariable.getD_ingMintk() + "\n";
         String bat = "Battery Level: " + batteryLevel + "\n";
 
-        Log.wtf("1 tripreport", companyname + " " + tripreportname + " " + devicename + " " + date + " " + vehicle + " " + dri + " " + cond + " " + route + " " + mode + " " + cpoint + " " + tcount + " " + gross + " " + bat );
-
-        callBluetooth(companyname + " " + tripreportname + " " + devicename + " " + date + " " + vehicle + " " + dri + " " + cond + " " + route + " " + mode + " " + cpoint + " " + tcount + " " + gross + " " + bat );
-
-        String pd = "Partial Details: " + list_partialdetails.toString()  + "\n";
-        String rl = "Reverse Log: " + list_reverselog.toString() + "\n";
-        String in = "Inspection: " + list_inspectionTripReport.toString()  + "\n";
-        String c = "Controlled: " + list_controlledTripReport.toString() + "\n";
+        String pd = "Partial Details: " + "\n" +list_partialdetails.toString()  + "\n";
+        String rl = "Reverse Log: " + "\n" +list_reverselog.toString() + "\n";
+        String in = "Inspection: " + "\n" + list_inspectionTripReport.toString()  + "\n";
+        String c = "Controlled: " + "\n" +list_controlledTripReport.toString() + "\n";
         String cvm = "Controlled (mPAD vs Controller)"; //arrange return
-
         String aoc = "Area of Closing: " +list_aoc.toString()+ "\n";
-
         String ts = ptype.toString() + "\n";
-
         String tline = GlobalVariable.getGross_line();
         String tnum = "1";
         String tdir = "0";
@@ -1209,10 +1216,10 @@ public class frmIngress extends AppCompatActivity {
 
         String th = "--------------- TEAR HERE ------------------";
 
-        Log.wtf("2 tripreport", pd + " " + rl + " " + in + " " + c + " " + cvm + " " + aoc + " " + ts + " " +
+        Log.wtf("2 tripreport", ddatetime + "" + dname + " " + dterminal+ " "+ dopening+ " "+ bat + " " + pd + " " + rl + " " + in + " " + c + " " + cvm + " " + aoc + " " + ts + " " +
          ttpax);
 
-        callBluetooth(pd + " " + rl + " " + in + " " + c + " " + cvm + " " + aoc + " " + ts + " " +
+        callBluetooth(ddatetime + "" + dname + " " + dterminal+ " "+ dopening+ " "+ bat + " "+pd + " " + rl + " " + in + " " + c + " " + cvm + " " + aoc + " " + ts + " " +
                 ttpax);
 
 //        List<Object> list = new ArrayList<Object>(Arrays.asList(test2));

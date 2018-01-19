@@ -5,38 +5,148 @@
 
 
 
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:orientation="vertical">
 
-        <ListView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/linesegment_list"></ListView>
-
-    </LinearLayout>
-
-    <LinearLayout
+    <!-- Header aligned to top -->
+    <RelativeLayout
+        android:id="@+id/header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_alignParentTop="true"
+        android:gravity="center">
 
-        <Button
-            android:text="CANCEL"
+
+        <!--<LinearLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:background="#00a20f"-->
+        <!--android:orientation="horizontal">-->
+
+
+        <!--<TextView-->
+        <!--android:layout_width="0dp"-->
+        <!--android:layout_height="40sp"-->
+        <!--android:paddingLeft="10sp"-->
+        <!--android:paddingRight="10sp"-->
+        <!--android:textAppearance="?android:attr/textAppearanceMedium"-->
+        <!--android:text="Large Text"-->
+        <!--android:textColor="#ffffff"-->
+        <!--android:layout_weight="1"-->
+        <!--android:drawableStart="@drawable/nav_user"-->
+        <!--android:gravity="start|center"-->
+        <!--android:id="@+id/txtUser"-->
+        <!--android:drawableLeft="@drawable/nav_user"-->
+        <!--android:textSize="12sp"/>-->
+
+        <!--<TextView-->
+        <!--android:layout_width="0sp"-->
+        <!--android:layout_height="40sp"-->
+        <!--android:textAppearance="?android:attr/textAppearanceMedium"-->
+        <!--android:text="Large Text"-->
+        <!--android:textColor="#ffffff"-->
+        <!--android:gravity="start|center|end"-->
+        <!--android:layout_weight="1"-->
+        <!--android:drawablePadding="-6sp"-->
+        <!--android:drawableLeft="@drawable/battery"-->
+        <!--android:drawableStart="@drawable/battery"-->
+        <!--android:id="@+id/txtBattery"-->
+        <!--android:textSize="12sp"/>-->
+
+        <!--<TextView-->
+        <!--android:layout_width="0dp"-->
+        <!--android:layout_height="40sp"-->
+        <!--android:paddingLeft="2sp"-->
+        <!--android:textAppearance="?android:attr/textAppearanceMedium"-->
+        <!--android:text="Large Text"-->
+        <!--android:textColor="#ffffff"-->
+        <!--android:layout_weight="1"-->
+        <!--android:gravity="start|center|end"-->
+        <!--android:drawablePadding="6sp"-->
+        <!--android:drawableLeft="@drawable/time"-->
+        <!--android:drawableStart="@drawable/time"-->
+        <!--android:id="@+id/txtDateTime"-->
+        <!--android:textSize="12sp"/>-->
+
+        <!--<ImageView-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:src="@drawable/nav_bluetooth"-->
+        <!--android:id="@+id/bluetooth"-->
+        <!--android:paddingRight="15sp" />-->
+
+
+        <!--</LinearLayout>-->
+    </RelativeLayout>
+
+    <!-- Footer aligned to bottom -->
+    <RelativeLayout
+        android:id="@+id/footer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:gravity="center">
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/i_save"
-            android:layout_weight="1" />
+            android:orientation="horizontal">
 
-        <Button
-            android:text="OK"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/i_cancel"
-            android:layout_weight="1" />
+            <Button
+                android:text="CANCEL"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/i_save"
+                android:layout_weight="1" />
+
+            <Button
+                android:text="OK"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/i_cancel"
+                android:layout_weight="1" />
+
+        </LinearLayout>
+
+
+
+    </RelativeLayout>
+
+    <!-- Content below header and above footer -->
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingTop="25sp"
+        android:layout_below="@+id/header"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_above="@+id/footer">
+
+
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical">
+
+            <ListView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/linesegment_list"></ListView>
+
+        </LinearLayout>
+
 
     </LinearLayout>
+
+
+
+
+
+
+
+
+
+
 
 
 

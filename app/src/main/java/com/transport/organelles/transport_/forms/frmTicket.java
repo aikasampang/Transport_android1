@@ -44,6 +44,7 @@ import com.transport.organelles.transport_.model.linesegment;
 
 import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -1046,7 +1047,7 @@ public class frmTicket extends AppCompatActivity {
         Date dtTemp = new Date(DateFormat.getDateTimeInstance().format(new Date()));
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         dtstartTime = formatter.format(dtTemp);
-
+        String tripId = dbQuery.getLastTrip();
 
         String companyName = c + "\n";
         String comAdd = "Brgy. Sto. Domingo Binan Laguna" + "\n";
@@ -1056,7 +1057,7 @@ public class frmTicket extends AppCompatActivity {
         String p = "Passenger - Ticket" + "\n";
         String device = GlobalVariable.getPhoneName() + "-" + l + "\n";
         String date = "Date:" + dtstartTime + "\n";
-        String vehicle = "Vehicle:" + GlobalVariable.d_busname;
+        String vehicle = "Vehicle:" + dbQuery.getResourceName(tripId) + "\n";
         String price = "Amount Due:" + ticketprice + "pesos" + "\n";
         String o = "From:" + o_refpoint ;
         String d = " - " + d_refpoint + "\n";
@@ -1064,8 +1065,14 @@ public class frmTicket extends AppCompatActivity {
         String driver = "Driver:" + dri + "\n";
         String conductor = "Conductor:" + cond + "\n";
 
-        String vat = "VATable:" + "\n";
-        String vatt = "VAT(12%): " + "\n";
+        DecimalFormat twoDForm = new DecimalFormat("#.##");
+        Double vatable = ticketprice / 1.2;
+        Double vt = ticketprice * 0.12;
+
+
+
+        String vat = "VATable:" + twoDForm.format(vatable)  +"\n";
+        String vatt = "VAT(12%): " + twoDForm.format(vt) + "\n";
         String vattt = "Zero-Rate" + "\n" + "Vat Exempted" + "\n" ;
         String vatttt = "Sold to:" + "    " + "TIN:" + "\n";
         String vattttt = "Name: " + "     " +  "Address:" + "\n" ;

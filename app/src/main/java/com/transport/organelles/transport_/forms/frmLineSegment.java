@@ -5,10 +5,13 @@ import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.transport.organelles.transport_.R;
 import com.transport.organelles.transport_.classforms.DBQuery;
@@ -27,6 +30,7 @@ public class frmLineSegment extends AppCompatActivity {
     Button cancel, ok;
     ListView listview;
     ArrayList<linesegment> ls = null;
+    String loc_name;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -72,8 +76,10 @@ public class frmLineSegment extends AppCompatActivity {
         listview.setAdapter(adapter);
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+            public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
+                loc_name = listview.getAdapter().getItem(position).toString();
+                Log.i("Selected Item in list", loc_name);
+               // Toast.makeText(frmLineSegment.this, loc_name, Toast.LENGTH_LONG).show();
             }
         });
 

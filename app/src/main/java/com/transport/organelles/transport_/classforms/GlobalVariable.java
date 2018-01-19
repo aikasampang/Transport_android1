@@ -1005,4 +1005,14 @@ public class GlobalVariable {
     public static void setGross_remarks(String gross_remarks) {
         GlobalVariable.gross_remarks = gross_remarks;
     }
+
+    public static String cashier_name;
+
+    public static String getCashier_name() {
+        return cashier_name;
+    }
+
+    public static void setCashier_name(String cashier_name) {
+        GlobalVariable.cashier_name = cashier_name;
+    }
 }
