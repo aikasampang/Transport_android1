@@ -84,6 +84,9 @@ public class frmIngress extends AppCompatActivity {
     private List<String> list_drislip, list_condslip, list_inspectionlog, list_dispatchIngress, list_arrival, list_partialdetails, list_reverselog, list_inspectionTripReport,
     list_controlledTripReport, list_aoc;
     int curdir = 0;
+
+    List<String> inspector;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -230,10 +233,10 @@ public class frmIngress extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                if (mService.getState() != BluetoothService.STATE_CONNECTED) {
-                    Toast.makeText(frmIngress.this, R.string.not_connected, Toast.LENGTH_LONG).show();
-                    return;
-                }
+//                if (mService.getState() != BluetoothService.STATE_CONNECTED) {
+//                    Toast.makeText(frmIngress.this, R.string.not_connected, Toast.LENGTH_LONG).show();
+//                    return;
+//                }
 
                 tripreport(0);
             }
@@ -1189,13 +1192,53 @@ public class frmIngress extends AppCompatActivity {
         String dopening = "Opening: " + GlobalVariable.getD_ingMintk() + "\n";
         String bat = "Battery Level: " + batteryLevel + "\n";
 
-        String pd = "Partial Details: " + "\n" +list_partialdetails.toString()  + "\n";
+        String pd = "Partial Details: " + "\n" + list_partialdetails.toString() + "\n";
+        for (int start =0; start < list_partialdetails.size(); start+= 5){
+            int end = Math.min(start + 5 , list_partialdetails.size());
+            inspector = list_partialdetails.subList(start, end);
+           // Log.wtf("inspector ", inspector + "\n");
+            callBluetooth("Partial Inspector : " + inspector + "\n");
+        }
+
+
         String rl = "Reverse Log: " + "\n" +list_reverselog.toString() + "\n";
+        for (int start =0; start < list_reverselog.size(); start+= 5){
+            int end = Math.min(start + 5 , list_reverselog.size());
+            inspector = list_reverselog.subList(start, end);
+            // Log.wtf("inspector ", inspector + "\n");
+            callBluetooth("Partial Inspector : " + inspector + "\n");
+        }
+
+
         String in = "Inspection: " + "\n" + list_inspectionTripReport.toString()  + "\n";
-        String c = "Controlled: " + "\n" +list_controlledTripReport.toString() + "\n";
-        String cvm = "Controlled (mPAD vs Controller)"; //arrange return
+        for (int start =0; start < list_inspectionTripReport.size(); start+= 5){
+            int end = Math.min(start + 5 , list_inspectionTripReport.size());
+            inspector = list_inspectionTripReport.subList(start, end);
+            // Log.wtf("inspector ", inspector + "\n");
+            callBluetooth("Partial Inspector : " + inspector + "\n");
+        }
+
+        String c = "Controlled: " + "\n" + list_controlledTripReport.toString() + "\n";
+        for (int start =0; start < list_controlledTripReport.size(); start+= 5){
+            int end = Math.min(start + 5 , list_controlledTripReport.size());
+            inspector = list_controlledTripReport.subList(start, end);
+            // Log.wtf("inspector ", inspector + "\n");
+            callBluetooth("Partial Inspector : " + inspector + "\n");
+        }
+
+
+        String cvm = "Controlled (mPAD vs Controller)" + "\n"; //arrange return
         String aoc = "Area of Closing: " +list_aoc.toString()+ "\n";
-        String ts = ptype.toString() + "\n";
+        for (int start =0; start < list_aoc.size(); start+= 5){
+            int end = Math.min(start + 5 , list_aoc.size());
+            inspector = list_aoc.subList(start, end);
+            // Log.wtf("inspector ", inspector + "\n");
+            callBluetooth("Partial Inspector : " + inspector + "\n");
+        }
+
+
+
+        String ts =  ptype.toString() + "\n";
         String tline = GlobalVariable.getGross_line();
         String tnum = "1";
         String tdir = "0";
@@ -1212,7 +1255,7 @@ public class frmIngress extends AppCompatActivity {
             tripnum = tnum + "th";
         }
 
-        String ttpax = " Pax:" + ttcount + "Total: " + tttotal + "\n";
+        String ttpax = " Pax:" + ttcount + " Total: " + tttotal + "\n";
 
         String th = "--------------- TEAR HERE ------------------";
 
@@ -1261,6 +1304,15 @@ public class frmIngress extends AppCompatActivity {
 //            curdir = (x3 - x2) / Math.abs(x3 - x2);
 //        }
     }
+
+//    private void stringToPrint(List array){
+//        for (int start =0; start < array.size(); start+= 5){
+//            int end = Math.min(start + 5 , array.size());
+//            inspector = array.subList(start, end);
+//            Log.wtf("inspector", inspector + "\n");
+//            callBluetooth(inspector + "\n");
+//        }
+//    }
 
     private static String convertStringArrayToString(String[] strArr, String delimiter) {
         StringBuilder sb = new StringBuilder();

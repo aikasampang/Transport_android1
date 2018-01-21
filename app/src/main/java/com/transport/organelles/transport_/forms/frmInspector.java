@@ -167,10 +167,10 @@ public class frmInspector extends AppCompatActivity {
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mService.getState() != BluetoothService.STATE_CONNECTED) {
-                    Toast.makeText(frmInspector.this, R.string.not_connected, Toast.LENGTH_LONG).show();
-                    return;
-                }
+//                if (mService.getState() != BluetoothService.STATE_CONNECTED) {
+//                    Toast.makeText(frmInspector.this, R.string.not_connected, Toast.LENGTH_LONG).show();
+//                    return;
+//                }
 
                 saveInspector();
             }
@@ -394,6 +394,8 @@ public class frmInspector extends AppCompatActivity {
 
 
 
+
+
        // String tickets = Arrays.toString(listTicket.toArray()) + "\n";
 //        int chunk = 25; // chunk size to divide
 //        for(int i=0;i<listTicket.;i+=chunk){
@@ -413,7 +415,8 @@ public class frmInspector extends AppCompatActivity {
         for (int start =0; start < listTicket.size(); start+= 5){
             int end = Math.min(start + 5 , listTicket.size());
             tickets = listTicket.subList(start, end) ;
-            Log.wtf("listticket", tickets + "\n");
+            Log.wtf("listticket",
+                    tickets + "\n");
             callBluetooth(tickets + "\n");
         }
 
