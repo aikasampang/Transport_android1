@@ -59,7 +59,7 @@ import java.util.List;
 public class frmTicket extends AppCompatActivity {
 
     private TextView txtDateTime, ticketno, bound, price, kmpost, tremaining, o_name, d_name;
-    NumberPicker origin, destination;
+    String ref, refPoint, refName;
     RadioGroup radiogroup;
     RadioButton regular, senior, student, baggage, rb;
     Button print, gc, aoc, hotspot;
@@ -129,8 +129,14 @@ public class frmTicket extends AppCompatActivity {
         // Initialize the BluetoothService to perform bluetooth connections
         mService = new BluetoothService(this, bluetoothHandler);
 
+        Bundle extras = getIntent().getExtras();
 
-
+        if(extras != null){
+            ref = extras.getString("ref");
+            refPoint = extras.getString("refpoint");
+            refName = extras.getString("refName");
+            lineseg(refPoint,refName);
+        }
     }
 
 
@@ -257,16 +263,29 @@ public class frmTicket extends AppCompatActivity {
                 String id = dbQuery.getLinefrmDB();
                 ed_origin.setText(dbQuery.getSegment(id, "first"));
                 ed_des.setText(dbQuery.getSegment(id, "last"));
+                if(cursor.isLast()){
+                    String d_namee = cursor.getString(cursor.getColumnIndex("NAME"));
+                    d_name.setText(d_namee);
+                }else if(cursor.isFirst()){
+                    String  o_namee = cursor.getString(cursor.getColumnIndex("NAME"));
+                    o_name.setText(o_namee);
+                }
                 //ascending(id);
 
             } else if (lDirection.toString().contains("NORTH")) {
                 String id = dbQuery.getLinefrmDB();
-                ed_origin.setText(dbQuery.getSegment(id, "first"));
-                ed_des.setText(dbQuery.getSegment(id, "last"));
+                ed_origin.setText(dbQuery.getSegment(id, "last"));
+                ed_des.setText(dbQuery.getSegment(id, "first"));
+                if(cursor.isLast()){
+                    String d_namee = cursor.getString(cursor.getColumnIndex("NAME"));
+                    d_name.setText(d_namee);
+                }else if(cursor.isFirst()){
+                    String  o_namee = cursor.getString(cursor.getColumnIndex("NAME"));
+                    o_name.setText(o_namee);
+                }
+
                 //descending(id);
             }
-
-
         }
 
 
@@ -275,12 +294,21 @@ public class frmTicket extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
+                String origin = ed_origin.getText().toString();
+                String destination = ed_des.getText().toString();
+
                 // Check that we're actually connected before trying anything
-//                if (mService.getState() != BluetoothService.STATE_CONNECTED) {
-//                    Toast.makeText(frmTicket.this, R.string.not_connected, Toast.LENGTH_SHORT)
-//                            .show();
-//                    return;
-//                }
+                if (mService.getState() != BluetoothService.STATE_CONNECTED) {
+                    Toast.makeText(frmTicket.this, R.string.not_connected, Toast.LENGTH_SHORT)
+                            .show();
+                    return;
+                }
+
+                if(origin.equals(destination)){
+                    Toast.makeText(frmTicket.this, "Please select origin/destination..", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
 
 
                 String type = GlobalVariable.getPaxtype();
@@ -536,26 +564,33 @@ public class frmTicket extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent linesegment = new Intent(frmTicket.this, frmLineSegment.class);
+                linesegment.putExtra("ref", "origin");
                 startActivity(linesegment);
-
-
-
-//                LayoutInflater inflater = getLayoutInflater();
-//                LayoutInflater lineseg = LayoutInflater.from(frmTicket.this);
-//                final View alertLayout = inflater.inflate(R.layout.modal_linesegment, null);
-//                listsPickerView  = (ListView) alertLayout.findViewById(R.id.list_linesegment);
-//                segmentLists =  new ArrayList<linesegment>();
-//                allListsAdapter = new linesegmentAdapter(frmTicket.this, segmentLists);
-//                listsPickerView.setAdapter(allListsAdapter);
-//
-//                AlertDialog.Builder builder = new AlertDialog.Builder(frmTicket.this);
-//                builder.setTitle("LineSegment");
-//                builder.setView(alertLayout);
-//                builder.show();
-
             }
         });
 
+        d_name.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent linesegementt = new Intent(frmTicket.this, frmLineSegment.class);
+                linesegementt.putExtra("ref", "destination");
+                startActivity(linesegementt);
+            }
+        });
+
+
+
+
+    }
+    private void lineseg(String point, String name){
+
+        if(ref.equals("origin")){
+            ed_origin.setText(point);
+            o_name.setText(name);
+        }else if(ref.equals("destination")) {
+            ed_des.setText(point);
+            d_name.setText(name);
+        }
     }
 
     private void updateRefRemaining(){
@@ -631,103 +666,103 @@ public class frmTicket extends AppCompatActivity {
 
 
 
-    private void ascending(final String id){
-        Toast.makeText(frmTicket.this,"ascending", Toast.LENGTH_LONG ).show();
-        final DBQuery dbQuery = new DBQuery(frmTicket.this);
-        //final String id = GlobalVariable.getLineid();
-        Log.wtf("id", id);
-        String[] o = dbQuery.getLineSegment(id, "ASC");
-        origin.setMinValue(0);
-        origin.setMaxValue(o.length-1);
-        origin.setDisplayedValues(o);
-        origin.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
-            @Override
-            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-                hasHotspot = "0";
-                origin_v = newVal;
-                String[] o = dbQuery.getLineSegment(id, "ASC");
-                String name = o[origin_v];
-                o_refpoint = dbQuery.getRefpoint(name);
-                Log.wtf("value -o",o_refpoint +"");
-                getDiscount2();
-                GlobalVariable.setOrigin(String.valueOf(o_refpoint));
-                if(o_refpoint >= 0){
-                    remainingPax(o_refpoint);
-                }
-
-            }
-        });
-
-        String[] d = dbQuery.getLineSegment(id, "DESC");
-        destination.setMinValue(0);
-        destination.setMaxValue(d.length-1);
-        destination.setDisplayedValues(d);
-        destination.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
-            @Override
-            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-                hasHotspot = "0";
-                des_v = newVal;
-                String[] d = dbQuery.getLineSegment(id, "DESC");
-                String name = d[des_v];
-                d_refpoint = dbQuery.getRefpoint(name);
-                Log.wtf("value -d",d_refpoint +"");
-                Log.wtf("paxtype",paxtype +"");
-                getDiscount2();
-                GlobalVariable.setDestination(String.valueOf(d_refpoint));
-                //computeTicketPrice();
-            }
-        });
-
-    }
-    private void descending(final String id){
-        Toast.makeText(frmTicket.this,"descending", Toast.LENGTH_LONG ).show();
-        final DBQuery dbQuery = new DBQuery(frmTicket.this);
-        //final String id = GlobalVariable.getLineid();
-        Log.wtf("id", id);
-        String[] o = dbQuery.getLineSegment(id, "DESC");
-        origin.setMinValue(0);
-        origin.setMaxValue(o.length-1);
-        origin.setDisplayedValues(o);
-        origin.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
-            @Override
-            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-                hasHotspot = "0";
-                origin_v = newVal;
-                String[] o = dbQuery.getLineSegment(id, "DESC");
-                String name = o[origin_v];
-                o_refpoint = dbQuery.getRefpoint(name);
-                Log.wtf("value -o",o_refpoint +"");
-                getDiscount2();
-                GlobalVariable.setOrigin(String.valueOf(o_refpoint));
-                if(o_refpoint >= 0){
-                    remainingPax(o_refpoint);
-                }
-
-            }
-        });
-
-        String[] d = dbQuery.getLineSegment(id, "ASC");
-        destination.setMinValue(0);
-        destination.setMaxValue(d.length-1);
-        destination.setDisplayedValues(d);
-        destination.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
-            @Override
-            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-                hasHotspot = "0";
-                des_v = newVal;
-                String[] d = dbQuery.getLineSegment(id, "ASC");
-                String name = d[des_v];
-                d_refpoint = dbQuery.getRefpoint(name);
-                Log.wtf("value -d",d_refpoint +"");
-                Log.wtf("paxtype",paxtype +"");
-                getDiscount2();
-                GlobalVariable.setDestination(String.valueOf(d_refpoint));
-                //computeTicketPrice();
-            }
-        });
-
-
-    }
+//    private void ascending(final String id){
+//        Toast.makeText(frmTicket.this,"ascending", Toast.LENGTH_LONG ).show();
+//        final DBQuery dbQuery = new DBQuery(frmTicket.this);
+//        //final String id = GlobalVariable.getLineid();
+//        Log.wtf("id", id);
+//        String[] o = dbQuery.getLineSegment(id, "ASC");
+//        origin.setMinValue(0);
+//        origin.setMaxValue(o.length-1);
+//        origin.setDisplayedValues(o);
+//        origin.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+//            @Override
+//            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+//                hasHotspot = "0";
+//                origin_v = newVal;
+//                String[] o = dbQuery.getLineSegment(id, "ASC");
+//                String name = o[origin_v];
+//                o_refpoint = dbQuery.getRefpoint(name);
+//                Log.wtf("value -o",o_refpoint +"");
+//                getDiscount2();
+//                GlobalVariable.setOrigin(String.valueOf(o_refpoint));
+//                if(o_refpoint >= 0){
+//                    remainingPax(o_refpoint);
+//                }
+//
+//            }
+//        });
+//
+//        String[] d = dbQuery.getLineSegment(id, "DESC");
+//        destination.setMinValue(0);
+//        destination.setMaxValue(d.length-1);
+//        destination.setDisplayedValues(d);
+//        destination.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+//            @Override
+//            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+//                hasHotspot = "0";
+//                des_v = newVal;
+//                String[] d = dbQuery.getLineSegment(id, "DESC");
+//                String name = d[des_v];
+//                d_refpoint = dbQuery.getRefpoint(name);
+//                Log.wtf("value -d",d_refpoint +"");
+//                Log.wtf("paxtype",paxtype +"");
+//                getDiscount2();
+//                GlobalVariable.setDestination(String.valueOf(d_refpoint));
+//                //computeTicketPrice();
+//            }
+//        });
+//
+//    }
+//    private void descending(final String id){
+//        Toast.makeText(frmTicket.this,"descending", Toast.LENGTH_LONG ).show();
+//        final DBQuery dbQuery = new DBQuery(frmTicket.this);
+//        //final String id = GlobalVariable.getLineid();
+//        Log.wtf("id", id);
+//        String[] o = dbQuery.getLineSegment(id, "DESC");
+//        origin.setMinValue(0);
+//        origin.setMaxValue(o.length-1);
+//        origin.setDisplayedValues(o);
+//        origin.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+//            @Override
+//            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+//                hasHotspot = "0";
+//                origin_v = newVal;
+//                String[] o = dbQuery.getLineSegment(id, "DESC");
+//                String name = o[origin_v];
+//                o_refpoint = dbQuery.getRefpoint(name);
+//                Log.wtf("value -o",o_refpoint +"");
+//                getDiscount2();
+//                GlobalVariable.setOrigin(String.valueOf(o_refpoint));
+//                if(o_refpoint >= 0){
+//                    remainingPax(o_refpoint);
+//                }
+//
+//            }
+//        });
+//
+//        String[] d = dbQuery.getLineSegment(id, "ASC");
+//        destination.setMinValue(0);
+//        destination.setMaxValue(d.length-1);
+//        destination.setDisplayedValues(d);
+//        destination.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+//            @Override
+//            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+//                hasHotspot = "0";
+//                des_v = newVal;
+//                String[] d = dbQuery.getLineSegment(id, "ASC");
+//                String name = d[des_v];
+//                d_refpoint = dbQuery.getRefpoint(name);
+//                Log.wtf("value -d",d_refpoint +"");
+//                Log.wtf("paxtype",paxtype +"");
+//                getDiscount2();
+//                GlobalVariable.setDestination(String.valueOf(d_refpoint));
+//                //computeTicketPrice();
+//            }
+//        });
+//
+//
+//    }
 
     private void getDiscount(){
 

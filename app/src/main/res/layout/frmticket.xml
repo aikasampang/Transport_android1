@@ -131,57 +131,6 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:id="@+id/two"
-            android:paddingTop="5sp"
-            android:paddingBottom="5sp"
-            >
-
-
-            <TextView
-                android:text="0"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/two"
-                android:id="@+id/t_ticket"
-                android:gravity="center"
-                android:paddingLeft="15sp"
-                android:paddingRight="50sp"
-                android:textStyle="bold"
-                />
-
-            <TextView
-                android:text="R.Pax:"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/two"
-                android:id="@+id/text"
-                android:textSize="15sp"
-                android:layout_weight="1"
-                android:textStyle="bold"/>
-
-
-            <TextView
-                android:text="0"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/two"
-                android:id="@+id/t_remaining"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:textStyle="bold"/>
-            <!--<Button-->
-                <!--android:text="Hotspot"-->
-                <!--android:layout_width="0dp"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:id="@+id/t_hotspot"-->
-                <!--android:layout_weight="1" />-->
-
-
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             android:orientation="vertical"
             android:paddingTop="2sp"
             android:paddingBottom="25sp"
@@ -436,6 +385,61 @@
                 android:layout_height="wrap_content"
                 android:text="Sustain"
                 android:id="@+id/t_sustain"/>
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:id="@+id/two"
+            android:paddingTop="5sp"
+            android:paddingBottom="5sp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="34dp">
+
+
+            <TextView
+                android:text="0"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/two"
+                android:id="@+id/t_ticket"
+                android:gravity="center"
+                android:paddingLeft="15sp"
+                android:paddingRight="50sp"
+                android:textStyle="bold"
+                />
+
+            <TextView
+                android:text="R.Pax:"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/two"
+                android:id="@+id/text"
+                android:textSize="15sp"
+                android:layout_weight="1"
+                android:textStyle="bold"/>
+
+
+            <TextView
+                android:text="0"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/two"
+                android:id="@+id/t_remaining"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textStyle="bold"/>
+            <!--<Button-->
+                <!--android:text="Hotspot"-->
+                <!--android:layout_width="0dp"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:id="@+id/t_hotspot"-->
+                <!--android:layout_weight="1" />-->
 
 
         </LinearLayout>

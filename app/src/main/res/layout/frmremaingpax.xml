@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:tools="http://schemas.android.com/tools"
+android:id="@+id/container"
+android:layout_width="match_parent"
+android:layout_height="match_parent" >
+
+<!-- Header aligned to top -->
+<RelativeLayout
+    android:id="@+id/header"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_alignParentTop="true"
+    android:background="#AFA7EF"
+    android:gravity="center">
+
+</RelativeLayout>
+
+<!-- Footer aligned to bottom -->
+<RelativeLayout
+    android:id="@+id/footer"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignParentBottom="true"
+    android:gravity="center">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <Button
+            android:layout_height="46dp"
+            android:layout_width="fill_parent"
+            android:text="Back"
+            android:id="@+id/back_remaining"
+            android:layout_gravity="center"
+            />
+
+    </LinearLayout>
+</RelativeLayout>
+
+<!-- Content below header and above footer -->
+<RelativeLayout
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_above="@id/footer"
+    android:layout_below="@id/header"
+    android:gravity="center">
+
+    <GridView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/remaining_grid"/>
+
+
+</RelativeLayout>
+
+</RelativeLayout>

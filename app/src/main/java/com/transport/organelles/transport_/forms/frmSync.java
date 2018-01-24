@@ -119,7 +119,7 @@ public class frmSync extends AppCompatActivity {
 
         btnSync= (Button) findViewById(R.id.btnSync);
         GlobalVariable.serverIP = "192.168.11.30:8080";
-
+        //fetch
         url_selectEmployee = "http://" + GlobalVariable.serverIP + "/transport/selectEmployee.php";
         url_selectControlmatrix = "http://" + GlobalVariable.serverIP + "/transport/selectControlmatrix.php";
         url_selectEmployeeMatrix = "http://" + GlobalVariable.serverIP + "/transport/selectEmployeematrix.php";
@@ -128,9 +128,7 @@ public class frmSync extends AppCompatActivity {
         url_selectResourcemodel = "http://" + GlobalVariable.serverIP + "/transport/selectResourcemodel.php";
         url_selectServiceMatrix = "http://" + GlobalVariable.serverIP + "/transport/selectServicematrix.php";
 
-
-
-
+        //insert
         url_insertDevicedata = "http://" + GlobalVariable.serverIP + "/transport/insertDevicedata.php";
         url_insertTripcost = "http://" + GlobalVariable.serverIP + "/transport/insertTripcost.php";
         url_insertTripcrew = "http://" + GlobalVariable.serverIP + "/transport/insertTripcrew.php";

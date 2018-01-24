@@ -167,10 +167,10 @@ public class frmInspector extends AppCompatActivity {
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                if (mService.getState() != BluetoothService.STATE_CONNECTED) {
-//                    Toast.makeText(frmInspector.this, R.string.not_connected, Toast.LENGTH_LONG).show();
-//                    return;
-//                }
+                if (mService.getState() != BluetoothService.STATE_CONNECTED) {
+                    Toast.makeText(frmInspector.this, R.string.not_connected, Toast.LENGTH_LONG).show();
+                    return;
+                }
 
                 saveInspector();
             }

@@ -66,7 +66,7 @@ public class frmMain extends AppCompatActivity  implements BluetoothBroadcastRec
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getSupportActionBar().hide();
+        getSupportActionBar().show();
         setContentView(R.layout.frmmain);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setModuleContent();

@@ -2397,7 +2397,30 @@ public class DBQuery extends DBObject {
 //    }
 
 
+    public ArrayList<linesegment> getRemainingPaxForm(String line, String direction, String currentKm){
 
+        String refpointsign;
+
+        if(direction.equals("1")){
+            refpointsign = ">";
+        }else{
+            refpointsign = "<";
+        }
+
+
+        String sql = "select ID, DATETIMESTAMP AS TIME, FROMREFPOINT AS [FROM], TOREFPOINT AS [TO] FROM TICKET WHERE TRIPID ='"+line+"' AND TOREFPOINT "+ refpointsign+"   "+currentKm+ " " + " ORDER BY DATETIMESTAMP DESC";
+        Cursor cursor = this.getDbConnection().rawQuery(sql, null);
+        ArrayList<linesegment> ls = new ArrayList<>();
+        if(cursor.moveToFirst()){
+            do{
+                ls.add(new linesegment(cursor.getString(cursor.getColumnIndex("NAME"))));
+            }while(cursor.moveToNext());
+        }
+        cursor.close();
+        return  ls;
+
+
+    }
 
 
 
