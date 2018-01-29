@@ -671,7 +671,7 @@ public class frmDispatch extends AppCompatActivity  {
 
         Log.wtf("toPrint", devicename + " " + dispatch + " " + startDate + " " + resourceID + " " + lineID + " " + dispatcher + " " + dri + " " + conductor + " " + opening + " " + terminal + battery);
 
-       callBluetooth(devicename + " " + dispatch + " " + startDate + " " + resourceID + " " + lineID + " " + dispatcher + " " + dri + " " + conductor + " " + opening + " " + terminal + battery);
+    //   callBluetooth(devicename + " " + dispatch + " " + startDate + " " + resourceID + " " + lineID + " " + dispatcher + " " + dri + " " + conductor + " " + opening + " " + terminal + battery);
 
         GlobalVariable.setName_driver(driver.getText().toString());
         GlobalVariable.setName_conductor(cond.getText().toString());

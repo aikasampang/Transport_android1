@@ -193,10 +193,11 @@
                     <EditText
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:hint="test "
                         android:id="@+id/edit_origin"
                         android:gravity="center"
-                        android:layout_weight="1" />
+                        android:layout_weight="1"
+                        android:maxLines="1"
+                        android:selectAllOnFocus="true"/>
 
                     <ImageView
                         android:layout_width="wrap_content"
@@ -232,10 +233,11 @@
                     <EditText
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:hint="test "
                         android:gravity="center"
                         android:id="@+id/edit_destination"
-                        android:layout_weight="1" />
+                        android:layout_weight="1"
+                        android:selectAllOnFocus="true"
+                        android:maxLines="1"/>
 
                     <ImageView
                         android:layout_width="wrap_content"

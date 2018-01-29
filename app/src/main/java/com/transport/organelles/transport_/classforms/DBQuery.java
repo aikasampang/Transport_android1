@@ -2423,7 +2423,15 @@ public class DBQuery extends DBObject {
     }
 
 
+    public String getNameSegment(String line , String refpoint){
 
+        String sql = "Select NAME from v_linesegment where lineid ='"+ line +"' and REFPOINT ='"+ refpoint+"'";
+        Cursor cursor = this.getDbConnection().rawQuery(sql, null);
+        cursor.moveToFirst();
+        String name = cursor.getString(cursor.getColumnIndex("NAME"));
+        cursor.close();
+        return name;
+    }
 
 
 

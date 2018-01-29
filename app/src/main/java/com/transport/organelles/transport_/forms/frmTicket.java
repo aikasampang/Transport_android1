@@ -12,6 +12,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -232,7 +234,7 @@ public class frmTicket extends AppCompatActivity {
         final DBQuery dbQuery = new DBQuery(frmTicket.this);
         String directionDB = dbQuery.getDirectionfromDB();
 //        String direction = GlobalVariable.d_direct;
-        String lDirection = GlobalVariable.getDirection();
+        String lDirection =dbQuery.getDirectionfromDB();
         Log.wtf("DIRECTION!!!!", lDirection);
 
         if (lDirection == null) {
@@ -247,19 +249,20 @@ public class frmTicket extends AppCompatActivity {
             } else if (directionDB.toString().contains("-1")) {
                 bound.setText("N BOUND");
                 String id = dbQuery.getLinefrmDB();
-                ed_origin.setText(dbQuery.getSegment(id, "first"));
-                ed_des.setText(dbQuery.getSegment(id, "last"));
+                ed_origin.setText(dbQuery.getSegment(id, "last"));
+                ed_des.setText(dbQuery.getSegment(id, "first"));
                 // descending(id);
             }
         } else {
-            if (lDirection.toString().contains("SOUTH")) {
+//            if (lDirection.toString().contains("1")) {
+//                bound.setText("S BOUND");
+//
+//            } else if (lDirection.toString().contains("-1")) {
+//                bound.setText("N BOUND");
+//            }
+
+            if (lDirection.toString().contains("1")) {
                 bound.setText("S BOUND");
-
-            } else if (lDirection.toString().contains("NORTH")) {
-                bound.setText("N BOUND");
-            }
-
-            if (lDirection.toString().contains("SOUTH")) {
                 String id = dbQuery.getLinefrmDB();
                 ed_origin.setText(dbQuery.getSegment(id, "first"));
                 ed_des.setText(dbQuery.getSegment(id, "last"));
@@ -272,7 +275,8 @@ public class frmTicket extends AppCompatActivity {
                 }
                 //ascending(id);
 
-            } else if (lDirection.toString().contains("NORTH")) {
+            } else if (lDirection.toString().contains("-1")) {
+                bound.setText("N BOUND");
                 String id = dbQuery.getLinefrmDB();
                 ed_origin.setText(dbQuery.getSegment(id, "last"));
                 ed_des.setText(dbQuery.getSegment(id, "first"));
@@ -293,20 +297,35 @@ public class frmTicket extends AppCompatActivity {
         print.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                DBQuery query = new DBQuery(frmTicket.this);
+                String devicename = GlobalVariable.getPhoneName();
                 String origin = ed_origin.getText().toString();
                 String destination = ed_des.getText().toString();
+                String direction = query.getDirectionValue(devicename);
+
 
                 // Check that we're actually connected before trying anything
-                if (mService.getState() != BluetoothService.STATE_CONNECTED) {
-                    Toast.makeText(frmTicket.this, R.string.not_connected, Toast.LENGTH_SHORT)
-                            .show();
-                    return;
-                }
+//                if (mService.getState() != BluetoothService.STATE_CONNECTED) {
+//                    Toast.makeText(frmTicket.this, R.string.not_connected, Toast.LENGTH_SHORT)
+//                            .show();
+//                    return;
+//                }
 
                 if(origin.equals(destination)){
                     Toast.makeText(frmTicket.this, "Please select origin/destination..", Toast.LENGTH_LONG).show();
                     return;
+                }
+
+                if(direction.equals("-1")){
+                    if(Integer.parseInt(origin) < Integer.parseInt(destination)){
+                        Toast.makeText(frmTicket.this, "Please select correct origin/destination..", Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                }else{
+                    if(Integer.parseInt(origin) > Integer.parseInt(destination)){
+                        Toast.makeText(frmTicket.this, "Please select correct origin/destination..", Toast.LENGTH_LONG).show();
+                        return;
+                    }
                 }
 
 
@@ -411,9 +430,31 @@ public class frmTicket extends AppCompatActivity {
 //        d_name.setText(namelast);
         kmpost.setText(textkm + "KM");
 
+
+        if(ed_origin.equals(cursor.isFirst())){
+            o_back.setEnabled(false);
+        }else if (ed_origin.equals(cursor.isLast())){
+            o_forward.setEnabled(false);
+        }else if(ed_des.getText().toString().equals(cursor.isFirst())){
+            d_back.setEnabled(false);
+        }else if(ed_des.getText().toString().equals(cursor.isLast())){
+            d_forward.setEnabled(false);
+        }
+
+
         o_forward.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+//                if(cursor.isLast()){
+//                    o_forward.setEnabled(false);
+//                }else {
+//
+//                    cursor.moveToNext();
+//                    String o_first = cursor.getString(cursor.getColumnIndex("REFPOINT"));
+//                    String o_namee = cursor.getString(cursor.getColumnIndex("NAME"));
+//                    ed_origin.setText(o_first);
+//                    o_name.setText(o_namee);
+//                }
                 if(cursor.isLast()){
                     cursor.moveToFirst();
                     String o_first = cursor.getString(cursor.getColumnIndex("REFPOINT"));
@@ -446,35 +487,45 @@ public class frmTicket extends AppCompatActivity {
 
             }
         });
-        o_back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(cursor.isFirst()){
-                    cursor.moveToLast();
-                    String last = cursor.getString(cursor.getColumnIndex("REFPOINT"));
-                    String name = cursor.getString(cursor.getColumnIndex("NAME"));
-                    o_name.setText(name);
-                    ed_origin.setText(last);
-                }else if(cursor.isLast()){
-                    cursor.moveToPrevious();
-                    String first = cursor.getString(cursor.getColumnIndex("REFPOINT"));
-                    String name = cursor.getString(cursor.getColumnIndex("NAME"));
-                    o_name.setText(name);
-                    ed_origin.setText(first);
-                }else{
-                    cursor.moveToPrevious();
-                    String next = cursor.getString(cursor.getColumnIndex("REFPOINT"));
-                    String name = cursor.getString(cursor.getColumnIndex("NAME"));
-                    o_name.setText(name);
-                    ed_origin.setText(next);
-                }
-                getDiscount2();
-                String textkm = Double.toString(kmpost());
-                kmpost.setText(textkm + "KM");
-
-
-            }
-        });
+//        o_back.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+////                if(cursor.isFirst()){
+////                    o_back.setEnabled(false);
+////                }else {
+////                    cursor.moveToPrevious();
+////                    String next = cursor.getString(cursor.getColumnIndex("REFPOINT"));
+////                    String name = cursor.getString(cursor.getColumnIndex("NAME"));
+////                    o_name.setText(name);
+////                    ed_origin.setText(next);
+////
+////                }
+//                if(cursor.isFirst()){
+//                    cursor.moveToLast();
+//                    String last = cursor.getString(cursor.getColumnIndex("REFPOINT"));
+//                    String name = cursor.getString(cursor.getColumnIndex("NAME"));
+//                    o_name.setText(name);
+//                    ed_origin.setText(last);
+//                }else if(cursor.isLast()){
+//                    cursor.moveToPrevious();
+//                    String first = cursor.getString(cursor.getColumnIndex("REFPOINT"));
+//                    String name = cursor.getString(cursor.getColumnIndex("NAME"));
+//                    o_name.setText(name);
+//                    ed_origin.setText(first);
+//                }else{
+//                    cursor.moveToPrevious();
+//                    String next = cursor.getString(cursor.getColumnIndex("REFPOINT"));
+//                    String name = cursor.getString(cursor.getColumnIndex("NAME"));
+//                    o_name.setText(name);
+//                    ed_origin.setText(next);
+//                }
+//                getDiscount2();
+//                String textkm = Double.toString(kmpost());
+//                kmpost.setText(textkm + "KM");
+//
+//
+//            }
+//        });
 
 
         d_back.setOnClickListener(new View.OnClickListener() {
@@ -578,6 +629,46 @@ public class frmTicket extends AppCompatActivity {
             }
         });
 
+        ed_des.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        ed_origin.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                DBQuery dbQuery1 = new DBQuery(frmTicket.this);
+                String newORI = ed_origin.getText().toString();
+                String line = dbQuery1.getLastLine();
+                String nameKmpoint = dbQuery1.getNameSegment(line, newORI);
+                o_name.setText(nameKmpoint);
+                getDiscount2();
+                String textkm = Double.toString(kmpost());
+                kmpost.setText(textkm + "KM");
+            }
+        });
+
 
 
 
@@ -587,9 +678,15 @@ public class frmTicket extends AppCompatActivity {
         if(ref.equals("origin")){
             ed_origin.setText(point);
             o_name.setText(name);
+            getDiscount2();
+            String textkm = Double.toString(kmpost());
+            kmpost.setText(textkm + "KM");
         }else if(ref.equals("destination")) {
             ed_des.setText(point);
             d_name.setText(name);
+            getDiscount2();
+            String textkm = Double.toString(kmpost());
+            kmpost.setText(textkm + "KM");
         }
     }
 
@@ -630,7 +727,7 @@ public class frmTicket extends AppCompatActivity {
         String sql = "Select * from v_linesegment where LINEID ='"+id+"'";
         cursor = dbObject.getDbConnection().rawQuery(sql, null);
         String devicename= GlobalVariable.getPhoneName();
-        String direction = dbQuery.getDirectionValue(devicename);
+        String direction = dbQuery.getDirectionfromDB();
 
         if (direction.equals("1")){
             cursor.moveToFirst();
@@ -648,12 +745,13 @@ public class frmTicket extends AppCompatActivity {
             cursor.moveToLast();
             String last = cursor.getString(cursor.getColumnIndex("REFPOINT"));
             String des = cursor.getString(cursor.getColumnIndex("NAME"));
-            ed_des.setText(last);
-            d_name.setText(des);
+            ed_origin.setText(last);
+            o_name.setText(des);
+            cursor.moveToFirst();
             String first = cursor.getString(cursor.getColumnIndex("REFPOINT"));
             String name = cursor.getString(cursor.getColumnIndex("NAME"));
-            ed_origin.setText(first);
-            o_name.setText(name);
+            ed_des.setText(first);
+            d_name.setText(name);
             getDiscount2();
 
         }

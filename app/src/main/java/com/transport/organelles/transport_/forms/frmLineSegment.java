@@ -99,12 +99,14 @@ public class frmLineSegment extends AppCompatActivity {
                     intent.putExtra("refpoint", refpoint);
                     intent.putExtra("refName", refName);
                     startActivity(intent);
+                    finish();
                 }else if(ref_data.equals("destination")){
                     Intent intent = new Intent (frmLineSegment.this, frmTicket.class);
                     intent.putExtra("ref", "destination");
                     intent.putExtra("refpoint", refpoint);
                     intent.putExtra("refName", refName);
                     startActivity(intent);
+                    finish();
                 }
             }
         });

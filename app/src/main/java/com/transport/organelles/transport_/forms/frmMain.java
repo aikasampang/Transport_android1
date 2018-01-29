@@ -503,7 +503,7 @@ public class frmMain extends AppCompatActivity  implements BluetoothBroadcastRec
         if(keyCode == KeyEvent.KEYCODE_HOME)
         {
             Log.i("Home Button","Clicked");
-            return true;
+            return false;
 
         }
         if(keyCode==KeyEvent.KEYCODE_BACK)
@@ -566,6 +566,39 @@ public class frmMain extends AppCompatActivity  implements BluetoothBroadcastRec
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    protected void onUserLeaveHint() {
+        LayoutInflater inflater = getLayoutInflater();
+        View alertLayout = inflater.inflate(R.layout.password, null);
+        final EditText pass = (EditText) alertLayout.findViewById(R.id.password);
+        AlertDialog.Builder builder = new AlertDialog.Builder(frmMain.this);
+        builder.setTitle("Code")
+                .setMessage("Please enter the code to exit.")
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String exitpass = "1234";
+
+                        if(pass.equals(exitpass)){
+                            android.os.Process.killProcess(android.os.Process.myPid());
+                            System.exit(1);
+                        }else{
+                            Toast.makeText(frmMain.this, "Wrong password! Please input the correct one.", Toast.LENGTH_LONG).show();
+                        }
+                    }
+                })
+                .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .setView(alertLayout)
+                .show();
 
 
+
+        Toast.makeText(frmMain.this,"exit app", Toast.LENGTH_LONG).show();
+        super.onUserLeaveHint();
+    }
 }
